@@ -50,12 +50,6 @@ BASH_CMD='/bin/bash'
 PHP_CMD='/usr/bin/php -q'
 PHP_SCRIPT_DEMAND="$PHP_CMD $ROOT_DIR/supervisor_demand.php"
 
-# DB
-DB_SUPERVISOR_HOST=
-DB_SUPERVISOR_USERNAME=
-DB_SUPERVISOR_PASSWORD=
-DB_SUPERVISOR_DB=
-
 ##
 # Colors and decorations types.
 # MUST define following types:

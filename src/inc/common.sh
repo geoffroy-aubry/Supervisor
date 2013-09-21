@@ -51,88 +51,11 @@ function checkScriptCalled () {
 }
 
 ##
-# Affiche le résultat de l'exécution de la ou les requêtes SQL spécifiées, en mode batch.
-#
-# @uses $DB_SUPERVISOR_DB, $DB_SUPERVISOR_HOST, $DB_SUPERVISOR_PASSWORD, $DB_SUPERVISOR_USERNAME
-# @param string $1-$n contenu de la ou les requêtes SQL à jouer
-#
-function execQuery () {
-    local query="$@"
-    mysql -u $DB_SUPERVISOR_USERNAME $DB_SUPERVISOR_DB -h $DB_SUPERVISOR_HOST \
-        --password=$DB_SUPERVISOR_PASSWORD --skip-column-names --batch -e "$query"
-}
-
-##
-# Affiche le résultat de l'exécution de la ou les requêtes SQL spécifiées, en mode batch
-# et converti au format CSV (" et ;).
-#
-# @param string $1-$n contenu de la ou les requêtes SQL à jouer
-#
-function execQuery2CSV () {
-    execQuery "$@" | sed -r 's/"/""/g' | sed -r 's/\t/";"/g' |sed -r 's/^|$/"/g'
-}
-
-function checkBeforeAdd () {
-    local script_name="$1"
-    local mask="$2"
-    execQuery " \
-        SELECT COUNT(*) AS NB \
-        FROM SUPERVISOR_DEMAND \
-        WHERE SUPERVISOR_DEMAND_STATUS_ID IN ($SUPERVISOR_STATUS_WAITING, $SUPERVISOR_STATUS_IN_PROGRESS) \
-        AND SCRIPT_NAME='$script_name' \
-        AND PARAMETERS LIKE '$mask'"
-}
-
-##
-# Notifie en DB du démarrage de l'exécution d'un script supervisé,
-# et affiche le nombre de lignes modifiées qui doit être égal à 1.
-#
-function startScript () {
-    local date="$(date +'%Y-%m-%d %H:%M:%S')"
-    if [ ! -z "$DB_SUPERVISOR_DB"]; then
-        execQuery " \
-            UPDATE SUPERVISOR_DEMAND SET \
-                EXECUTION_ID='$EXECUTION_ID', \
-                DATE_START='$date', \
-                SUPERVISOR_DEMAND_STATUS_ID=$SUPERVISOR_STATUS_IN_PROGRESS \
-            WHERE SUPERVISOR_DEMAND_ID=$SUPERVISOR_ID \
-            LIMIT 1; \
-            SELECT ROW_COUNT()"
-    else
-        echo 1
-    fi
-}
-
-##
-# Notifie en DB de la fin d'exécution d'un script supervisé,
-# et affiche le nombre de lignes modifiées qui doit être égal à 1.
-#
-# @param int $1 statut de fin d'exécution du script.
-#
-function endScript () {
-    local status="$1"
-    local date="$(date +'%Y-%m-%d %H:%M:%S')"
-    if [ ! -z "$DB_SUPERVISOR_DB"]; then
-        execQuery " \
-            UPDATE SUPERVISOR_DEMAND SET \
-                DATE_END='$date', \
-                SUPERVISOR_DEMAND_STATUS_ID=$status \
-             WHERE SUPERVISOR_DEMAND_ID=$SUPERVISOR_ID
-            LIMIT 1; \
-            SELECT ROW_COUNT()"
-    else
-        echo 1
-    fi
-}
-
-##
 # Initialisation des logs et notification du START.
 #
 # @uses $EXECUTION_ID, $SCRIPT_INFO_LOG_FILE, $SCRIPT_NAME, $SUPERVISOR_INFO_LOG_FILE, $SUPERVISOR_MAIL_SUBJECT_PREFIX
 #
 function initExecutionOfScript () {
-    [ ! "$(startScript)" -eq "1" ] && die 'Start failed!'
-
     getDateWithCS; local datecs="$RETVAL"
     echo "$datecs;$EXECUTION_ID;$SCRIPT_NAME;START" >> $SUPERVISOR_INFO_LOG_FILE
     echo "$datecs;START" >> $SCRIPT_INFO_LOG_FILE
@@ -203,8 +126,6 @@ function displayResult () {
 
     # if error:
     if [ -s $SCRIPT_ERROR_LOG_FILE ]; then
-        [ ! "$(endScript $SUPERVISOR_STATUS_END_ERROR)" -eq "1" ] && die 'End failed!'
-
         local src_ifs="$IFS"
         getDateWithCS; local datecs="$RETVAL"
         echo "$datecs;$EXECUTION_ID;$SCRIPT_NAME;ERROR" >> $SUPERVISOR_INFO_LOG_FILE
@@ -247,7 +168,6 @@ Error log file: $(dirname $SCRIPT_ERROR_LOG_FILE)/<b>$(basename $SCRIPT_ERROR_LO
 
     # else if warnings:
     elif [ "$nb_warnings" -gt 0 ]; then
-        [ ! "$(endScript $SUPERVISOR_STATUS_END_WARNING)" -eq "1" ] && die 'End failed!'
         getDateWithCS; local datecs="$RETVAL"
         echo "$datecs;$EXECUTION_ID;$SCRIPT_NAME;WARNING" >> $SUPERVISOR_INFO_LOG_FILE
         echo "$datecs;WARNING" >> $SCRIPT_INFO_LOG_FILE
@@ -327,7 +247,6 @@ Error log file: <i>N.A.</i><br />$warning_html"
 
     # else if successful:
     else
-        [ ! "$(endScript $SUPERVISOR_STATUS_END_OK)" -eq "1" ] && die 'End failed!'
         getDateWithCS; local datecs="$RETVAL"
         echo "$datecs;$EXECUTION_ID;$SCRIPT_NAME;OK" >> $SUPERVISOR_INFO_LOG_FILE
         echo "$datecs;OK" >> $SCRIPT_INFO_LOG_FILE
