@@ -1,9 +1,10 @@
 #!/bin/bash
 
 # PATHS
-ROOT_DIR=$(dirname "$0")
+ROOT_DIR=$(cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd)
 CONF_DIR=$ROOT_DIR/conf
-LIB_DIR=$ROOT_DIR/lib
+SRC_DIR=$ROOT_DIR/src
+INC_DIR=$SRC_DIR/inc
 SCRIPTS_DIR=$ROOT_DIR/scripts
 SHELL_SCRIPTS_DIR=$SCRIPTS_DIR/shell
 PHP_SCRIPTS_DIR=$SCRIPTS_DIR/php
@@ -70,7 +71,7 @@ DB_SUPERVISOR_DB=
 #   - http://confignewton.com/wp-content/uploads/2011/07/bash_color_codes.png
 #
 # @var associative array
-# @see inc/coloredUI.inc.sh for more details.
+# @see src/inc/coloredUI.sh for more details.
 #
 declare -A CUI_COLORS=(
     [error]='\033[1;31m'

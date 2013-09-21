@@ -9,7 +9,7 @@
 #      `==> '<type.header><type>message with <type.bold>bold section<type>.\033[0m'
 #
 # Concrete example:
-#	  . coloredUI.inc.sh
+#	  . coloredUI.sh
 #     CUI_COLORS=(
 #	      [error]='\033[1;31m'
 #	      [help]='\033[0;36m'

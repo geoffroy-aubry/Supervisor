@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Includes :
-. $LIB_DIR/tools.inc.sh
-. $LIB_DIR/coloredUI.inc.sh
+. $INC_DIR/tools.sh
+. $INC_DIR/coloredUI.sh
 
 ##
 # Initialisation du répertoire de logs :

@@ -7,7 +7,7 @@
 #set -o pipefail
 
 # Includes :
-. $(dirname $0)/conf/config.inc.sh
+. $(dirname $0)/conf/config.sh
 
 actions="START;OK;WARNING;ERROR;INIT ERROR"
 max_nb_days=7

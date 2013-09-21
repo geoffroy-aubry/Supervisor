@@ -13,8 +13,8 @@ set -o pipefail
 shopt -s extglob
 
 # Includes :
-. $(dirname $0)/conf/config.inc.sh
-. $LIB_DIR/common.inc.sh
+. $(dirname $0)/../conf/config.sh
+. $INC_DIR/common.sh
 
 # Duplication du flux d'erreur :
 exec 2> >(tee -a $SUPERVISOR_ERROR_LOG_FILE >&2)
@@ -211,4 +211,5 @@ function addAndRunDemand () {
     runDemand
 }
 
+#[ $# -eq 0 ] && displayHelp
 main "$@"
