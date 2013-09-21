@@ -18,7 +18,7 @@ function initScriptLogs () {
 ##
 # S'assure de l'existence du script à superviser et le cas échéant construit la commande ($CMD) à exécuter.
 #
-# @uses $SCRIPT_NAME, $EXECUTION_ID, $SUPERVISOR_INFO_LOG_FILE, $SHELL_SCRIPTS_DIR, $PHP_SCRIPTS_DIR, $PHP_CMD, $SCRIPT_PARAMETERS.
+# @uses $SCRIPT_NAME, $EXECUTION_ID, $SUPERVISOR_INFO_LOG_FILE, $PHP_CMD, $SCRIPT_PARAMETERS.
 #
 function checkScriptCalled () {
     local now
@@ -29,23 +29,20 @@ function checkScriptCalled () {
     else
         local directory
         local ext="${SCRIPT_NAME##*.}"
-        local script_path
         if [ "$ext" = 'sh' ]; then
-            [ "${SCRIPT_NAME:0:1}" = '/' ] && script_path="$SCRIPT_NAME" || script_path="$SHELL_SCRIPTS_DIR/$SCRIPT_NAME"
-            CMD="$BASH_CMD $script_path $SCRIPT_PARAMETERS"
+            CMD="$BASH_CMD $SCRIPT_NAME $SCRIPT_PARAMETERS"
         elif [ "$ext" = 'php' ]; then
-            [ "${SCRIPT_NAME:0:1}" = '/' ] && script_path="$SCRIPT_NAME" || script_path="$PHP_SCRIPTS_DIR/$SCRIPT_NAME"
-            CMD="$PHP_CMD $script_path $SCRIPT_PARAMETERS"
+            CMD="$PHP_CMD $SCRIPT_NAME $SCRIPT_PARAMETERS"
         else
             getDateWithCS; now="$RETVAL"
             echo "$now;$EXECUTION_ID;$SCRIPT_NAME;INIT ERROR" >> $SUPERVISOR_INFO_LOG_FILE
             die "Extension of script '$SCRIPT_NAME' not handled!"
         fi
 
-        if [ ! -f "$script_path" ]; then
+        if [ ! -f "$SCRIPT_NAME" ]; then
             getDateWithCS; now="$RETVAL"
             echo "$now;$EXECUTION_ID;$SCRIPT_NAME;INIT ERROR" >> $SUPERVISOR_INFO_LOG_FILE
-            die "Script '$script_path' not found!"
+            die "Script '$SCRIPT_NAME' not found!"
         fi
     fi
 }

@@ -6,8 +6,6 @@ CONF_DIR=$ROOT_DIR/conf
 SRC_DIR=$ROOT_DIR/src
 INC_DIR=$SRC_DIR/inc
 SCRIPTS_DIR=$ROOT_DIR/scripts
-SHELL_SCRIPTS_DIR=$SCRIPTS_DIR/shell
-PHP_SCRIPTS_DIR=$SCRIPTS_DIR/php
 LOG_DIR='/var/log/supervisor'
 
 SUPERVISOR_ERROR_HEADER_SEPARATOR='----------------------------------------------------------------------'
