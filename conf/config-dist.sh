@@ -9,8 +9,6 @@ SCRIPTS_DIR=$ROOT_DIR/scripts
 SHELL_SCRIPTS_DIR=$SCRIPTS_DIR/shell
 PHP_SCRIPTS_DIR=$SCRIPTS_DIR/php
 LOG_DIR='/var/log/supervisor'
-DATA_DIR=$ROOT_DIR/data
-BACKUPS_DIR=$ROOT_DIR/backups
 
 SUPERVISOR_ERROR_HEADER_SEPARATOR='----------------------------------------------------------------------'
 SUPERVISOR_ERROR_HEADER="$SUPERVISOR_ERROR_HEADER_SEPARATOR\n[%s] %s\n"
