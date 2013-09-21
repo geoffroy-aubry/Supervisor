@@ -44,9 +44,6 @@ function main () {
     if [ "$action" = "--get-logs" ]; then
         shift
         getLogs "$1" "$2"
-    elif [ "$action" = "--do-cron" ]; then
-        shift
-        doCronJob
     elif [ "${action:0:1}" = "-" ]; then
         die "Unknown action '$action'!"
     else
@@ -67,22 +64,6 @@ function getLogs () {
     [ -s "$LOG_DIR/$script_name.$id.error.log" ] && error="$(cat "$LOG_DIR/$script_name.$id.error.log" | sed 's/</\&lt;/g' | sed 's/\&/\&amp;/g')"
     echo '<?xml version="1.0" encoding="UTF-8"?>'
     echo "<logs><info>$info</info><error>$error</error></logs>"
-}
-
-function doCronJob () {
-    local n="$SUPERVISOR_MAX_DEMANDS_PER_MINUTE"
-    local max=60
-
-    let "i=$max/$n"
-    while [ "$max" -gt "$i" ]; do
-        sleep $i
-        #echo "$(date +\%s), => apres sleep $i > $0" >> /home/gaubry/testsupervisorcron.txt
-        /bin/bash $0 --run-next 1>/dev/null
-
-        let "max-=$i"
-        let "n--"
-        let "i=$max/$n"
-    done
 }
 
 function runDemand () {
