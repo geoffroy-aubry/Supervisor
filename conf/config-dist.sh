@@ -5,11 +5,8 @@ ROOT_DIR=$(cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd)
 CONF_DIR=$ROOT_DIR/conf
 SRC_DIR=$ROOT_DIR/src
 INC_DIR=$SRC_DIR/inc
-SCRIPTS_DIR=$ROOT_DIR/scripts
 LOG_DIR='/var/log/supervisor'
 
-SUPERVISOR_ERROR_HEADER_SEPARATOR='----------------------------------------------------------------------'
-SUPERVISOR_ERROR_HEADER="$SUPERVISOR_ERROR_HEADER_SEPARATOR\n[%s] %s\n"
 SUPERVISOR_ERROR_LOG_FILE=$LOG_DIR/supervisor.error.log
 SUPERVISOR_INFO_LOG_FILE=$LOG_DIR/supervisor.info.log
 SUPERVISOR_MONITORING_LOG_FILE=$LOG_DIR/supervisor.monitoring.log
