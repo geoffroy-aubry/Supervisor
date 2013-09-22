@@ -68,7 +68,7 @@ Supervisor error file: $(dirname $SUPERVISOR_ERROR_LOG_FILE)/<b>$(basename $SUPE
 Error:<br /><pre>$(cat $SUPERVISOR_ERROR_LOG_FILE)</pre>"
 		tail -n 50 "$SUPERVISOR_INFO_LOG_FILE" | gzip > "$SUPERVISOR_INFO_LOG_FILE.gz"
 		gzip -c "$SUPERVISOR_ERROR_LOG_FILE" > "$SUPERVISOR_ERROR_LOG_FILE.gz"
-		echo "$mail_msg" | mutt -F "$CONF_DIR/muttrc" -e "set content_type=text/html" -s "$mail_subject" -a "$SUPERVISOR_INFO_LOG_FILE.gz" -a "$SUPERVISOR_ERROR_LOG_FILE.gz" -- $SUPERVISOR_MAIL_TO
+		echo "$mail_msg" | $SUPERVISOR_MAIL_MUTT_CMD -F "$CONF_DIR/muttrc" -e "set content_type=text/html" -s "$mail_subject" -a "$SUPERVISOR_INFO_LOG_FILE.gz" -a "$SUPERVISOR_ERROR_LOG_FILE.gz" -- $SUPERVISOR_MAIL_TO
 		rm -f "$SUPERVISOR_INFO_LOG_FILE.gz"
 		rm -f "$SUPERVISOR_ERROR_LOG_FILE.gz"
 	fi

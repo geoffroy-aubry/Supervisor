@@ -59,7 +59,7 @@ function initExecutionOfScript () {
         local mail_msg="<h3>$msg.</h3>Instigator: "
         [ -z "$INSTIGATOR_EMAIL" ] && mail_msg="$mail_msg<i>not specified</i>" || mail_msg="$mail_msg$INSTIGATOR_EMAIL"
         mail_msg="$mail_msg<br /><br />Executed command: <pre>\$ $CMD $EXECUTION_ID $SCRIPT_ERROR_LOG_FILE 2>>$SCRIPT_ERROR_LOG_FILE</pre><br />Server: $(hostname)<br />You will receive another email at the end of execution."
-        echo "$mail_msg" | mutt -e "$SUPERVISOR_MAIL_MUTT_CMDS" -s "$mail_subject" -- $SUPERVISOR_MAIL_TO $INSTIGATOR_EMAIL
+        echo "$mail_msg" | $SUPERVISOR_MAIL_MUTT_CMD -e "$SUPERVISOR_MAIL_MUTT_CFG" -s "$mail_subject" -- $SUPERVISOR_MAIL_TO $INSTIGATOR_EMAIL
     fi
 }
 
@@ -149,7 +149,7 @@ Error log file: $(dirname $SCRIPT_ERROR_LOG_FILE)/<b>$(basename $SCRIPT_ERROR_LO
             gzip -c "$SCRIPT_INFO_LOG_FILE" > "$SCRIPT_INFO_LOG_FILE.gz"
             gzip -c "$SCRIPT_ERROR_LOG_FILE" > "$SCRIPT_ERROR_LOG_FILE.gz"
             SUPERVISOR_MAIL_ADD_ATTACHMENT="$SUPERVISOR_MAIL_ADD_ATTACHMENT $SCRIPT_ERROR_LOG_FILE.gz"
-            echo "$mail_msg" | mutt -e "$SUPERVISOR_MAIL_MUTT_CMDS" -s "$mail_subject" -a $SUPERVISOR_MAIL_ADD_ATTACHMENT -- $SUPERVISOR_MAIL_TO $INSTIGATOR_EMAIL
+            echo "$mail_msg" | $SUPERVISOR_MAIL_MUTT_CMD -e "$SUPERVISOR_MAIL_MUTT_CFG" -s "$mail_subject" -a $SUPERVISOR_MAIL_ADD_ATTACHMENT -- $SUPERVISOR_MAIL_TO $INSTIGATOR_EMAIL
             rm -f "$SUPERVISOR_INFO_LOG_FILE.$EXECUTION_ID.gz"
             rm -f "$SCRIPT_INFO_LOG_FILE.gz"
             rm -f "$SCRIPT_ERROR_LOG_FILE.gz"
@@ -229,7 +229,7 @@ Execution log file: $(dirname $SCRIPT_INFO_LOG_FILE)/<b>$(basename $SCRIPT_INFO_
 Error log file: <i>N.A.</i><br />$warning_html"
             tail -n 50 "$SUPERVISOR_INFO_LOG_FILE" | gzip > "$SUPERVISOR_INFO_LOG_FILE.$EXECUTION_ID.gz"
             gzip -c "$SCRIPT_INFO_LOG_FILE" > "$SCRIPT_INFO_LOG_FILE.gz"
-            echo "$mail_msg" | mutt -e "$SUPERVISOR_MAIL_MUTT_CMDS" -s "$mail_subject" -a $SUPERVISOR_MAIL_ADD_ATTACHMENT -- $SUPERVISOR_MAIL_TO $INSTIGATOR_EMAIL
+            echo "$mail_msg" | $SUPERVISOR_MAIL_MUTT_CMD -e "$SUPERVISOR_MAIL_MUTT_CFG" -s "$mail_subject" -a $SUPERVISOR_MAIL_ADD_ATTACHMENT -- $SUPERVISOR_MAIL_TO $INSTIGATOR_EMAIL
             rm -f "$SUPERVISOR_INFO_LOG_FILE.$EXECUTION_ID.gz"
             rm -f "$SCRIPT_INFO_LOG_FILE.gz"
         fi
@@ -260,7 +260,7 @@ Error log file: <i>N.A.</i><br />\
 No warnings."
             tail -n 50 "$SUPERVISOR_INFO_LOG_FILE" | gzip > "$SUPERVISOR_INFO_LOG_FILE.$EXECUTION_ID.gz"
             gzip -c "$SCRIPT_INFO_LOG_FILE" > "$SCRIPT_INFO_LOG_FILE.gz"
-            echo "$mail_msg" | mutt -e "$SUPERVISOR_MAIL_MUTT_CMDS" -s "$mail_subject" -a $SUPERVISOR_MAIL_ADD_ATTACHMENT -- $SUPERVISOR_MAIL_TO $INSTIGATOR_EMAIL
+            echo "$mail_msg" | $SUPERVISOR_MAIL_MUTT_CMD -e "$SUPERVISOR_MAIL_MUTT_CFG" -s "$mail_subject" -a $SUPERVISOR_MAIL_ADD_ATTACHMENT -- $SUPERVISOR_MAIL_TO $INSTIGATOR_EMAIL
             rm -f "$SUPERVISOR_INFO_LOG_FILE.$EXECUTION_ID.gz"
             rm -f "$SCRIPT_INFO_LOG_FILE.gz"
         fi
