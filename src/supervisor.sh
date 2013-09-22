@@ -33,14 +33,12 @@ function getOpts () {
         case $i in
             -c)
                 long_option="--conf" ;;
+
             --conf=*)
-                CONFIG_FILE=${i#*=}
-                [ -f "$CONFIG_FILE" ] || die "Config file missing: '<b>$CONFIG_FILE</b>'"
-                ;;
+                CONFIG_FILE=${i#*=} ;;
 
             --instigator-email=*)
-                INSTIGATOR_EMAIL=${i#*=}
-                ;;
+                INSTIGATOR_EMAIL=${i#*=} ;;
 
             *)
                 case $j in
@@ -65,6 +63,9 @@ function runDemand () {
 }
 
 getOpts "$@"
+
+[ -f "$CONFIG_FILE" ]   || die "Config file missing: '<b>$CONFIG_FILE</b>'"
+#[ ! -z "$SCRIPT_NAME" ] || die "Missing script name!"
 
 # Includes:
 . $(dirname $0)/../conf/supervisor-dist.sh

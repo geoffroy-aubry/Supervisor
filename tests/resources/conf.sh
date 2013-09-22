@@ -28,12 +28,6 @@ SUPERVISOR_MAIL_SEND_ON_ERROR=1
 # Error and warning detection
 SUPERVISOR_LOG_TABULATION='┆   '
 
-# BASH
-BASH_CMD='/bin/bash'
-
-# PHP
-PHP_CMD='/usr/bin/php -q'
-
 ##
 # Colors and decorations types.
 # MUST define following types:
