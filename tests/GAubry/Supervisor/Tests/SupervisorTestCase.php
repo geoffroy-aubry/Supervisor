@@ -15,11 +15,12 @@ class SupervisorTestCase extends \PHPUnit_Framework_TestCase
      */
     public function setUp ()
     {
-        $this->sTmpDir = sys_get_temp_dir() . '/supervisor-test.' . date("Ymd-His") . '.' . getmypid();
+        $this->sTmpDir = sys_get_temp_dir() . '/supervisor-test.' . date("Ymd-His")
+                       . '.' . str_pad(rand(0, 99999), 5, '0', STR_PAD_LEFT);
         mkdir($this->sTmpDir);
-        $sContent = file_get_contents('tests/resources/conf.sh');
+        $sContent = file_get_contents(RESOURCES_DIR . '/conf.sh');
         $aReplace = array(
-            '{root_dir}' => __DIR__ . '/../../../..',
+            '{root_dir}' => ROOT_DIR,
             '{log_dir}' => $this->sTmpDir
         );
         $sContent = strtr($sContent, $aReplace);
@@ -28,7 +29,7 @@ class SupervisorTestCase extends \PHPUnit_Framework_TestCase
 
     protected function execSupervisor ($sParameters, $bStripBashColors = true)
     {
-        $sCmd = "src/supervisor.sh -c $this->sTmpDir/conf.sh $sParameters";
+        $sCmd = SRC_DIR . "/supervisor.sh -c $this->sTmpDir/conf.sh $sParameters";
         try {
             $aStdOut = $this->exec($sCmd, $bStripBashColors);
         } catch (\RuntimeException $oException) {

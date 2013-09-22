@@ -18,8 +18,6 @@ if (! file_exists(__DIR__ . '/../../vendor/autoload.php')) {
 $oLoader = require __DIR__ . '/../../vendor/autoload.php';
 $oLoader->add('GAubry\Supervisor\Tests', __DIR__ . '/../');
 
-// $aConfig = require_once(__DIR__ . '/../../conf/supervisor.php');
-
-// new ErrorHandler($aConfig['GAubry\ErrorHandler']);
+require_once(__DIR__ . '/../../conf/phpunit.php');
 
 date_default_timezone_set('UTC');

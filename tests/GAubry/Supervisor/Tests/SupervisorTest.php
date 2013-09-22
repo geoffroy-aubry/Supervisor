@@ -7,24 +7,6 @@ use GAubry\Helpers\Helpers;
 class SupervisorTest extends SupervisorTestCase
 {
     /**
-     * Sets up the fixture, for example, open a network connection.
-     * This method is called before a test is executed.
-     */
-    public function setUp ()
-    {
-        parent::setUp();
-    }
-
-    /**
-     * Tears down the fixture, for example, close a network connection.
-     * This method is called after a test is executed.
-     */
-    public function tearDown()
-    {
-        parent::tearDown();
-    }
-
-    /**
      */
     public function testWithoutScript ()
     {
@@ -33,5 +15,17 @@ class SupervisorTest extends SupervisorTestCase
         $this->assertEquals(array(), $aStdOut);
         $this->assertEquals(array('NO SCRIPT;INIT ERROR', ''), $aSupervisorInfo);
         $this->assertEquals(array('/!\ Missing script name!', ''), $aSupervisorErr);
+    }
+
+    /**
+     */
+    public function testWithNotExecutableScript ()
+    {
+//         $this->setExpectedException('\RuntimeException', 'Exit code not nullcc: 1');
+        list($aStdOut, $aSupervisorInfo, $aSupervisorErr) =
+            $this->execSupervisor(RESOURCES_DIR . '/not_executable', true);
+        $this->assertEquals(array(), $aStdOut);
+        $this->assertEquals(array('NO SCRIPT;INIT ERROR', ''), $aSupervisorInfo);
+        $this->assertEquals(array("/!\ Script '" . RESOURCES_DIR . "/not_executable' not found!", ''), $aSupervisorErr);
     }
 }
