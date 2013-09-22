@@ -12,58 +12,46 @@ set -o nounset
 set -o pipefail
 shopt -s extglob
 
-# Includes :
-. $(dirname $0)/../conf/supervisor.sh
-. $INC_DIR/common.sh
-
-# Duplication du flux d'erreur :
-exec 2> >(tee -a $SUPERVISOR_ERROR_LOG_FILE >&2)
-
 # Globales :
+CONFIG_FILE="$(dirname $0)/../conf/supervisor.sh"
 SCRIPT_NAME=''
 SCRIPT_PARAMETERS=''
 EXECUTION_ID=''
 INSTIGATOR_EMAIL=''
 SUPERVISOR_MAIL_ADD_ATTACHMENT=''
 
-##
-# Contrôleur.
-# @uses $SCRIPT_NAME, $SCRIPT_PARAMETERS, $EXECUTION_ID, $INSTIGATOR_EMAIL
-#
-function main () {
-    local action="$1"
+function getOpts () {
+    local j=0
+    local long_option=''
 
-    # Si le 1er paramètre précise l'instigateur de l'action :
-    local instigator='--instigator-email='
-    if [ "${action:0:${#instigator}}" = "$instigator" ]; then
-        INSTIGATOR_EMAIL="${action:${#instigator}}"
-        shift
-        action="$1"
-    fi
+    for i in "$@"; do
+        if [ ! -z "$long_option" ]; then
+            i="$long_option=$i"
+            long_option=''
+        fi
 
-    if [ "$action" = "--get-logs" ]; then
-        shift
-        getLogs "$1" "$2"
-    elif [ "${action:0:1}" = "-" ]; then
-        die "Unknown action '$action'!"
-    else
-        EXECUTION_ID="$(date +'%Y%m%d%H%M%S')_$(printf '%05d' $RANDOM)"
-        SCRIPT_NAME="$1"; shift
-        SCRIPT_PARAMETERS="$@"
-        runDemand
-    fi
-}
+        case $i in
+            -c)
+                long_option="--conf" ;;
+            --conf=*)
+                CONFIG_FILE=${i#*=}
+                [ -f "$CONFIG_FILE" ] || die "Config file missing: '<b>$CONFIG_FILE</b>'"
+                ;;
 
-function getLogs () {
-    local script_name="$1"
-    local id="$2"
-    local info=''
-    local error=''
+            --instigator-email=*)
+                INSTIGATOR_EMAIL=${i#*=}
+                ;;
 
-    [ -s "$LOG_DIR/$script_name.$id.info.log" ] && info="$(cat "$LOG_DIR/$script_name.$id.info.log" | sed 's/</\&lt;/g' | sed 's/\&/\&amp;/g')"
-    [ -s "$LOG_DIR/$script_name.$id.error.log" ] && error="$(cat "$LOG_DIR/$script_name.$id.error.log" | sed 's/</\&lt;/g' | sed 's/\&/\&amp;/g')"
-    echo '<?xml version="1.0" encoding="UTF-8"?>'
-    echo "<logs><info>$info</info><error>$error</error></logs>"
+            *)
+                case $j in
+                    0) SCRIPT_NAME="$i" ;;
+                    1) SCRIPT_PARAMETERS="$i" ;;
+                    *) ;;
+                esac
+                j=$(($j + 1))
+                ;;
+        esac
+    done
 }
 
 function runDemand () {
@@ -76,5 +64,16 @@ function runDemand () {
     displayResult
 }
 
+getOpts "$@"
+
+# Includes:
+. $(dirname $0)/../conf/supervisor-dist.sh
+. $CONFIG_FILE
+. $INC_DIR/common.sh
+
+# Duplication du flux d'erreur :
+exec 2> >(tee -a $SUPERVISOR_ERROR_LOG_FILE >&2)
+
 #[ $# -eq 0 ] && displayHelp
-main "$@"
+EXECUTION_ID="$(date +'%Y%m%d%H%M%S')_$(printf '%05d' $RANDOM)"
+runDemand
