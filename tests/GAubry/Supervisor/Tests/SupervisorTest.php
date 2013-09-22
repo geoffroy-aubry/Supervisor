@@ -12,6 +12,7 @@ class SupervisorTest extends SupervisorTestCase
      */
     public function setUp ()
     {
+        parent::setUp();
     }
 
     /**
@@ -20,14 +21,17 @@ class SupervisorTest extends SupervisorTestCase
      */
     public function tearDown()
     {
+        parent::tearDown();
     }
 
     /**
      */
-    public function testX ()
+    public function testWithoutScript ()
     {
-        $sCmd = "src/supervisor.sh tests/resources/simple.sh";
-        $aResult = $this->exec($sCmd, true);
-        $this->assertEquals(array(), $aResult);
+//         $this->setExpectedException('\RuntimeException', 'Exit code not nullcc: 1');
+        list($aStdOut, $aSupervisorInfo, $aSupervisorErr) = $this->execSupervisor('', true);
+        $this->assertEquals(array(), $aStdOut);
+        $this->assertEquals(array('NO SCRIPT;INIT ERROR', ''), $aSupervisorInfo);
+        $this->assertEquals(array('/!\ Missing script name!', ''), $aSupervisorErr);
     }
 }

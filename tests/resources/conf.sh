@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # PATHS
-ROOT_DIR=$(cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd)
+ROOT_DIR="{root_dir}"
 CONF_DIR=$ROOT_DIR/conf
 SRC_DIR=$ROOT_DIR/src
 INC_DIR=$SRC_DIR/inc
-LOG_DIR='/var/log/datawarehouse'
+LOG_DIR="{log_dir}"
 
 SUPERVISOR_ERROR_LOG_FILE=$LOG_DIR/supervisor.error.log
 SUPERVISOR_INFO_LOG_FILE=$LOG_DIR/supervisor.info.log
