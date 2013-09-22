@@ -290,9 +290,9 @@ function displayScriptMsg {
 
     # Trim:
     tmsg="$msg"
+    tmsg="$(echo "$tmsg" | sed -r 's:(\033|\x1B)\[[0-9;]*[mK]::ig')"
     if [ ! -z "$SUPERVISOR_LOG_TABULATION" ]; then
         #tmsg="${tmsg//[^[:print:]]\[+([0-9;])[mK]/}"
-        tmsg="$(echo "$tmsg" | sed -r 's:(\033|\x1B)\[[0-9;]*[mK]::ig')"
         tmsg="${tmsg##+($SUPERVISOR_LOG_TABULATION)}"
     fi
     tmsg="${tmsg##+( )}"

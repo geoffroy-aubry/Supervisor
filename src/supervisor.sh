@@ -13,7 +13,7 @@ set -o pipefail
 shopt -s extglob
 
 # Includes :
-. $(dirname $0)/../conf/config.sh
+. $(dirname $0)/../conf/supervisor.sh
 . $INC_DIR/common.sh
 
 # Duplication du flux d'erreur :

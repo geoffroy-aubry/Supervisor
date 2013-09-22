@@ -13,7 +13,7 @@ MAX_DAYS="$1"
 MIN_DAYS="$2"
 
 # Includes :
-. $(dirname $0)/conf/config.sh
+. $(dirname $0)/conf/supervisor.sh
 
 cd "$LOG_DIR"
 for i in $(seq "$MAX_DAYS" -1 "$MIN_DAYS"); do

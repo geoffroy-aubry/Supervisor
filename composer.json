@@ -1,0 +1,8 @@
+{
+    "name": "geoffroy-aubry/supervisor",
+    "require-dev": {
+        "php"                   : ">=5.3.3",
+        "phpunit/phpunit"       : ">=3.7",
+        "geoffroy-aubry/helpers": "1.*"
+    }
+}

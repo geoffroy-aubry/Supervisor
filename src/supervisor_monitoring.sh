@@ -13,7 +13,7 @@
 ##
 
 # Includes :
-. $(dirname $0)/conf/config.sh
+. $(dirname $0)/conf/supervisor.sh
 
 if [ -s "$SUPERVISOR_ERROR_LOG_FILE" ]; then
 	[ ! -s "$SUPERVISOR_INFO_LOG_FILE" ] && touch $SUPERVISOR_INFO_LOG_FILE
