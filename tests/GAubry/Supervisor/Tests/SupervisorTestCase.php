@@ -7,7 +7,7 @@ use GAubry\Helpers\Debug;
 
 class SupervisorTestCase extends \PHPUnit_Framework_TestCase
 {
-    private $sTmpDir;
+    protected $sTmpDir;
 
     /**
      * Sets up the fixture, for example, open a network connection.
@@ -31,41 +31,49 @@ class SupervisorTestCase extends \PHPUnit_Framework_TestCase
     {
         $sCmd = SRC_DIR . "/supervisor.sh -c $this->sTmpDir/conf.sh $sParameters";
         try {
-            $aStdOut = $this->exec($sCmd, $bStripBashColors);
+            $sStdOut = $this->exec($sCmd, $bStripBashColors);
         } catch (\RuntimeException $oException) {
             if (substr($oException->getMessage(), 0, strlen('Exit code not null: ')) == 'Exit code not null: ') {
-                $aStdOut = array();
+                $sStdOut = '';
             } else {
                 throw $oException;
             }
         }
 
+        $sExecId = '';
         $aSupervisorInfo = file($this->sTmpDir . '/supervisor.info.log');
-        $aSupervisorInfo = $this->stripBashColors($aSupervisorInfo, $bStripBashColors);
+        $sSupervisorInfo = $this->stripBashColors(implode('', $aSupervisorInfo), $bStripBashColors);
         $aFilteredSupervisorInfo = array();
-        foreach($aSupervisorInfo as $sLine) {
+        foreach(explode("\n", $sSupervisorInfo) as $sLine) {
             if (empty($sLine)) {
                 $aFilteredSupervisorInfo[] = '';
             } else {
+                if (empty($sExecId)) {
+                    $sExecId = substr($sLine, strlen('2012-07-18 15:01:46 32cs;'), strlen('20120718150145_17543'));
+                }
                 $aFilteredSupervisorInfo[] = substr($sLine, strlen('2012-07-18 15:01:46 32cs;20120718150145_17543;'));
             }
         }
 
         $aSupervisorErr = file($this->sTmpDir . '/supervisor.error.log');
-        $aSupervisorErr = $this->stripBashColors($aSupervisorErr, $bStripBashColors);
+        $sSupervisorErr = $this->stripBashColors(implode("\n", $aSupervisorErr), $bStripBashColors);
 
-        return array($aStdOut, $aFilteredSupervisorInfo, $aSupervisorErr);
+        return array(
+            $sExecId,
+            $sStdOut,
+            implode("\n", $aFilteredSupervisorInfo),
+            $sSupervisorErr
+        );
     }
 
-    protected function stripBashColors (array $aData, $bStripBashColors = true)
+    protected function stripBashColors ($sMsg, $bStripBashColors = true)
     {
-        $sMsg = implode("\n", $aData);
         if ($bStripBashColors) {
             $sMsg = Helpers::stripBashColors($sMsg);
         } else {
             $sMsg = str_replace("\033", '\033', $sMsg);
         }
-        return explode("\n", $sMsg);
+        return $sMsg;
     }
 
     protected function exec ($sCmd, $bStripBashColors = true)
@@ -83,6 +91,7 @@ class SupervisorTestCase extends \PHPUnit_Framework_TestCase
             }
             throw new \RuntimeException($sMsg, $oException->getCode(), $oException);
         }
-        return $this->stripBashColors($aResult, $bStripBashColors);
+        $sResult = $this->stripBashColors(implode("\n", $aResult), $bStripBashColors);
+        return $sResult;
     }
 }

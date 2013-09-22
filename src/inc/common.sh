@@ -47,7 +47,7 @@ function checkScriptCalled () {
 function initExecutionOfScript () {
     getDateWithCS; local datecs="$RETVAL"
     echo "$datecs;$EXECUTION_ID;$SCRIPT_NAME;START" >> $SUPERVISOR_INFO_LOG_FILE
-    echo "$datecs;START" >> $SCRIPT_INFO_LOG_FILE
+    echo "$datecs;${SUPERVISOR_PREFIX_MSG}START" >> $SCRIPT_INFO_LOG_FILE
     echo
 
     local msg="Starting script '<b>$SCRIPT_NAME</b>' with id '<b>$EXECUTION_ID</b>'"
@@ -118,7 +118,7 @@ function displayResult () {
         local src_ifs="$IFS"
         getDateWithCS; local datecs="$RETVAL"
         echo "$datecs;$EXECUTION_ID;$SCRIPT_NAME;ERROR" >> $SUPERVISOR_INFO_LOG_FILE
-        echo "$datecs;ERROR" >> $SCRIPT_INFO_LOG_FILE
+        echo "$datecs;${SUPERVISOR_PREFIX_MSG}ERROR" >> $SCRIPT_INFO_LOG_FILE
         CUI_displayMsg error "Script '<b>$SCRIPT_NAME</b>' FAILED!"
         echo
 
@@ -159,7 +159,7 @@ Error log file: $(dirname $SCRIPT_ERROR_LOG_FILE)/<b>$(basename $SCRIPT_ERROR_LO
     elif [ "$nb_warnings" -gt 0 ]; then
         getDateWithCS; local datecs="$RETVAL"
         echo "$datecs;$EXECUTION_ID;$SCRIPT_NAME;WARNING" >> $SUPERVISOR_INFO_LOG_FILE
-        echo "$datecs;WARNING" >> $SCRIPT_INFO_LOG_FILE
+        echo "$datecs;${SUPERVISOR_PREFIX_MSG}WARNING" >> $SCRIPT_INFO_LOG_FILE
         [ "$nb_warnings" -gt 1 ] && plural='S' || plural=''
         CUI_displayMsg warning "$nb_warnings WARNING$plural"
         echo
@@ -238,7 +238,7 @@ Error log file: <i>N.A.</i><br />$warning_html"
     else
         getDateWithCS; local datecs="$RETVAL"
         echo "$datecs;$EXECUTION_ID;$SCRIPT_NAME;OK" >> $SUPERVISOR_INFO_LOG_FILE
-        echo "$datecs;OK" >> $SCRIPT_INFO_LOG_FILE
+        echo "$datecs;${SUPERVISOR_PREFIX_MSG}OK" >> $SCRIPT_INFO_LOG_FILE
         CUI_displayMsg ok 'OK'
         echo
         CUI_displayMsg help "Supervisor log file: $(dirname $SUPERVISOR_INFO_LOG_FILE)/<b>$(basename $SUPERVISOR_INFO_LOG_FILE)</b>"

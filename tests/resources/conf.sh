@@ -27,6 +27,7 @@ SUPERVISOR_MAIL_SEND_ON_ERROR=1
 
 # Error and warning detection
 SUPERVISOR_LOG_TABULATION='┆   '
+SUPERVISOR_PREFIX_MSG='[SUPERVISOR] '
 
 ##
 # Colors and decorations types.
