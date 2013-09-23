@@ -97,7 +97,7 @@ function executeScript () {
 
         wait $pid
         status=$?
-        [ $status -ne 0 ] && echo "Exit code not null: $status" >>$SCRIPT_ERROR_LOG_FILE
+        [ $status -ne 0 ] && echo "${SUPERVISOR_PREFIX_MSG}Exit code not null: $status" >>$SCRIPT_ERROR_LOG_FILE
     fi
 }
 
