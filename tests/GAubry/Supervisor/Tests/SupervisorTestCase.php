@@ -40,13 +40,13 @@ class SupervisorTestCase extends \PHPUnit_Framework_TestCase
             }
         }
 
-        $sAnyDate = '2012-07-18 15:01:46 32cs';
+        $sAnyDate   = '2012-07-18 15:01:46 32cs';
         $sAnyExecId = '20120718150145_17543';
 
         $sExecId = '';
         $sScriptName = '';
-        $aSupervisorInfo = file($this->sTmpDir . '/supervisor.info.log');
-        $sSupervisorInfo = $this->stripBashColors(implode('', $aSupervisorInfo), $bStripBashColors);
+        $sSupervisorInfoPath = $this->sTmpDir . '/supervisor.info.log';
+        $sSupervisorInfo = $this->stripBashColors(implode('', file($sSupervisorInfoPath)), $bStripBashColors);
         $aFilteredSupervisorInfo = array();
         foreach(explode("\n", $sSupervisorInfo) as $sLine) {
             if (empty($sLine)) {
@@ -61,22 +61,34 @@ class SupervisorTestCase extends \PHPUnit_Framework_TestCase
             }
         }
 
-        $aSupervisorErr = file($this->sTmpDir . '/supervisor.error.log');
-        $sSupervisorErr = $this->stripBashColors(implode("\n", $aSupervisorErr), $bStripBashColors);
+        $sSupervisorErrPath = $this->sTmpDir . '/supervisor.error.log';
+        $sSupervisorErr = $this->stripBashColors(implode("\n", file($sSupervisorErrPath)), $bStripBashColors);
 
-        $sScriptInfoName = "$this->sTmpDir/$sScriptName.$sExecId.info.log";
-        if (is_file($sScriptInfoName)) {
-            $sScriptInfo = preg_replace('/^[^;]+;/m', '', file_get_contents($sScriptInfoName));
+        $sScriptInfoPath = "$this->sTmpDir/$sScriptName.$sExecId.info.log";
+        if (is_file($sScriptInfoPath)) {
+            $sScriptInfoContent = preg_replace('/^[^;]+;/m', '', file_get_contents($sScriptInfoPath));
         } else {
-            $sScriptInfo = '';
+            $sScriptInfoContent = '';
+        }
+
+        $sScriptErrPath = "$this->sTmpDir/$sScriptName.$sExecId.error.log";
+        if (is_file($sScriptErrPath)) {
+            $sScriptErrContent = preg_replace('/^[^;]+;/m', '', file_get_contents($sScriptErrPath));
+        } else {
+            $sScriptErrContent = '';
         }
 
         return array(
-            $sExecId,
-            $sStdOut,
-            $sScriptInfo,
-            implode("\n", $aFilteredSupervisorInfo),
-            $sSupervisorErr
+            'exec_id'                 => $sExecId,
+            'std_out'                 => $sStdOut,
+            'script_info_path'        => $sScriptInfoPath,
+            'script_info_content'     => $sScriptInfoContent,
+            'script_err_path'         => $sScriptErrPath,
+            'script_err_content'      => $sScriptErrContent,
+            'supervisor_info_path'    => $sSupervisorInfoPath,
+            'supervisor_info_content' => implode("\n", $aFilteredSupervisorInfo),
+            'supervisor_err_path'     => $sSupervisorErrPath,
+            'supervisor_err_content'  => $sSupervisorErr
         );
     }
 

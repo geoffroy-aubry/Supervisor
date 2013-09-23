@@ -10,11 +10,12 @@ class SupervisorTest extends SupervisorTestCase
      */
     public function testWithoutScript ()
     {
-        list($sExecId, $sStdOut, $sScriptInfo, $sSupervisorInfo, $sSupervisorErr) = $this->execSupervisor('', true);
-        $this->assertEquals('', $sStdOut);
-        $this->assertEquals('', $sScriptInfo);
-        $this->assertEquals("NO SCRIPT;INIT ERROR\n", $sSupervisorInfo);
-        $this->assertEquals("/!\\ Missing script name!\n", $sSupervisorErr);
+        $aResult = $this->execSupervisor('', true);
+        $this->assertEquals('', $aResult['std_out']);
+        $this->assertEquals('', $aResult['script_info_content']);
+        $this->assertEquals('', $aResult['script_err_content']);
+        $this->assertEquals("NO SCRIPT;INIT ERROR\n", $aResult['supervisor_info_content']);
+        $this->assertEquals("/!\\ Missing script name!\n", $aResult['supervisor_err_content']);
     }
 
     /**
@@ -22,29 +23,56 @@ class SupervisorTest extends SupervisorTestCase
     public function testWithNotExecutableScript ()
     {
         $sScript = RESOURCES_DIR . '/not_executable';
-        list($sExecId, $sStdOut, $sScriptInfo, $sSupervisorInfo, $sSupervisorErr) = $this->execSupervisor($sScript, true);
-        $this->assertEquals('', $sStdOut);
-        $this->assertEquals('', $sScriptInfo);
-        $this->assertEquals("NO SCRIPT;INIT ERROR\n", $sSupervisorInfo);
-        $this->assertEquals("/!\ Script '$sScript' not found!\n", $sSupervisorErr);
+        $aResult = $this->execSupervisor($sScript, true);
+        $this->assertEquals('', $aResult['std_out']);
+        $this->assertEquals('', $aResult['script_info_content']);
+        $this->assertEquals('', $aResult['script_err_content']);
+        $this->assertEquals("NO SCRIPT;INIT ERROR\n", $aResult['supervisor_info_content']);
+        $this->assertEquals("/!\ Script '$sScript' not found!\n", $aResult['supervisor_err_content']);
     }
 
     /**
      */
     public function testWithEmptyExecutableScript ()
     {
-        $sScript = RESOURCES_DIR . '/empty_executable';
-        list($sExecId, $sStdOut, $sScriptInfo, $sSupervisorInfo, $sSupervisorErr) = $this->execSupervisor($sScript, true);
-        $this->assertEquals("
-(i) Starting script '$sScript' with id '$sExecId'
+        $sScriptName = 'empty_executable';
+        $sScriptPath = RESOURCES_DIR . "/$sScriptName";
+        $aResult = $this->execSupervisor($sScriptPath, true);
+        $sExpectedStdOut = "
+(i) Starting script '$sScriptPath' with id '%1\$s'
 OK
 
 (i) Supervisor log file: $this->sTmpDir/supervisor.info.log
-(i) Execution log file: $this->sTmpDir/empty_executable.$sExecId.info.log
-"
-            , $sStdOut);
-        $this->assertEquals("[SUPERVISOR] START\n[SUPERVISOR] OK\n", $sScriptInfo);
-        $this->assertEquals("$sScript;START\n$sScript;OK\n", $sSupervisorInfo);
-        $this->assertEquals('', $sSupervisorErr);
+(i) Execution log file: $this->sTmpDir/$sScriptName.%1\$s.info.log
+";
+        $this->assertEquals(sprintf($sExpectedStdOut, $aResult['exec_id']), $aResult['std_out']);
+        $this->assertEquals("[SUPERVISOR] START\n[SUPERVISOR] OK\n", $aResult['script_info_content']);
+        $this->assertEquals('', $aResult['script_err_content']);
+        $this->assertEquals("$sScriptPath;START\n$sScriptPath;OK\n", $aResult['supervisor_info_content']);
+        $this->assertEquals('', $aResult['supervisor_err_content']);
+    }
+
+    /**
+     */
+    public function testWithBashExit ()
+    {
+        $sScriptName = 'bash_exit_not_null.sh';
+        $sScriptPath = RESOURCES_DIR . "/$sScriptName";
+        $aResult = $this->execSupervisor($sScriptPath, true);
+        $sExpectedStdOut = "
+(i) Starting script '$sScriptPath' with id '%1\$s'
+/!\ Script '$sScriptPath' FAILED!
+
+(i) Supervisor log file: $this->sTmpDir/supervisor.info.log:
+%2\$s
+(i) Execution log file: $this->sTmpDir/$sScriptName.%1\$s.info.log
+(i) Error log file: $this->sTmpDir/$sScriptName.%1\$s.error.log:
+/!\ Exit code not null: 42
+";
+        $this->assertEquals(sprintf($sExpectedStdOut, $aResult['exec_id'], file_get_contents($aResult['supervisor_info_path'])), $aResult['std_out']);
+        $this->assertEquals("[SUPERVISOR] START\n[SUPERVISOR] ERROR\n", $aResult['script_info_content']);
+        $this->assertEquals("Exit code not null: 42\n", $aResult['script_err_content']);
+        $this->assertEquals("$sScriptPath;START\n$sScriptPath;ERROR\n", $aResult['supervisor_info_content']);
+        $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 }
