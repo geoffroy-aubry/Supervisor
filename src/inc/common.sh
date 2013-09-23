@@ -2,6 +2,7 @@
 
 # Includes :
 . $INC_DIR/tools.sh
+. $INC_DIR/mails.sh
 . $INC_DIR/coloredUI.sh
 
 ##
@@ -53,14 +54,7 @@ function initExecutionOfScript () {
     local msg="Starting script '<b>$SCRIPT_NAME</b>' with id '<b>$EXECUTION_ID</b>'"
     CUI_displayMsg help "$msg"
 
-    # start mail:
-    if [ "$SUPERVISOR_MAIL_SEND_ON_INIT" -eq 1 ]; then
-        local mail_subject="$SUPERVISOR_MAIL_SUBJECT_PREFIX ${SCRIPT_NAME##*/} > Starting ($EXECUTION_ID)"
-        local mail_msg="<h3>$msg.</h3>Instigator: "
-        [ -z "$INSTIGATOR_EMAIL" ] && mail_msg="$mail_msg<i>not specified</i>" || mail_msg="$mail_msg$INSTIGATOR_EMAIL"
-        mail_msg="$mail_msg<br /><br />Executed command: <pre>\$ $CMD $EXECUTION_ID $SCRIPT_ERROR_LOG_FILE 2>>$SCRIPT_ERROR_LOG_FILE</pre><br />Server: $(hostname)<br />You will receive another email at the end of execution."
-        echo "$mail_msg" | $SUPERVISOR_MAIL_MUTT_CMD -e "$SUPERVISOR_MAIL_MUTT_CFG" -s "$mail_subject" -- $SUPERVISOR_MAIL_TO $INSTIGATOR_EMAIL
-    fi
+    [ "$SUPERVISOR_MAIL_SEND_ON_INIT" -eq 1 ] && sendMailOnInit
 }
 
 ##
@@ -88,8 +82,6 @@ function executeScript () {
         while IFS='' read line; do
             IFS="$src_ifs"
             getDateWithCS; now="$RETVAL"
-            #log_line="$now;$line"
-            #echo "${log_line//[^[:print:]]\[+([0-9;])[mK]/}" >> $SCRIPT_INFO_LOG_FILE
             echo "$now;$line" | sed -r 's:(\033|\x1B)\[[0-9;]*[mK]::ig' >> $SCRIPT_INFO_LOG_FILE
             displayScriptMsg "$now" "$line"
         done < $pipe
@@ -107,10 +99,6 @@ function executeScript () {
 # @uses $EXECUTION_ID, $SCRIPT_ERROR_LOG_FILE, $SCRIPT_INFO_LOG_FILE, $SCRIPT_NAME, $SUPERVISOR_INFO_LOG_FILE, $SUPERVISOR_MAIL_SUBJECT_PREFIX
 #
 function displayResult () {
-    local mail_subject_prefix="$SUPERVISOR_MAIL_SUBJECT_PREFIX ${SCRIPT_NAME##*/} >"
-    local date="$(date +'%Y-%m-%d %H:%M:%S')"
-    local plural
-
     SUPERVISOR_MAIL_ADD_ATTACHMENT="$SUPERVISOR_INFO_LOG_FILE.$EXECUTION_ID.gz $SCRIPT_INFO_LOG_FILE.gz $SUPERVISOR_MAIL_ADD_ATTACHMENT"
 
     # if error:
@@ -133,30 +121,11 @@ function displayResult () {
         IFS="$src_ifs"
         echo
 
-        # error mail:
-        if [ "$SUPERVISOR_MAIL_SEND_ON_ERROR" -eq 1 ]; then
-            local mail_subject="$mail_subject_prefix ERROR ($EXECUTION_ID)"
-            local mail_msg="<h3 style=\"color: #FF0000\">Error in execution of script '<b>$SCRIPT_NAME</b>' with id '<b>$EXECUTION_ID</b>'.</h3>Instigator: "
-            [ -z "$INSTIGATOR_EMAIL" ] && mail_msg="$mail_msg<i>not specified</i>" || mail_msg="$mail_msg$INSTIGATOR_EMAIL"
-            mail_msg="$mail_msg<br /><br />\
-Executed command: <pre>\$ $CMD $EXECUTION_ID $SCRIPT_ERROR_LOG_FILE 2>>$SCRIPT_ERROR_LOG_FILE</pre><br />\
-Server: $(hostname)<br />\
-Supervisor log file: $(dirname $SUPERVISOR_INFO_LOG_FILE)/<b>$(basename $SUPERVISOR_INFO_LOG_FILE)</b><br />\
-Execution log file: $(dirname $SCRIPT_INFO_LOG_FILE)/<b>$(basename $SCRIPT_INFO_LOG_FILE)</b><br />\
-Error log file: $(dirname $SCRIPT_ERROR_LOG_FILE)/<b>$(basename $SCRIPT_ERROR_LOG_FILE)</b><br /><br />\
-<b style=\"color: #FF0000\">Error:</b><br /><pre>$(cat $SCRIPT_ERROR_LOG_FILE)</pre>"
-            tail -n 50 "$SUPERVISOR_INFO_LOG_FILE" | gzip > "$SUPERVISOR_INFO_LOG_FILE.$EXECUTION_ID.gz"
-            gzip -c "$SCRIPT_INFO_LOG_FILE" > "$SCRIPT_INFO_LOG_FILE.gz"
-            gzip -c "$SCRIPT_ERROR_LOG_FILE" > "$SCRIPT_ERROR_LOG_FILE.gz"
-            SUPERVISOR_MAIL_ADD_ATTACHMENT="$SUPERVISOR_MAIL_ADD_ATTACHMENT $SCRIPT_ERROR_LOG_FILE.gz"
-            echo "$mail_msg" | $SUPERVISOR_MAIL_MUTT_CMD -e "$SUPERVISOR_MAIL_MUTT_CFG" -s "$mail_subject" -a $SUPERVISOR_MAIL_ADD_ATTACHMENT -- $SUPERVISOR_MAIL_TO $INSTIGATOR_EMAIL
-            rm -f "$SUPERVISOR_INFO_LOG_FILE.$EXECUTION_ID.gz"
-            rm -f "$SCRIPT_INFO_LOG_FILE.gz"
-            rm -f "$SCRIPT_ERROR_LOG_FILE.gz"
-        fi
+        [ "$SUPERVISOR_MAIL_SEND_ON_ERROR" -eq 1 ] && sendMailOnError
 
     # else if warnings:
     elif [ "$nb_warnings" -gt 0 ]; then
+        local plural
         getDateWithCS; local datecs="$RETVAL"
         echo "$datecs;$EXECUTION_ID;$SCRIPT_NAME;WARNING" >> $SUPERVISOR_INFO_LOG_FILE
         echo "$datecs;${SUPERVISOR_PREFIX_MSG}WARNING" >> $SCRIPT_INFO_LOG_FILE
@@ -168,71 +137,7 @@ Error log file: $(dirname $SCRIPT_ERROR_LOG_FILE)/<b>$(basename $SCRIPT_ERROR_LO
         echo
         rm -f $SCRIPT_ERROR_LOG_FILE
 
-        # warning mail:
-        if [ "$SUPERVISOR_MAIL_SEND_ON_WARNING" -eq 1 ]; then
-            [ "$nb_warnings" -gt 1 ] && plural='s' || plural=''
-            local warning_html=''
-            local history_ids=''
-            for msg in "${warning_messages[@]}"; do
-                warning_html="$warning_html<li>$msg</li>"
-                if [[ "$msg" =~ rejected\ rows.*logs\.rejected_rows\.history_id= ]]; then
-                    history_ids="$history_ids, ${msg##*=}"
-                fi
-            done
-            warning_html="<ol>$warning_html</ol>"
-            if [ ! -z "$history_ids" ]; then
-                history_ids="${history_ids:1}"
-                local query="$(cat <<EOF
-WITH R AS (
-    SELECT
-        CASE
-            WHEN substr(lower(message), 1, length('SQLSTATE[23505]: ')) != lower('SQLSTATE[23505]: ') THEN message
-            ELSE substring(message from '^[^"]+"[^"]+"')
-        END AS canonical_message, -- Unique violation
-        *
-    FROM logs.rejected_rows
-    WHERE history_id IN ($history_ids)
-)
-SELECT
-    row_number() OVER (ORDER BY count(*) DESC) AS "#",
-    string_agg(distinct history_id::text, ', ' ORDER BY history_id::text ASC) AS history_ids,
-    canonical_message,
-    count(*) AS nb_of_rejected_rows,
-    (count(*)*100.0/(SELECT count(*) FROM R))::numeric(4,1) AS percentage_of_rejected_rows,
-    min(timestamp)::timestamp(0) with time zone AS min_date,
-    max(timestamp)::timestamp(0) with time zone AS max_date,
-    (SELECT R2.message FROM R AS R2 WHERE R2.canonical_message=R.canonical_message ORDER BY id ASC LIMIT 1) AS example_of_message,
-    (SELECT R2.rejected_row FROM R AS R2 WHERE R2.canonical_message=R.canonical_message ORDER BY id ASC LIMIT 1) AS example_of_rejected_row
-FROM R
-GROUP BY canonical_message
-ORDER BY "#" ASC
-EOF
-)";
-                local css='<style type="text/css">
-    table {border-collapse: collapse; border: 1px solid black;}
-    table th, table td {border: 1px solid black; padding: 4px; white-space: nowrap;}
-    table th {background-color: #ccc; font-size: 85%;}
-    table td {font-size: 75%;}
-</style>'
-                local result_html="$(psql --html --table-attr="cellspacing=0" -h localhost -U dw datawarehouse_dev -c "$query")"
-                warning_html="$warning_html<p>Summary of causes of rejected rows:</p>$css$result_html"
-            fi
-            warning_html="<br /><p style=\"color: #FF8C00\"><b>Warning$plural</b> <i>(see attached files for more details)</i>:$warning_html</p>"
-            local mail_subject="$mail_subject_prefix WARNING ($EXECUTION_ID)"
-            local mail_msg="<h3 style=\"color: #FF8C00\">Warning in execution of script '<b>$SCRIPT_NAME</b>' with id '<b>$EXECUTION_ID</b>'.</h3><b style=\"color: #FF8C00\">Completed with $nb_warnings warning$plural.</b><br />Instigator: "
-            [ -z "$INSTIGATOR_EMAIL" ] && mail_msg="$mail_msg<i>not specified</i>" || mail_msg="$mail_msg$INSTIGATOR_EMAIL"
-            mail_msg="$mail_msg<br /><br />\
-Executed command: <pre>\$ $CMD $EXECUTION_ID $SCRIPT_ERROR_LOG_FILE 2>>$SCRIPT_ERROR_LOG_FILE</pre><br />\
-Server: $(hostname)<br />\
-Supervisor log file: $(dirname $SUPERVISOR_INFO_LOG_FILE)/<b>$(basename $SUPERVISOR_INFO_LOG_FILE)</b><br />\
-Execution log file: $(dirname $SCRIPT_INFO_LOG_FILE)/<b>$(basename $SCRIPT_INFO_LOG_FILE)</b><br />\
-Error log file: <i>N.A.</i><br />$warning_html"
-            tail -n 50 "$SUPERVISOR_INFO_LOG_FILE" | gzip > "$SUPERVISOR_INFO_LOG_FILE.$EXECUTION_ID.gz"
-            gzip -c "$SCRIPT_INFO_LOG_FILE" > "$SCRIPT_INFO_LOG_FILE.gz"
-            echo "$mail_msg" | $SUPERVISOR_MAIL_MUTT_CMD -e "$SUPERVISOR_MAIL_MUTT_CFG" -s "$mail_subject" -a $SUPERVISOR_MAIL_ADD_ATTACHMENT -- $SUPERVISOR_MAIL_TO $INSTIGATOR_EMAIL
-            rm -f "$SUPERVISOR_INFO_LOG_FILE.$EXECUTION_ID.gz"
-            rm -f "$SCRIPT_INFO_LOG_FILE.gz"
-        fi
+        [ "$SUPERVISOR_MAIL_SEND_ON_WARNING" -eq 1 ] && sendMailOnWarning
 
     # else if successful:
     else
@@ -246,24 +151,7 @@ Error log file: <i>N.A.</i><br />$warning_html"
         echo
         rm -f $SCRIPT_ERROR_LOG_FILE
 
-        # successful mail:
-        if [ "$SUPERVISOR_MAIL_SEND_ON_SUCCESS" -eq 1 ]; then
-            local mail_subject="$mail_subject_prefix Success ($EXECUTION_ID)"
-            local mail_msg="Successful execution of script '<b>$SCRIPT_NAME</b>' with id '<b>$EXECUTION_ID</b>'.<br />Instigator: "
-            [ -z "$INSTIGATOR_EMAIL" ] && mail_msg="$mail_msg<i>not specified</i>" || mail_msg="$mail_msg$INSTIGATOR_EMAIL"
-            mail_msg="$mail_msg<br /><br />\
-Executed command: <pre>\$ $CMD $EXECUTION_ID $SCRIPT_ERROR_LOG_FILE 2>>$SCRIPT_ERROR_LOG_FILE</pre><br />\
-Server: $(hostname)<br />\
-Supervisor log file: $(dirname $SUPERVISOR_INFO_LOG_FILE)/<b>$(basename $SUPERVISOR_INFO_LOG_FILE)</b><br />\
-Execution log file: $(dirname $SCRIPT_INFO_LOG_FILE)/<b>$(basename $SCRIPT_INFO_LOG_FILE)</b><br />\
-Error log file: <i>N.A.</i><br />\
-No warnings."
-            tail -n 50 "$SUPERVISOR_INFO_LOG_FILE" | gzip > "$SUPERVISOR_INFO_LOG_FILE.$EXECUTION_ID.gz"
-            gzip -c "$SCRIPT_INFO_LOG_FILE" > "$SCRIPT_INFO_LOG_FILE.gz"
-            echo "$mail_msg" | $SUPERVISOR_MAIL_MUTT_CMD -e "$SUPERVISOR_MAIL_MUTT_CFG" -s "$mail_subject" -a $SUPERVISOR_MAIL_ADD_ATTACHMENT -- $SUPERVISOR_MAIL_TO $INSTIGATOR_EMAIL
-            rm -f "$SUPERVISOR_INFO_LOG_FILE.$EXECUTION_ID.gz"
-            rm -f "$SCRIPT_INFO_LOG_FILE.gz"
-        fi
+        [ "$SUPERVISOR_MAIL_SEND_ON_SUCCESS" -eq 1 ] && sendMailOnSuccess
     fi
 }
 

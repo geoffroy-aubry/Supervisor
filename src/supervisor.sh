@@ -65,28 +65,21 @@ function getOpts () {
     done
 }
 
-function runDemand () {
-    checkScriptCalled
-    initScriptLogs
-    initExecutionOfScript
-    nb_warnings=0
-    warning_messages=()
-    executeScript
-    displayResult
-}
-
 getOpts "$@"
-
 [ -f "$CONFIG_FILE" ]   || die "Config file missing: '<b>$CONFIG_FILE</b>'"
-#[ ! -z "$SCRIPT_NAME" ] || die "Missing script name!"
 
 # Includes:
 . $(dirname $0)/../conf/supervisor-dist.sh
 . $CONFIG_FILE
 . $INC_DIR/common.sh
 
-# Duplication du flux d'erreur :
+# Duplicate stderr:
 exec 2> >(tee -a $SUPERVISOR_ERROR_LOG_FILE >&2)
 
-#[ $# -eq 0 ] && displayHelp
-runDemand
+checkScriptCalled
+initScriptLogs
+initExecutionOfScript
+nb_warnings=0
+warning_messages=()
+executeScript
+displayResult
