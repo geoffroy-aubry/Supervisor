@@ -16,13 +16,16 @@ shopt -s extglob
 CONFIG_FILE="$(dirname $0)/../conf/supervisor.sh"
 SCRIPT_NAME=''
 SCRIPT_PARAMETERS=''
-EXECUTION_ID=''
+EXECUTION_ID="$(date +'%Y%m%d%H%M%S')_$(printf '%05d' $RANDOM)"
 INSTIGATOR_EMAIL=''
 SUPERVISOR_MAIL_ADD_ATTACHMENT=''
 
 function getOpts () {
     local j=0
     local long_option=''
+    local parameter
+    local name
+    local value
 
     for i in "$@"; do
         if [ ! -z "$long_option" ]; then
@@ -39,6 +42,16 @@ function getOpts () {
 
             --instigator-email=*)
                 INSTIGATOR_EMAIL=${i#*=} ;;
+
+            -p)
+                long_option="--param" ;;
+
+            --param=*)
+                parameter=${i#*=}
+                name='EXT_'${parameter%=*}
+                value=${parameter#*=}
+                declare -rg -- $name="$value" # readonly and global
+                ;;
 
             *)
                 case $j in
@@ -76,5 +89,4 @@ getOpts "$@"
 exec 2> >(tee -a $SUPERVISOR_ERROR_LOG_FILE >&2)
 
 #[ $# -eq 0 ] && displayHelp
-EXECUTION_ID="$(date +'%Y%m%d%H%M%S')_$(printf '%05d' $RANDOM)"
 runDemand

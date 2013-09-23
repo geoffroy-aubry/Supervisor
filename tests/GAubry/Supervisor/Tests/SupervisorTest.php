@@ -36,15 +36,14 @@ class SupervisorTest extends SupervisorTestCase
         list($sExecId, $sStdOut, $sSupervisorInfo, $sSupervisorErr) =
             $this->execSupervisor($sScript, true);
         $this->assertEquals("
-(i) Starting script '/home/geoffroy/eclipse-workspace-4.2/github.perso.supervisor/tests/resources/empty_executable' with id '$sExecId'
+(i) Starting script '$sScript' with id '$sExecId'
 OK
 
 (i) Supervisor log file: $this->sTmpDir/supervisor.info.log
 (i) Execution log file: $this->sTmpDir/empty_executable.$sExecId.info.log
 "
             , $sStdOut);
-        $this->assertEquals("$sScript;START
-$sScript;OK\n", $sSupervisorInfo);
+        $this->assertEquals("$sScript;START\n$sScript;OK\n", $sSupervisorInfo);
         $this->assertEquals('', $sSupervisorErr);
     }
 }
