@@ -40,7 +40,11 @@ class SupervisorTestCase extends \PHPUnit_Framework_TestCase
             }
         }
 
+        $sAnyDate = '2012-07-18 15:01:46 32cs';
+        $sAnyExecId = '20120718150145_17543';
+
         $sExecId = '';
+        $sScriptName = '';
         $aSupervisorInfo = file($this->sTmpDir . '/supervisor.info.log');
         $sSupervisorInfo = $this->stripBashColors(implode('', $aSupervisorInfo), $bStripBashColors);
         $aFilteredSupervisorInfo = array();
@@ -49,18 +53,28 @@ class SupervisorTestCase extends \PHPUnit_Framework_TestCase
                 $aFilteredSupervisorInfo[] = '';
             } else {
                 if (empty($sExecId)) {
-                    $sExecId = substr($sLine, strlen('2012-07-18 15:01:46 32cs;'), strlen('20120718150145_17543'));
+                    $sExecId = substr($sLine, strlen("$sAnyDate;"), strlen($sAnyExecId));
+                    $sFullScriptName = strstr(substr($sLine, strlen("$sAnyDate;$sAnyExecId;")), ';', true);
+                    $sScriptName = substr(strrchr($sFullScriptName, '/'), 1);
                 }
-                $aFilteredSupervisorInfo[] = substr($sLine, strlen('2012-07-18 15:01:46 32cs;20120718150145_17543;'));
+                $aFilteredSupervisorInfo[] = substr($sLine, strlen("$sAnyDate;$sAnyExecId;"));
             }
         }
 
         $aSupervisorErr = file($this->sTmpDir . '/supervisor.error.log');
         $sSupervisorErr = $this->stripBashColors(implode("\n", $aSupervisorErr), $bStripBashColors);
 
+        $sScriptInfoName = "$this->sTmpDir/$sScriptName.$sExecId.info.log";
+        if (is_file($sScriptInfoName)) {
+            $sScriptInfo = preg_replace('/^[^;]+;/m', '', file_get_contents($sScriptInfoName));
+        } else {
+            $sScriptInfo = '';
+        }
+
         return array(
             $sExecId,
             $sStdOut,
+            $sScriptInfo,
             implode("\n", $aFilteredSupervisorInfo),
             $sSupervisorErr
         );
