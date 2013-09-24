@@ -273,4 +273,34 @@ PHP   1. {main}() $sScriptPath:0\n", $aResult['script_err_content']);
         $this->assertEquals("$sScriptPath;START\n$sScriptPath;ERROR\n", $aResult['supervisor_info_content']);
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
+
+    /**
+     */
+    public function testPhpFatalError ()
+    {
+        $sScriptName = 'php_fatal_error.php';
+        $sScriptPath = RESOURCES_DIR . "/$sScriptName";
+        $aResult = $this->execSupervisor($sScriptPath);
+        $sExpectedStdOut = "
+(i) Starting script '$sScriptPath' with id '%1\$s'
+/!\ Script '$sScriptPath' FAILED!
+
+(i) Supervisor log file: $this->sTmpDir/supervisor.info.log:
+%2\$s
+(i) Execution log file: $this->sTmpDir/$sScriptName.%1\$s.info.log
+(i) Error log file: $this->sTmpDir/$sScriptName.%1\$s.error.log:
+/!\ PHP Fatal error:  Call to undefined function undefined_fct() in $sScriptPath on line 4
+PHP Stack trace:
+PHP   1. {main}() $sScriptPath:0
+[SUPERVISOR] Exit code not null: 255
+";
+        $this->assertEquals(sprintf($sExpectedStdOut, $aResult['exec_id'], file_get_contents($aResult['supervisor_info_path'])), $aResult['std_out']);
+        $this->assertEquals("[SUPERVISOR] START\n[SUPERVISOR] ERROR\n", $aResult['script_info_content']);
+        $this->assertEquals("PHP Fatal error:  Call to undefined function undefined_fct() in $sScriptPath on line 4
+PHP Stack trace:
+PHP   1. {main}() $sScriptPath:0
+[SUPERVISOR] Exit code not null: 255\n", $aResult['script_err_content']);
+        $this->assertEquals("$sScriptPath;START\n$sScriptPath;ERROR\n", $aResult['supervisor_info_content']);
+        $this->assertEquals('', $aResult['supervisor_err_content']);
+    }
 }
