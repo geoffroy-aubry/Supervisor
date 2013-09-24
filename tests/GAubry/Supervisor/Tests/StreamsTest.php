@@ -67,7 +67,7 @@ OK
 
     /**
      */
-    public function testSimpleScript ()
+    public function testBashColoredSimpleScript ()
     {
         $sScriptName = 'bash_colored_simple.sh';
         $sScriptPath = RESOURCES_DIR . "/$sScriptName";
