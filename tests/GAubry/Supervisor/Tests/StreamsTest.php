@@ -4,13 +4,13 @@ namespace GAubry\Supervisor\Tests;
 
 use GAubry\Helpers\Helpers;
 
-class SupervisorTest extends SupervisorTestCase
+class StreamsTest extends SupervisorTestCase
 {
     /**
      */
     public function testWithoutScript ()
     {
-        $aResult = $this->execSupervisor('', true);
+        $aResult = $this->execSupervisor('');
         $this->assertEquals('', $aResult['std_out']);
         $this->assertEquals('', $aResult['script_info_content']);
         $this->assertEquals('', $aResult['script_err_content']);
@@ -20,10 +20,10 @@ class SupervisorTest extends SupervisorTestCase
 
     /**
      */
-    public function testWithNotExecutableScript ()
+    public function testNotExecutableScript ()
     {
         $sScript = RESOURCES_DIR . '/not_executable';
-        $aResult = $this->execSupervisor($sScript, true);
+        $aResult = $this->execSupervisor($sScript);
         $this->assertEquals('', $aResult['std_out']);
         $this->assertEquals('', $aResult['script_info_content']);
         $this->assertEquals('', $aResult['script_err_content']);
@@ -33,11 +33,11 @@ class SupervisorTest extends SupervisorTestCase
 
     /**
      */
-    public function testWithEmptyExecutableScript ()
+    public function testEmptyExecutableScript ()
     {
         $sScriptName = 'empty_executable';
         $sScriptPath = RESOURCES_DIR . "/$sScriptName";
-        $aResult = $this->execSupervisor($sScriptPath, true);
+        $aResult = $this->execSupervisor($sScriptPath);
         $sExpectedStdOut = "
 (i) Starting script '$sScriptPath' with id '%1\$s'
 OK
@@ -54,11 +54,11 @@ OK
 
     /**
      */
-    public function testWithSimpleScript ()
+    public function testSimpleScript ()
     {
-        $sScriptName = 'simple.sh';
+        $sScriptName = 'bash_colored_simple.sh';
         $sScriptPath = RESOURCES_DIR . "/$sScriptName";
-        $aResult = $this->execSupervisor($sScriptPath, true);
+        $aResult = $this->execSupervisor($sScriptPath);
         $sExpectedStdOut = "
 (i) Starting script '$sScriptPath' with id '%1\$s'
 %2\$sOK
@@ -80,11 +80,11 @@ Title:
 
     /**
      */
-    public function testWithBashExit ()
+    public function testBashExit ()
     {
         $sScriptName = 'bash_exit_not_null.sh';
         $sScriptPath = RESOURCES_DIR . "/$sScriptName";
-        $aResult = $this->execSupervisor($sScriptPath, true);
+        $aResult = $this->execSupervisor($sScriptPath);
         $sExpectedStdOut = "
 (i) Starting script '$sScriptPath' with id '%1\$s'
 /!\ Script '$sScriptPath' FAILED!
@@ -104,11 +104,11 @@ Title:
 
     /**
      */
-    public function testWithBashStdErr ()
+    public function testBashStdErr ()
     {
         $sScriptName = 'bash_std_err.sh';
         $sScriptPath = RESOURCES_DIR . "/$sScriptName";
-        $aResult = $this->execSupervisor($sScriptPath, true);
+        $aResult = $this->execSupervisor($sScriptPath);
         $sExpectedStdOut = "
 (i) Starting script '$sScriptPath' with id '%1\$s'
 /!\ Script '$sScriptPath' FAILED!
@@ -128,11 +128,11 @@ Title:
 
     /**
      */
-    public function testWithBashStdErrAndExit ()
+    public function testBashStdErrAndExit ()
     {
         $sScriptName = 'bash_std_err_and_exit_not_null.sh';
         $sScriptPath = RESOURCES_DIR . "/$sScriptName";
-        $aResult = $this->execSupervisor($sScriptPath, true);
+        $aResult = $this->execSupervisor($sScriptPath);
         $sExpectedStdOut = "
 (i) Starting script '$sScriptPath' with id '%1\$s'
 /!\ Script '$sScriptPath' FAILED!
@@ -153,11 +153,11 @@ Title:
 
     /**
      */
-    public function testWithPhpExit ()
+    public function testPhpExit ()
     {
         $sScriptName = 'php_exit_not_null.php';
         $sScriptPath = RESOURCES_DIR . "/$sScriptName";
-        $aResult = $this->execSupervisor($sScriptPath, true);
+        $aResult = $this->execSupervisor($sScriptPath);
         $sExpectedStdOut = "
 (i) Starting script '$sScriptPath' with id '%1\$s'
 /!\ Script '$sScriptPath' FAILED!
@@ -177,11 +177,11 @@ Title:
 
     /**
      */
-    public function testWithPhpStdErr ()
+    public function testPhpStdErr ()
     {
         $sScriptName = 'php_std_err.php';
         $sScriptPath = RESOURCES_DIR . "/$sScriptName";
-        $aResult = $this->execSupervisor($sScriptPath, true);
+        $aResult = $this->execSupervisor($sScriptPath);
         $sExpectedStdOut = "
 (i) Starting script '$sScriptPath' with id '%1\$s'
 /!\ Script '$sScriptPath' FAILED!
@@ -201,11 +201,11 @@ Title:
 
     /**
      */
-    public function testWithPhpException ()
+    public function testPhpException ()
     {
         $sScriptName = 'php_exception.php';
         $sScriptPath = RESOURCES_DIR . "/$sScriptName";
-        $aResult = $this->execSupervisor($sScriptPath, true);
+        $aResult = $this->execSupervisor($sScriptPath);
         $sExpectedStdOut = "
 (i) Starting script '$sScriptPath' with id '%1\$s'
 /!\ Script '$sScriptPath' FAILED!
@@ -235,11 +235,11 @@ Stack trace:
 
     /**
      */
-    public function testWithPhpNotice ()
+    public function testPhpNotice ()
     {
         $sScriptName = 'php_notice.php';
         $sScriptPath = RESOURCES_DIR . "/$sScriptName";
-        $aResult = $this->execSupervisor($sScriptPath, true);
+        $aResult = $this->execSupervisor($sScriptPath);
         $sExpectedStdOut = "
 (i) Starting script '$sScriptPath' with id '%1\$s'
 /!\ Script '$sScriptPath' FAILED!

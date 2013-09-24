@@ -2,7 +2,7 @@
 
 function getMailSubject () {
     local status="$1"
-    echo "$SUPERVISOR_MAIL_SUBJECT_PREFIX ${SCRIPT_NAME##*/} > $status ($EXECUTION_ID)"
+    echo "$SUPERVISOR_MAIL_SUBJECT_PREFIX${SCRIPT_NAME##*/} > $status ($EXECUTION_ID)"
 }
 
 function getMailInstigator () {
@@ -40,7 +40,7 @@ function sendMail () {
 
     [ ! -z "$attachment" ] && attachment="-a $attachment"
     echo "$mail_msg" | $SUPERVISOR_MAIL_MUTT_CMD \
-        -e "$SUPERVISOR_MAIL_MUTT_CFG" -s "$mail_subject" $attachment -- $SUPERVISOR_MAIL_TO $INSTIGATOR_EMAIL
+        -e "$SUPERVISOR_MAIL_MUTT_CFG" -s "$mail_subject" $attachment -- $SUPERVISOR_MAIL_TO$INSTIGATOR_EMAIL
 }
 
 function parentSendMailOnError () {

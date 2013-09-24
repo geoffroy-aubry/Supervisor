@@ -41,7 +41,7 @@ function getOpts () {
                 CONFIG_FILE=${i#*=} ;;
 
             --instigator-email=*)
-                INSTIGATOR_EMAIL=${i#*=} ;;
+                INSTIGATOR_EMAIL=' '${i#*=} ;;
 
             -p)
                 long_option="--param" ;;

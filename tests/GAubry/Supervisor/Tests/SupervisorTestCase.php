@@ -9,6 +9,17 @@ class SupervisorTestCase extends \PHPUnit_Framework_TestCase
 {
     protected $sTmpDir;
 
+    private function copyConfigFile ($sConfigFilename)
+    {
+        $sContent = file_get_contents(RESOURCES_DIR . '/' . $sConfigFilename);
+        $aReplace = array(
+            '{root_dir}' => ROOT_DIR,
+            '{log_dir}' => $this->sTmpDir
+        );
+        $sContent = strtr($sContent, $aReplace);
+        file_put_contents($this->sTmpDir . '/' . $sConfigFilename, $sContent);
+    }
+
     /**
      * Sets up the fixture, for example, open a network connection.
      * This method is called before a test is executed.
@@ -18,18 +29,17 @@ class SupervisorTestCase extends \PHPUnit_Framework_TestCase
         $this->sTmpDir = sys_get_temp_dir() . '/supervisor-test.' . date("Ymd-His")
                        . '.' . str_pad(rand(0, 99999), 5, '0', STR_PAD_LEFT);
         mkdir($this->sTmpDir);
-        $sContent = file_get_contents(RESOURCES_DIR . '/conf.sh');
-        $aReplace = array(
-            '{root_dir}' => ROOT_DIR,
-            '{log_dir}' => $this->sTmpDir
-        );
-        $sContent = strtr($sContent, $aReplace);
-        file_put_contents($this->sTmpDir . '/conf.sh', $sContent);
+        $this->copyConfigFile('conf.sh');
     }
 
-    protected function execSupervisor ($sParameters, $bStripBashColors = true)
+    protected function execSupervisor ($sParameters, $sConfigFilename = '', $bStripBashColors = true)
     {
-        $sCmd = SRC_DIR . "/supervisor.sh -c $this->sTmpDir/conf.sh $sParameters";
+        if (empty($sConfigFilename)) {
+            $sConfigFilename = 'conf.sh';
+        } else {
+            $this->copyConfigFile($sConfigFilename);
+        }
+        $sCmd = SRC_DIR . "/supervisor.sh -c '$this->sTmpDir/$sConfigFilename' $sParameters";
         try {
             $sStdOut = $this->exec($sCmd, $bStripBashColors);
         } catch (\RuntimeException $oException) {
@@ -78,6 +88,13 @@ class SupervisorTestCase extends \PHPUnit_Framework_TestCase
             $sScriptErrContent = '';
         }
 
+        $sSentMailsPath = $this->sTmpDir . '/mutt';
+        if (is_file($sSentMailsPath)) {
+            $sSentMailsContent = trim(file_get_contents($sSentMailsPath));
+        } else {
+            $sSentMailsContent = '';
+        }
+
         return array(
             'exec_id'                 => $sExecId,
             'std_out'                 => $sStdOut,
@@ -88,7 +105,8 @@ class SupervisorTestCase extends \PHPUnit_Framework_TestCase
             'supervisor_info_path'    => $sSupervisorInfoPath,
             'supervisor_info_content' => implode("\n", $aFilteredSupervisorInfo),
             'supervisor_err_path'     => $sSupervisorErrPath,
-            'supervisor_err_content'  => $sSupervisorErr
+            'supervisor_err_content'  => $sSupervisorErr,
+            'sent_mails'              => $sSentMailsContent
         );
     }
 
