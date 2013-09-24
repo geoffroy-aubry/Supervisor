@@ -12,7 +12,7 @@ function getMailInstigator () {
 }
 
 function getMailMsgCmdAndServer () {
-    echo "Executed command: <pre>\$ $CMD $EXECUTION_ID $SCRIPT_ERROR_LOG_FILE 2>>$SCRIPT_ERROR_LOG_FILE</pre><br />"
+    echo "Executed command: <pre>\$ $SCRIPT_NAME $SCRIPT_PARAMETERS $EXECUTION_ID $SCRIPT_ERROR_LOG_FILE 2>>$SCRIPT_ERROR_LOG_FILE</pre><br />"
     echo "Server: $(hostname)<br />"
 }
 
@@ -48,8 +48,9 @@ function parentSendMailOnError () {
 $(getMailInstigator)$(getMailMsgCmdAndServer)$(getMailMsgInfoLogFiles)\
 Error log file: $(dirname $SCRIPT_ERROR_LOG_FILE)/<b>$(basename $SCRIPT_ERROR_LOG_FILE)</b><br /><br />\
 <b style=\"color: #FF0000\">Error:</b><br /><pre>$(cat $SCRIPT_ERROR_LOG_FILE)</pre>"
+    local attachment="$SUPERVISOR_INFO_LOG_FILE.$EXECUTION_ID.gz $SCRIPT_INFO_LOG_FILE.gz$SUPERVISOR_MAIL_ADD_ATTACHMENT"
     compressAttachedFiles
-    sendMail "$(getMailSubject ERROR)" "$mail_msg" "$SUPERVISOR_MAIL_ADD_ATTACHMENT $SCRIPT_ERROR_LOG_FILE.gz"
+    sendMail "$(getMailSubject ERROR)" "$mail_msg" "$attachment $SCRIPT_ERROR_LOG_FILE.gz"
     removeAttachedFiles
 }
 
@@ -66,8 +67,9 @@ function parentSendMailOnWarning () {
 $(getMailInstigator)$(getMailMsgCmdAndServer)$(getMailMsgInfoLogFiles)\
 Error log file: <i>N.A.</i><br /><br />\
 <p style=\"color: #FF8C00\"><b>Warning$plural</b> <i>(see attached files for more details)</i>:<ol>$warning_html</ol></p>"
+    local attachment="$SUPERVISOR_INFO_LOG_FILE.$EXECUTION_ID.gz $SCRIPT_INFO_LOG_FILE.gz$SUPERVISOR_MAIL_ADD_ATTACHMENT"
     compressAttachedFiles
-    sendMail "$(getMailSubject WARNING)" "$mail_msg" "$SUPERVISOR_MAIL_ADD_ATTACHMENT"
+    sendMail "$(getMailSubject WARNING)" "$mail_msg" "$attachment"
     removeAttachedFiles
 }
 
@@ -75,8 +77,9 @@ function parentSendMailOnSuccess () {
     local mail_msg="Successful execution of script '<b>$SCRIPT_NAME</b>' with id '<b>$EXECUTION_ID</b>'.\
 $(getMailInstigator)$(getMailMsgCmdAndServer)$(getMailMsgInfoLogFiles)\
 Error log file: <i>N.A.</i><br />No warnings."
+    local attachment="$SUPERVISOR_INFO_LOG_FILE.$EXECUTION_ID.gz $SCRIPT_INFO_LOG_FILE.gz$SUPERVISOR_MAIL_ADD_ATTACHMENT"
     compressAttachedFiles
-    sendMail "$(getMailSubject SUCCESS)" "$mail_msg" "$SUPERVISOR_MAIL_ADD_ATTACHMENT"
+    sendMail "$(getMailSubject SUCCESS)" "$mail_msg" "$attachment"
     removeAttachedFiles
 }
 

@@ -76,9 +76,9 @@ getOpts "$@"
 # Duplicate stderr:
 exec 2> >(tee -a $SUPERVISOR_ERROR_LOG_FILE >&2)
 
-checkScriptCalled
 initScriptLogs
 initExecutionOfScript
+checkScriptCalled
 nb_warnings=0
 warning_messages=()
 executeScript

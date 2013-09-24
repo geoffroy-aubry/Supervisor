@@ -13,11 +13,13 @@
 function initScriptLogs () {
     [ -d "$LOG_DIR" ] || mkdir -p "$LOG_DIR"
     SCRIPT_ERROR_LOG_FILE=$LOG_DIR/$(basename "$SCRIPT_NAME").$EXECUTION_ID.error.log
+    touch $SCRIPT_ERROR_LOG_FILE
     SCRIPT_INFO_LOG_FILE=$LOG_DIR/$(basename "$SCRIPT_NAME").$EXECUTION_ID.info.log
+    touch $SCRIPT_INFO_LOG_FILE
 }
 
 ##
-# S'assure de l'existence du script à superviser et le cas échéant construit la commande ($CMD) à exécuter.
+# S'assure de l'existence du script à superviser.
 #
 # @uses $SCRIPT_NAME, $EXECUTION_ID, $SUPERVISOR_INFO_LOG_FILE, $SCRIPT_PARAMETERS.
 #
@@ -26,17 +28,21 @@ function checkScriptCalled () {
     if [ -z "$SCRIPT_NAME" ]; then
         getDateWithCS; now="$RETVAL"
         echo "$now;$EXECUTION_ID;NO SCRIPT;INIT ERROR" >> $SUPERVISOR_INFO_LOG_FILE
+        echo "$now;${SUPERVISOR_PREFIX_MSG}ERROR" >> $SCRIPT_INFO_LOG_FILE
+        [ "$SUPERVISOR_MAIL_SEND_ON_ERROR" -eq 1 ] && sendMailOnError
         die "Missing script name!"
     elif [ ! -f "$SCRIPT_NAME" ]; then
         getDateWithCS; now="$RETVAL"
-        echo "$now;$EXECUTION_ID;NO SCRIPT;INIT ERROR" >> $SUPERVISOR_INFO_LOG_FILE
+        echo "$now;$EXECUTION_ID;$SCRIPT_NAME;INIT ERROR" >> $SUPERVISOR_INFO_LOG_FILE
+        echo "$now;${SUPERVISOR_PREFIX_MSG}ERROR" >> $SCRIPT_INFO_LOG_FILE
+        [ "$SUPERVISOR_MAIL_SEND_ON_ERROR" -eq 1 ] && sendMailOnError
         die "Script '<b>$SCRIPT_NAME</b>' not found!"
     elif [ ! -x "$SCRIPT_NAME" ]; then
         getDateWithCS; now="$RETVAL"
-        echo "$now;$EXECUTION_ID;NO SCRIPT;INIT ERROR" >> $SUPERVISOR_INFO_LOG_FILE
+        echo "$now;$EXECUTION_ID;$SCRIPT_NAME;INIT ERROR" >> $SUPERVISOR_INFO_LOG_FILE
+        echo "$now;${SUPERVISOR_PREFIX_MSG}ERROR" >> $SCRIPT_INFO_LOG_FILE
+        [ "$SUPERVISOR_MAIL_SEND_ON_ERROR" -eq 1 ] && sendMailOnError
         die "Script '<b>$SCRIPT_NAME</b>' is not executable!"
-    else
-        CMD="$SCRIPT_NAME $SCRIPT_PARAMETERS"
     fi
 }
 
@@ -46,12 +52,13 @@ function checkScriptCalled () {
 # @uses $EXECUTION_ID, $SCRIPT_INFO_LOG_FILE, $SCRIPT_NAME, $SUPERVISOR_INFO_LOG_FILE, $SUPERVISOR_MAIL_SUBJECT_PREFIX
 #
 function initExecutionOfScript () {
+    local script_name="${SCRIPT_NAME:-NO SCRIPT}"
     getDateWithCS; local datecs="$RETVAL"
-    echo "$datecs;$EXECUTION_ID;$SCRIPT_NAME;START" >> $SUPERVISOR_INFO_LOG_FILE
+    echo "$datecs;$EXECUTION_ID;$script_name;START" >> $SUPERVISOR_INFO_LOG_FILE
     echo "$datecs;${SUPERVISOR_PREFIX_MSG}START" >> $SCRIPT_INFO_LOG_FILE
     echo
 
-    local msg="Starting script '<b>$SCRIPT_NAME</b>' with id '<b>$EXECUTION_ID</b>'"
+    local msg="Starting script '<b>$script_name</b>' with id '<b>$EXECUTION_ID</b>'"
     CUI_displayMsg help "$msg"
 
     [ "$SUPERVISOR_MAIL_SEND_ON_INIT" -eq 1 ] && sendMailOnInit
@@ -60,7 +67,7 @@ function initExecutionOfScript () {
 ##
 # Appel du script passé en paramètres, en empilant le log d'erreurs à la suite des paramètres déjà fournis.
 #
-# @uses $CMD, $EXECUTION_ID, $SCRIPT_ERROR_LOG_FILE, $SCRIPT_INFO_LOG_FILE, $SCRIPT_NAME
+# @uses $EXECUTION_ID, $SCRIPT_ERROR_LOG_FILE, $SCRIPT_INFO_LOG_FILE, $SCRIPT_NAME, $SCRIPT_PARAMETERS
 #
 function executeScript () {
     local lock_failed=0
@@ -75,7 +82,7 @@ function executeScript () {
         local src_ifs="$IFS"
         local pipe="/tmp/fifo_${EXECUTION_ID}_$RANDOM"
         mkfifo -m 666 $pipe
-        $CMD $EXECUTION_ID $SCRIPT_ERROR_LOG_FILE 2>>$SCRIPT_ERROR_LOG_FILE > $pipe &
+        $SCRIPT_NAME $SCRIPT_PARAMETERS $EXECUTION_ID $SCRIPT_ERROR_LOG_FILE 2>>$SCRIPT_ERROR_LOG_FILE > $pipe &
         pid=$!
 
         local now
@@ -99,11 +106,10 @@ function executeScript () {
 # @uses $EXECUTION_ID, $SCRIPT_ERROR_LOG_FILE, $SCRIPT_INFO_LOG_FILE, $SCRIPT_NAME, $SUPERVISOR_INFO_LOG_FILE, $SUPERVISOR_MAIL_SUBJECT_PREFIX
 #
 function displayResult () {
-    SUPERVISOR_MAIL_ADD_ATTACHMENT="$SUPERVISOR_INFO_LOG_FILE.$EXECUTION_ID.gz $SCRIPT_INFO_LOG_FILE.gz $SUPERVISOR_MAIL_ADD_ATTACHMENT"
-
     # if error:
     if [ -s $SCRIPT_ERROR_LOG_FILE ]; then
         local src_ifs="$IFS"
+
         getDateWithCS; local datecs="$RETVAL"
         echo "$datecs;$EXECUTION_ID;$SCRIPT_NAME;ERROR" >> $SUPERVISOR_INFO_LOG_FILE
         echo "$datecs;${SUPERVISOR_PREFIX_MSG}ERROR" >> $SCRIPT_INFO_LOG_FILE
@@ -175,8 +181,8 @@ function displayScriptMsg {
         #tmsg="${tmsg//[^[:print:]]\[+([0-9;])[mK]/}"
         tmsg="${tmsg##+($SUPERVISOR_LOG_TABULATION)}"
     fi
-    tmsg="${tmsg##+( )}"
-    tmsg="${tmsg%%+( )}"
+    tmsg="${tmsg##+( )}"	# ltrim
+    tmsg="${tmsg%%+( )}"	# rtrim
 
     if [ "${tmsg:0:8}" = 'WARNING ' ] || [ "${tmsg:0:9}" = '[WARNING]' ]; then
         echo -n $date

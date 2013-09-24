@@ -12,23 +12,36 @@ class StreamsTest extends SupervisorTestCase
     {
         $aResult = $this->execSupervisor('');
         $this->assertEquals('', $aResult['std_out']);
-        $this->assertEquals('', $aResult['script_info_content']);
+        $this->assertEquals("[SUPERVISOR] START\n[SUPERVISOR] ERROR\n", $aResult['script_info_content']);
         $this->assertEquals('', $aResult['script_err_content']);
-        $this->assertEquals("NO SCRIPT;INIT ERROR\n", $aResult['supervisor_info_content']);
+        $this->assertEquals("NO SCRIPT;START\nNO SCRIPT;INIT ERROR\n", $aResult['supervisor_info_content']);
         $this->assertEquals("/!\\ Missing script name!\n", $aResult['supervisor_err_content']);
+    }
+
+    /**
+     */
+    public function testScriptNotFound ()
+    {
+        $sScriptPath = RESOURCES_DIR . '/not_exists';
+        $aResult = $this->execSupervisor($sScriptPath);
+        $this->assertEquals('', $aResult['std_out']);
+        $this->assertEquals("[SUPERVISOR] START\n[SUPERVISOR] ERROR\n", $aResult['script_info_content']);
+        $this->assertEquals('', $aResult['script_err_content']);
+        $this->assertEquals("$sScriptPath;START\n$sScriptPath;INIT ERROR\n", $aResult['supervisor_info_content']);
+        $this->assertEquals("/!\ Script '$sScriptPath' not found!\n", $aResult['supervisor_err_content']);
     }
 
     /**
      */
     public function testNotExecutableScript ()
     {
-        $sScript = RESOURCES_DIR . '/not_executable';
-        $aResult = $this->execSupervisor($sScript);
+        $sScriptPath = RESOURCES_DIR . '/not_executable';
+        $aResult = $this->execSupervisor($sScriptPath);
         $this->assertEquals('', $aResult['std_out']);
-        $this->assertEquals('', $aResult['script_info_content']);
+        $this->assertEquals("[SUPERVISOR] START\n[SUPERVISOR] ERROR\n", $aResult['script_info_content']);
         $this->assertEquals('', $aResult['script_err_content']);
-        $this->assertEquals("NO SCRIPT;INIT ERROR\n", $aResult['supervisor_info_content']);
-        $this->assertEquals("/!\ Script '$sScript' not found!\n", $aResult['supervisor_err_content']);
+        $this->assertEquals("$sScriptPath;START\n$sScriptPath;INIT ERROR\n", $aResult['supervisor_info_content']);
+        $this->assertEquals("/!\ Script '$sScriptPath' is not executable!\n", $aResult['supervisor_err_content']);
     }
 
     /**
