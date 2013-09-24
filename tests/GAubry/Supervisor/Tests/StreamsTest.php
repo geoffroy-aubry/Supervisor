@@ -303,4 +303,92 @@ PHP   1. {main}() $sScriptPath:0
         $this->assertEquals("$sScriptPath;START\n$sScriptPath;ERROR\n", $aResult['supervisor_info_content']);
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
+
+    /**
+     */
+    public function testBlockingLocks ()
+    {
+        $sScriptName = 'bash_colored_simple_sleep.sh';
+        $sScriptPath = RESOURCES_DIR . "/$sScriptName";
+        $sCmdA = SRC_DIR . "/supervisor.sh -c '$this->sTmpDir/conf_lock-A.sh' $sScriptPath";
+        $sCmdB = SRC_DIR . "/supervisor.sh -c '$this->sTmpDir/conf_lock-B.sh' $sScriptPath";
+        $sCmd = "($sCmdA) > /dev/null 2>&1 & sleep .2 && ($sCmdB)";
+
+        $aResult = $this->execSupervisor($sCmd, array('conf_lock-A.sh', 'conf_lock-B.sh'));
+        $sExpectedStdOut = "
+(i) Starting script '$sScriptPath' with id '%1\$s'
+/!\ Script '$sScriptPath' FAILED!
+
+(i) Supervisor log file: $this->sTmpDir/supervisor.info.log:
+%2\$s
+(i) Execution log file: $this->sTmpDir/$sScriptName.%1\$s.info.log
+(i) Error log file: $this->sTmpDir/$sScriptName.%1\$s.error.log:
+/!\ Another instance of '$sScriptName' is still running with supervisor!
+";
+        $this->assertEquals(sprintf($sExpectedStdOut, $aResult['exec_id'], file_get_contents($aResult['supervisor_info_path'])), $aResult['std_out']);
+        $this->assertEquals("[SUPERVISOR] START\n[SUPERVISOR] ERROR\n", $aResult['script_info_content']);
+        $this->assertEquals("Another instance of '<b>$sScriptName</b>' is still running with supervisor!\n", $aResult['script_err_content']);
+        $this->assertEquals("$sScriptPath;START\n$sScriptPath;ERROR\n", $aResult['supervisor_info_content']);
+        $this->assertEquals('', $aResult['supervisor_err_content']);
+    }
+
+    /**
+     */
+    public function testWithoutLocks ()
+    {
+        $sScriptName = 'bash_colored_simple_sleep.sh';
+        $sScriptPath = RESOURCES_DIR . "/$sScriptName";
+        $sCmdA = SRC_DIR . "/supervisor.sh -c '$this->sTmpDir/conf_without-lock-A.sh' $sScriptPath";
+        $sCmdB = SRC_DIR . "/supervisor.sh -c '$this->sTmpDir/conf_without-lock-B.sh' $sScriptPath";
+        $sCmd = "($sCmdA) > /dev/null 2>&1 & sleep .2 && ($sCmdB)";
+
+        $aResult = $this->execSupervisor($sCmd, array('conf_without-lock-A.sh', 'conf_without-lock-B.sh'));
+        $sExpectedStdOut = "
+(i) Starting script '$sScriptPath' with id '%1\$s'
+%2\$sOK
+
+(i) Supervisor log file: $this->sTmpDir/supervisor.info.log
+(i) Execution log file: $this->sTmpDir/$sScriptName.%1\$s.info.log
+";
+        $this->assertEquals(sprintf($sExpectedStdOut, $aResult['exec_id'], preg_replace(array('/^.*;\[SUPERVISOR\] .*$\n/m', '/^([0-9: -]{22}cs);/m'), array('', '$1, '), file_get_contents($aResult['script_info_path']))), $aResult['std_out']);
+        $this->assertEquals("[SUPERVISOR] START
+Title:
+┆   level 1
+┆   ┆   yellow level 2
+  END with spaces" . '  ' . "
+[SUPERVISOR] OK\n", $aResult['script_info_content']);
+        $this->assertEquals('', $aResult['script_err_content']);
+        $this->assertEquals("$sScriptPath;START\n$sScriptPath;OK\n", $aResult['supervisor_info_content']);
+        $this->assertEquals('', $aResult['supervisor_err_content']);
+    }
+
+    /**
+     */
+    public function testNonBlockingLocks ()
+    {
+        $sScriptName = 'bash_colored_simple.sh';
+        $sScriptPath = RESOURCES_DIR . "/$sScriptName";
+        $sCmdA = SRC_DIR . "/supervisor.sh -c '$this->sTmpDir/conf_lock-A.sh' bash_colored_simple_sleep.sh";
+        $sCmdB = SRC_DIR . "/supervisor.sh -c '$this->sTmpDir/conf_lock-B.sh' $sScriptPath";
+        $sCmd = "($sCmdA) > /dev/null 2>&1 & sleep .2 && ($sCmdB)";
+
+        $aResult = $this->execSupervisor($sCmd, array('conf_lock-A.sh', 'conf_lock-B.sh'));
+        $sExpectedStdOut = "
+(i) Starting script '$sScriptPath' with id '%1\$s'
+%2\$sOK
+
+(i) Supervisor log file: $this->sTmpDir/supervisor.info.log
+(i) Execution log file: $this->sTmpDir/$sScriptName.%1\$s.info.log
+";
+        $this->assertEquals(sprintf($sExpectedStdOut, $aResult['exec_id'], preg_replace(array('/^.*;\[SUPERVISOR\] .*$\n/m', '/^([0-9: -]{22}cs);/m'), array('', '$1, '), file_get_contents($aResult['script_info_path']))), $aResult['std_out']);
+        $this->assertEquals("[SUPERVISOR] START
+Title:
+┆   level 1
+┆   ┆   yellow level 2
+  END with spaces" . '  ' . "
+[SUPERVISOR] OK\n", $aResult['script_info_content']);
+        $this->assertEquals('', $aResult['script_err_content']);
+        $this->assertEquals("$sScriptPath;START\n$sScriptPath;OK\n", $aResult['supervisor_info_content']);
+        $this->assertEquals('', $aResult['supervisor_err_content']);
+    }
 }

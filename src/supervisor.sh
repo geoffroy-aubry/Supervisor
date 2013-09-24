@@ -66,7 +66,7 @@ function getOpts () {
 }
 
 getOpts "$@"
-[ -f "$CONFIG_FILE" ]   || die "Config file missing: '<b>$CONFIG_FILE</b>'"
+[ -f "$CONFIG_FILE" ] || die "Config file missing: '<b>$CONFIG_FILE</b>'"
 
 # Includes:
 . $(dirname $0)/../conf/supervisor-dist.sh
@@ -75,6 +75,8 @@ getOpts "$@"
 
 # Duplicate stderr:
 exec 2> >(tee -a $SUPERVISOR_ERROR_LOG_FILE >&2)
+[ -x "$(echo "$SUPERVISOR_MAIL_MUTT_CMD" | cut -d' ' -f1)" ] \
+    || die "Invalid Mutt command: '<b>$SUPERVISOR_MAIL_MUTT_CMD</b>'"
 
 initScriptLogs
 initExecutionOfScript

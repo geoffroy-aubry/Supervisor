@@ -127,4 +127,21 @@ class SentMailsTest extends SupervisorTestCase
                         . "mutt -e 'set content_type=text/html' -s '[DW] $sScriptName > ERROR ($sExecId)' $sAttachment -- $sMailTo";
         $this->assertEquals($sExpectedMails, $aResult['sent_mails']);
     }
+
+    public function testBlockingLocks ()
+    {
+        $sScriptName = 'bash_colored_simple_sleep2.sh';
+        $sScriptPath = RESOURCES_DIR . "/$sScriptName";
+        $sCmdA = SRC_DIR . "/supervisor.sh -c '$this->sTmpDir/conf_lock-A.sh' $sScriptPath";
+        $sCmdB = SRC_DIR . "/supervisor.sh -c '$this->sTmpDir/conf_lock-B.sh' $sScriptPath";
+        $sCmd = "($sCmdA) > /dev/null 2>&1 & sleep .2 && ($sCmdB)";
+
+        $aResult = $this->execSupervisor($sCmd, array('conf_lock-A.sh', 'conf_lock-B.sh'));
+        $sExecId = $aResult['exec_id'];
+        $sMailTo = "'abc@def.com' 'ghi@jkl.com'";
+        $sAttachment = "-a '$this->sTmpDir/supervisor.info.log.$sExecId.gz' '$this->sTmpDir/$sScriptName.$sExecId.info.log.gz' '$this->sTmpDir/$sScriptName.$sExecId.error.log.gz'";
+        $sExpectedMails = "mutt -e 'set content_type=text/html' -s '[DW] $sScriptName > STARTING ($sExecId)' -- $sMailTo\n"
+        . "mutt -e 'set content_type=text/html' -s '[DW] $sScriptName > ERROR ($sExecId)' $sAttachment -- $sMailTo";
+        $this->assertEquals($sExpectedMails, $aResult['sent_mails']);
+    }
 }

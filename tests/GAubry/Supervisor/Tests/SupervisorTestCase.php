@@ -32,14 +32,22 @@ class SupervisorTestCase extends \PHPUnit_Framework_TestCase
         $this->copyConfigFile('conf.sh');
     }
 
-    protected function execSupervisor ($sParameters, $sConfigFilename = '', $bStripBashColors = true)
+    protected function execSupervisor ($sParameters, $mConfigFilename = '', $bStripBashColors = true)
     {
-        if (empty($sConfigFilename)) {
-            $sConfigFilename = 'conf.sh';
+        if (is_string($mConfigFilename)) {
+            if (empty($mConfigFilename)) {
+                $mConfigFilename = 'conf.sh';
+            } else {
+                $this->copyConfigFile($mConfigFilename);
+            }
+            $sCmd = SRC_DIR . "/supervisor.sh -c '$this->sTmpDir/$mConfigFilename' $sParameters";
         } else {
-            $this->copyConfigFile($sConfigFilename);
+            foreach ($mConfigFilename as $sConfigFilename) {
+                $this->copyConfigFile($sConfigFilename);
+            }
+            $sCmd = $sParameters;
         }
-        $sCmd = SRC_DIR . "/supervisor.sh -c '$this->sTmpDir/$sConfigFilename' $sParameters";
+
         try {
             $sStdOut = $this->exec($sCmd, $bStripBashColors);
         } catch (\RuntimeException $oException) {
