@@ -2,13 +2,13 @@
 
 LOG_DIR="$1"
 shift
-exec > "$LOG_DIR/mutt"
+exec >> "$LOG_DIR/mutt"
 
-echo -n '/usr/bin/mutt '
+echo -n 'mutt'
 for i in "$@"; do
     case "$i" in
-        -a|-e|-s|--) printf -- "$i "   ;;
-        *)           printf -- "'$i' " ;;
+        -a|-e|-s|--) printf -- " $i"   ;;
+        *)           printf -- " '$i'" ;;
     esac
 done
 echo
