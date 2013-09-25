@@ -19,6 +19,8 @@ SCRIPT_PARAMETERS=''
 EXECUTION_ID="$(date +'%Y%m%d%H%M%S')_$(printf '%05d' $RANDOM)"
 INSTIGATOR_EMAIL=''
 SUPERVISOR_MAIL_ADD_ATTACHMENT=''
+CUSTOMIZED_MAILS=''
+SUPERVISOR_PREFIX_EXT_PARAM='EXT_'
 
 function getOpts () {
     local j=0
@@ -34,23 +36,18 @@ function getOpts () {
         fi
 
         case $i in
-            -c)
-                long_option="--conf" ;;
+            -c) long_option="--conf" ;;
+            -p) long_option="--param" ;;
 
-            --conf=*)
-                CONFIG_FILE=${i#*=} ;;
-
-            --instigator-email=*)
-                INSTIGATOR_EMAIL=' '${i#*=} ;;
-
-            -p)
-                long_option="--param" ;;
+            --conf=*)             CONFIG_FILE=${i#*=} ;;
+            --customized-mails=*) CUSTOMIZED_MAILS=${i#*=} ;;
+            --instigator-email=*) INSTIGATOR_EMAIL=' '${i#*=} ;;
 
             --param=*)
                 parameter=${i#*=}
-                name='EXT_'${parameter%=*}
+                name=$SUPERVISOR_PREFIX_EXT_PARAM${parameter%=*}
                 value=${parameter#*=}
-                declare -rg -- $name="$value" # readonly and global
+                declare -rg -- $name="$value"    # readonly and global
                 ;;
 
             *)
@@ -72,9 +69,17 @@ getOpts "$@"
 . $(dirname $0)/../conf/supervisor-dist.sh
 . $CONFIG_FILE
 . $INC_DIR/common.sh
+if [ ! -z "$CUSTOMIZED_MAILS" ]; then
+    if [ -f "$CUSTOMIZED_MAILS" ]; then
+        . "$CUSTOMIZED_MAILS"
+    else
+        die "Customized mails file not found: '<b>$CUSTOMIZED_MAILS</b>'"
+    fi
+fi
 
 # Duplicate stderr:
 exec 2> >(tee -a $SUPERVISOR_ERROR_LOG_FILE >&2)
+
 [ -x "$(echo "$SUPERVISOR_MAIL_MUTT_CMD" | cut -d' ' -f1)" ] \
     || die "Invalid Mutt command: '<b>$SUPERVISOR_MAIL_MUTT_CMD</b>'"
 

@@ -144,4 +144,30 @@ class SentMailsTest extends SupervisorTestCase
         . "mutt -e 'set content_type=text/html' -s '[DW] $sScriptName > ERROR ($sExecId)' $sAttachment -- $sMailTo";
         $this->assertEquals($sExpectedMails, $aResult['sent_mails']);
     }
+
+    public function testCustomMailWithParameter ()
+    {
+        $sScriptName = 'php_notice.php';
+        $sScriptPath = RESOURCES_DIR . "/$sScriptName";
+        $sParameters = "--param=ETL=maChaîne\ ETL"
+                     . " --customized-mails=" . RESOURCES_DIR . "/mails_with_parameter.sh $sScriptPath";
+        $aResult = $this->execSupervisor($sParameters, 'conf_mail-init.sh');
+        $sExecId = $aResult['exec_id'];
+        $sMailTo = "'abc@def.com' 'ghi@jkl.com'";
+        $sExpectedMails = "mutt -e 'set content_type=text/html' -s 'maChaîne ETL' -- 'abc@def.com' 'ghi@jkl.com'";
+        $this->assertEquals($sExpectedMails, $aResult['sent_mails']);
+    }
+
+    public function testCustomMailWithMultipleParameters ()
+    {
+        $sScriptName = 'php_notice.php';
+        $sScriptPath = RESOURCES_DIR . "/$sScriptName";
+        $sParameters = "--param=ETL=maChaîne\ ETL --param=etl=lower-case"
+                     . " --customized-mails=" . RESOURCES_DIR . "/mails_with_multiple_parameters.sh $sScriptPath";
+        $aResult = $this->execSupervisor($sParameters, 'conf_mail-init.sh');
+        $sExecId = $aResult['exec_id'];
+        $sMailTo = "'abc@def.com' 'ghi@jkl.com'";
+        $sExpectedMails = "mutt -e 'set content_type=text/html' -s 'maChaîne ETL.lower-case' -- 'abc@def.com' 'ghi@jkl.com'";
+        $this->assertEquals($sExpectedMails, $aResult['sent_mails']);
+    }
 }
