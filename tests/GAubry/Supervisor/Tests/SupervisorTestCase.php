@@ -128,6 +128,27 @@ class SupervisorTestCase extends \PHPUnit_Framework_TestCase
         return $sMsg;
     }
 
+    /**
+     * Exécute du code appelant et retourne la sortie d'exécution sous forme d'une chaîne de caractères.
+     * L'éventuelle coloration Shell est enlevée.
+     * Les fichiers de configuration Shell sont préalablement chargés.
+     *
+     * En cas d'erreur shell (code d'erreur <> 0), lance une exception incluant le message d'erreur.
+     *
+     * Par exemple : $this->shellCodeCall('process_options x -aV; isset_option a; echo \$?');
+     * Attention à l'échappement des dollars ($).
+     *
+     * @param string $sCmd
+     * @param bool $bStripBashColors Supprime ou non la coloration Bash de la chaîne retournée
+     * @return string sortie d'exécution sous forme d'une chaîne de caractères.
+     * @throws \RuntimeException en cas d'erreur shell
+     */
+    protected function shellCodeCall ($sCmd, $bStripBashColors = true)
+    {
+        $sShellCodeCall = '/bin/bash ' . TESTS_DIR . '/inc/testShellCode.sh "' . $sCmd . '"';
+        return $this->exec($sShellCodeCall, $bStripBashColors);
+    }
+
     protected function exec ($sCmd, $bStripBashColors = true)
     {
         try {
