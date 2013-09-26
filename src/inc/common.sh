@@ -30,19 +30,19 @@ function checkScriptCalled () {
         echo "$now;$EXECUTION_ID;NO SCRIPT;INIT ERROR" >> $SUPERVISOR_INFO_LOG_FILE
         echo "$now;${SUPERVISOR_PREFIX_MSG}ERROR" >> $SCRIPT_INFO_LOG_FILE
         [ "$SUPERVISOR_MAIL_SEND_ON_ERROR" -eq 1 ] && sendMailOnError
-        die "Missing script name!"
+        die "Missing script name!" 65
     elif [ ! -f "$SCRIPT_NAME" ]; then
         getDateWithCS; now="$RETVAL"
         echo "$now;$EXECUTION_ID;$SCRIPT_NAME;INIT ERROR" >> $SUPERVISOR_INFO_LOG_FILE
         echo "$now;${SUPERVISOR_PREFIX_MSG}ERROR" >> $SCRIPT_INFO_LOG_FILE
         [ "$SUPERVISOR_MAIL_SEND_ON_ERROR" -eq 1 ] && sendMailOnError
-        die "Script '<b>$SCRIPT_NAME</b>' not found!"
+        die "Script '<b>$SCRIPT_NAME</b>' not found!" 66
     elif [ ! -x "$SCRIPT_NAME" ]; then
         getDateWithCS; now="$RETVAL"
         echo "$now;$EXECUTION_ID;$SCRIPT_NAME;INIT ERROR" >> $SUPERVISOR_INFO_LOG_FILE
         echo "$now;${SUPERVISOR_PREFIX_MSG}ERROR" >> $SCRIPT_INFO_LOG_FILE
         [ "$SUPERVISOR_MAIL_SEND_ON_ERROR" -eq 1 ] && sendMailOnError
-        die "Script '<b>$SCRIPT_NAME</b>' is not executable!"
+        die "Script '<b>$SCRIPT_NAME</b>' is not executable!" 67
     fi
 }
 
@@ -73,8 +73,9 @@ function executeScript () {
     local lock_failed=0
     if [ $SUPERVISOR_LOCK_SCRIPT -eq 1 ]; then
         if ! getLock "$(basename "$SCRIPT_NAME")"; then
-            echo "Another instance of '<b>$(basename "$SCRIPT_NAME")</b>' is still running with supervisor!" >> $SCRIPT_ERROR_LOG_FILE
+            echo "${SUPERVISOR_PREFIX_MSG}Another instance of '<b>$(basename "$SCRIPT_NAME")</b>' is still running with supervisor!" >> $SCRIPT_ERROR_LOG_FILE
             lock_failed=1
+            EXIT_CODE=69
         fi
     fi
 
@@ -95,8 +96,13 @@ function executeScript () {
         rm -f $pipe
 
         wait $pid
-        status=$?
-        [ $status -ne 0 ] && echo "${SUPERVISOR_PREFIX_MSG}Exit code not null: $status" >>$SCRIPT_ERROR_LOG_FILE
+        EXIT_CODE=$?
+        if [ $EXIT_CODE -ne 0 ]; then
+            echo "${SUPERVISOR_PREFIX_MSG}Exit code not null: $EXIT_CODE" >> $SCRIPT_ERROR_LOG_FILE
+        elif [ -s $SCRIPT_ERROR_LOG_FILE ]; then
+            EXIT_CODE=68
+            echo "${SUPERVISOR_PREFIX_MSG}Exit code changed from 0 to $EXIT_CODE due to errors." >> $SCRIPT_ERROR_LOG_FILE
+        fi
     fi
 }
 
@@ -207,7 +213,9 @@ function displayScriptMsg {
 }
 
 function die () {
-    CUI_displayMsg error "$1" >&2
+    local msg="$1"
+    local exit_code="${2}"
+    CUI_displayMsg error "$msg" >&2
     echo
-    exit 1
+    exit $exit_code
 }

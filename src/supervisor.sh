@@ -8,6 +8,20 @@
 
 # echo "mail_msg" | mutt -e "set content_type=text/html" -s "mail_subject" -- geoff.abury@gmail.com gaubry@hi-media.com
 
+# Supervisor exit codes:
+#
+# 0 iff no error
+# 65 Missing script name!
+# 66 Script '…' not found!
+# 67 Script '…' is not executable!
+# 68 Exit code changed from 0 to 68 due to errors.
+# 69 Another instance of '…' is still running with supervisor!
+# 70 Config file missing: '…'
+# 71 Customized mails file not found: '…'
+# 72 Invalid Mutt command: '…'
+# Any code not null returned by user script
+
+
 set -o nounset
 set -o pipefail
 shopt -s extglob
@@ -21,6 +35,7 @@ INSTIGATOR_EMAIL=''
 SUPERVISOR_MAIL_ADD_ATTACHMENT=''
 CUSTOMIZED_MAILS=''
 SUPERVISOR_PREFIX_EXT_PARAM='EXT_'
+EXIT_CODE=0
 
 function getOpts () {
     local j=0
@@ -63,7 +78,7 @@ function getOpts () {
 }
 
 getOpts "$@"
-[ -f "$CONFIG_FILE" ] || die "Config file missing: '<b>$CONFIG_FILE</b>'"
+[ -f "$CONFIG_FILE" ] || die "Config file missing: '<b>$CONFIG_FILE</b>'" 70
 
 # Includes:
 . $(dirname $0)/../conf/supervisor-dist.sh
@@ -73,7 +88,7 @@ if [ ! -z "$CUSTOMIZED_MAILS" ]; then
     if [ -f "$CUSTOMIZED_MAILS" ]; then
         . "$CUSTOMIZED_MAILS"
     else
-        die "Customized mails file not found: '<b>$CUSTOMIZED_MAILS</b>'"
+        die "Customized mails file not found: '<b>$CUSTOMIZED_MAILS</b>'" 71
     fi
 fi
 
@@ -81,7 +96,7 @@ fi
 exec 2> >(tee -a $SUPERVISOR_ERROR_LOG_FILE >&2)
 
 [ -x "$(echo "$SUPERVISOR_MAIL_MUTT_CMD" | cut -d' ' -f1)" ] \
-    || die "Invalid Mutt command: '<b>$SUPERVISOR_MAIL_MUTT_CMD</b>'"
+    || die "Invalid Mutt command: '<b>$SUPERVISOR_MAIL_MUTT_CMD</b>'" 72
 
 initScriptLogs
 initExecutionOfScript
@@ -90,3 +105,4 @@ nb_warnings=0
 warning_messages=()
 executeScript
 displayResult
+exit $EXIT_CODE

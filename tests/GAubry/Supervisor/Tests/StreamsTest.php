@@ -11,7 +11,9 @@ class StreamsTest extends SupervisorTestCase
     public function testWithoutScript ()
     {
         $aResult = $this->execSupervisor('');
-        $this->assertEquals('', $aResult['std_out']);
+        $sExpectedStdOut = "\n(i) Starting script 'NO SCRIPT' with id '" . $aResult['exec_id'] . "'";
+        $this->assertEquals($sExpectedStdOut, $aResult['std_out']);
+        $this->assertEquals(65, $aResult['exit_code']);
         $this->assertEquals("[SUPERVISOR] START\n[SUPERVISOR] ERROR\n", $aResult['script_info_content']);
         $this->assertEquals('', $aResult['script_err_content']);
         $this->assertEquals("NO SCRIPT;START\nNO SCRIPT;INIT ERROR\n", $aResult['supervisor_info_content']);
@@ -24,7 +26,9 @@ class StreamsTest extends SupervisorTestCase
     {
         $sScriptPath = RESOURCES_DIR . '/not_exists';
         $aResult = $this->execSupervisor($sScriptPath);
-        $this->assertEquals('', $aResult['std_out']);
+        $sExpectedStdOut = "\n(i) Starting script '$sScriptPath' with id '" . $aResult['exec_id'] . "'";
+        $this->assertEquals($sExpectedStdOut, $aResult['std_out']);
+        $this->assertEquals(66, $aResult['exit_code']);
         $this->assertEquals("[SUPERVISOR] START\n[SUPERVISOR] ERROR\n", $aResult['script_info_content']);
         $this->assertEquals('', $aResult['script_err_content']);
         $this->assertEquals("$sScriptPath;START\n$sScriptPath;INIT ERROR\n", $aResult['supervisor_info_content']);
@@ -37,7 +41,9 @@ class StreamsTest extends SupervisorTestCase
     {
         $sScriptPath = RESOURCES_DIR . '/not_executable';
         $aResult = $this->execSupervisor($sScriptPath);
-        $this->assertEquals('', $aResult['std_out']);
+        $sExpectedStdOut = "\n(i) Starting script '$sScriptPath' with id '" . $aResult['exec_id'] . "'";
+        $this->assertEquals($sExpectedStdOut, $aResult['std_out']);
+        $this->assertEquals(67, $aResult['exit_code']);
         $this->assertEquals("[SUPERVISOR] START\n[SUPERVISOR] ERROR\n", $aResult['script_info_content']);
         $this->assertEquals('', $aResult['script_err_content']);
         $this->assertEquals("$sScriptPath;START\n$sScriptPath;INIT ERROR\n", $aResult['supervisor_info_content']);
@@ -56,9 +62,9 @@ class StreamsTest extends SupervisorTestCase
 OK
 
 (i) Supervisor log file: $this->sTmpDir/supervisor.info.log
-(i) Execution log file: $this->sTmpDir/$sScriptName.%1\$s.info.log
-";
+(i) Execution log file: $this->sTmpDir/$sScriptName.%1\$s.info.log";
         $this->assertEquals(sprintf($sExpectedStdOut, $aResult['exec_id']), $aResult['std_out']);
+        $this->assertEquals(0, $aResult['exit_code']);
         $this->assertEquals("[SUPERVISOR] START\n[SUPERVISOR] OK\n", $aResult['script_info_content']);
         $this->assertEquals('', $aResult['script_err_content']);
         $this->assertEquals("$sScriptPath;START\n$sScriptPath;OK\n", $aResult['supervisor_info_content']);
@@ -77,9 +83,9 @@ OK
 %2\$sOK
 
 (i) Supervisor log file: $this->sTmpDir/supervisor.info.log
-(i) Execution log file: $this->sTmpDir/$sScriptName.%1\$s.info.log
-";
+(i) Execution log file: $this->sTmpDir/$sScriptName.%1\$s.info.log";
         $this->assertEquals(sprintf($sExpectedStdOut, $aResult['exec_id'], preg_replace(array('/^.*;\[SUPERVISOR\] .*$\n/m', '/^([0-9: -]{22}cs);/m'), array('', '$1, '), file_get_contents($aResult['script_info_path']))), $aResult['std_out']);
+        $this->assertEquals(0, $aResult['exit_code']);
         $this->assertEquals("[SUPERVISOR] START
 Title:
 ┆   level 1
@@ -106,9 +112,9 @@ Title:
 %2\$s
 (i) Execution log file: $this->sTmpDir/$sScriptName.%1\$s.info.log
 (i) Error log file: $this->sTmpDir/$sScriptName.%1\$s.error.log:
-/!\ [SUPERVISOR] Exit code not null: 42
-";
+/!\ [SUPERVISOR] Exit code not null: 42";
         $this->assertEquals(sprintf($sExpectedStdOut, $aResult['exec_id'], file_get_contents($aResult['supervisor_info_path'])), $aResult['std_out']);
+        $this->assertEquals(42, $aResult['exit_code']);
         $this->assertEquals("[SUPERVISOR] START\n[SUPERVISOR] ERROR\n", $aResult['script_info_content']);
         $this->assertEquals("[SUPERVISOR] Exit code not null: 42\n", $aResult['script_err_content']);
         $this->assertEquals("$sScriptPath;START\n$sScriptPath;ERROR\n", $aResult['supervisor_info_content']);
@@ -131,10 +137,11 @@ Title:
 (i) Execution log file: $this->sTmpDir/$sScriptName.%1\$s.info.log
 (i) Error log file: $this->sTmpDir/$sScriptName.%1\$s.error.log:
 /!\ It's an error!
-";
+[SUPERVISOR] Exit code changed from 0 to 68 due to errors.";
         $this->assertEquals(sprintf($sExpectedStdOut, $aResult['exec_id'], file_get_contents($aResult['supervisor_info_path'])), $aResult['std_out']);
+        $this->assertEquals(68, $aResult['exit_code']);
         $this->assertEquals("[SUPERVISOR] START\n[SUPERVISOR] ERROR\n", $aResult['script_info_content']);
-        $this->assertEquals("It's an error!\n", $aResult['script_err_content']);
+        $this->assertEquals("It's an error!\n[SUPERVISOR] Exit code changed from 0 to 68 due to errors.\n", $aResult['script_err_content']);
         $this->assertEquals("$sScriptPath;START\n$sScriptPath;ERROR\n", $aResult['supervisor_info_content']);
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
@@ -155,9 +162,9 @@ Title:
 (i) Execution log file: $this->sTmpDir/$sScriptName.%1\$s.info.log
 (i) Error log file: $this->sTmpDir/$sScriptName.%1\$s.error.log:
 /!\ It's an error!
-[SUPERVISOR] Exit code not null: 42
-";
+[SUPERVISOR] Exit code not null: 42";
         $this->assertEquals(sprintf($sExpectedStdOut, $aResult['exec_id'], file_get_contents($aResult['supervisor_info_path'])), $aResult['std_out']);
+        $this->assertEquals(42, $aResult['exit_code']);
         $this->assertEquals("[SUPERVISOR] START\n[SUPERVISOR] ERROR\n", $aResult['script_info_content']);
         $this->assertEquals("It's an error!\n[SUPERVISOR] Exit code not null: 42\n", $aResult['script_err_content']);
         $this->assertEquals("$sScriptPath;START\n$sScriptPath;ERROR\n", $aResult['supervisor_info_content']);
@@ -179,9 +186,9 @@ Title:
 %2\$s
 (i) Execution log file: $this->sTmpDir/$sScriptName.%1\$s.info.log
 (i) Error log file: $this->sTmpDir/$sScriptName.%1\$s.error.log:
-/!\ [SUPERVISOR] Exit code not null: 42
-";
+/!\ [SUPERVISOR] Exit code not null: 42";
         $this->assertEquals(sprintf($sExpectedStdOut, $aResult['exec_id'], file_get_contents($aResult['supervisor_info_path'])), $aResult['std_out']);
+        $this->assertEquals(42, $aResult['exit_code']);
         $this->assertEquals("[SUPERVISOR] START\n[SUPERVISOR] ERROR\n", $aResult['script_info_content']);
         $this->assertEquals("[SUPERVISOR] Exit code not null: 42\n", $aResult['script_err_content']);
         $this->assertEquals("$sScriptPath;START\n$sScriptPath;ERROR\n", $aResult['supervisor_info_content']);
@@ -204,10 +211,11 @@ Title:
 (i) Execution log file: $this->sTmpDir/$sScriptName.%1\$s.info.log
 (i) Error log file: $this->sTmpDir/$sScriptName.%1\$s.error.log:
 /!\ It's an error!
-";
+[SUPERVISOR] Exit code changed from 0 to 68 due to errors.";
         $this->assertEquals(sprintf($sExpectedStdOut, $aResult['exec_id'], file_get_contents($aResult['supervisor_info_path'])), $aResult['std_out']);
+        $this->assertEquals(68, $aResult['exit_code']);
         $this->assertEquals("[SUPERVISOR] START\n[SUPERVISOR] ERROR\n", $aResult['script_info_content']);
-        $this->assertEquals("It's an error!\n", $aResult['script_err_content']);
+        $this->assertEquals("It's an error!\n[SUPERVISOR] Exit code changed from 0 to 68 due to errors.\n", $aResult['script_err_content']);
         $this->assertEquals("$sScriptPath;START\n$sScriptPath;ERROR\n", $aResult['supervisor_info_content']);
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
@@ -232,9 +240,9 @@ Title:
 Stack trace:
 #0 {main}
   thrown in $sScriptPath on line 4
-[SUPERVISOR] Exit code not null: 255
-";
+[SUPERVISOR] Exit code not null: 255";
         $this->assertEquals(sprintf($sExpectedStdOut, $aResult['exec_id'], file_get_contents($aResult['supervisor_info_path'])), $aResult['std_out']);
+        $this->assertEquals(255, $aResult['exit_code']);
         $this->assertEquals("[SUPERVISOR] START\n[SUPERVISOR] ERROR\n", $aResult['script_info_content']);
         $this->assertEquals("PHP Fatal error:  Uncaught exception 'RuntimeException' with message 'It's an error!
 ' in $sScriptPath:4
@@ -264,12 +272,14 @@ Stack trace:
 /!\ PHP Notice:  Undefined variable: b in $sScriptPath on line 4
 PHP Stack trace:
 PHP   1. {main}() $sScriptPath:0
-";
+[SUPERVISOR] Exit code changed from 0 to 68 due to errors.";
         $this->assertEquals(sprintf($sExpectedStdOut, $aResult['exec_id'], file_get_contents($aResult['supervisor_info_path'])), $aResult['std_out']);
+        $this->assertEquals(68, $aResult['exit_code']);
         $this->assertEquals("[SUPERVISOR] START\n[SUPERVISOR] ERROR\n", $aResult['script_info_content']);
         $this->assertEquals("PHP Notice:  Undefined variable: b in $sScriptPath on line 4
 PHP Stack trace:
-PHP   1. {main}() $sScriptPath:0\n", $aResult['script_err_content']);
+PHP   1. {main}() $sScriptPath:0
+[SUPERVISOR] Exit code changed from 0 to 68 due to errors.\n", $aResult['script_err_content']);
         $this->assertEquals("$sScriptPath;START\n$sScriptPath;ERROR\n", $aResult['supervisor_info_content']);
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
@@ -292,9 +302,9 @@ PHP   1. {main}() $sScriptPath:0\n", $aResult['script_err_content']);
 /!\ PHP Fatal error:  Call to undefined function undefined_fct() in $sScriptPath on line 4
 PHP Stack trace:
 PHP   1. {main}() $sScriptPath:0
-[SUPERVISOR] Exit code not null: 255
-";
+[SUPERVISOR] Exit code not null: 255";
         $this->assertEquals(sprintf($sExpectedStdOut, $aResult['exec_id'], file_get_contents($aResult['supervisor_info_path'])), $aResult['std_out']);
+        $this->assertEquals(255, $aResult['exit_code']);
         $this->assertEquals("[SUPERVISOR] START\n[SUPERVISOR] ERROR\n", $aResult['script_info_content']);
         $this->assertEquals("PHP Fatal error:  Call to undefined function undefined_fct() in $sScriptPath on line 4
 PHP Stack trace:
@@ -323,11 +333,11 @@ PHP   1. {main}() $sScriptPath:0
 %2\$s
 (i) Execution log file: $this->sTmpDir/$sScriptName.%1\$s.info.log
 (i) Error log file: $this->sTmpDir/$sScriptName.%1\$s.error.log:
-/!\ Another instance of '$sScriptName' is still running with supervisor!
-";
+/!\ [SUPERVISOR] Another instance of '$sScriptName' is still running with supervisor!";
         $this->assertEquals(sprintf($sExpectedStdOut, $aResult['exec_id'], file_get_contents($aResult['supervisor_info_path'])), $aResult['std_out']);
+        $this->assertEquals(69, $aResult['exit_code']);
         $this->assertEquals("[SUPERVISOR] START\n[SUPERVISOR] ERROR\n", $aResult['script_info_content']);
-        $this->assertEquals("Another instance of '<b>$sScriptName</b>' is still running with supervisor!\n", $aResult['script_err_content']);
+        $this->assertEquals("[SUPERVISOR] Another instance of '<b>$sScriptName</b>' is still running with supervisor!\n", $aResult['script_err_content']);
         $this->assertEquals("$sScriptPath;START\n$sScriptPath;ERROR\n", $aResult['supervisor_info_content']);
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
@@ -348,9 +358,9 @@ PHP   1. {main}() $sScriptPath:0
 %2\$sOK
 
 (i) Supervisor log file: $this->sTmpDir/supervisor.info.log
-(i) Execution log file: $this->sTmpDir/$sScriptName.%1\$s.info.log
-";
+(i) Execution log file: $this->sTmpDir/$sScriptName.%1\$s.info.log";
         $this->assertEquals(sprintf($sExpectedStdOut, $aResult['exec_id'], preg_replace(array('/^.*;\[SUPERVISOR\] .*$\n/m', '/^([0-9: -]{22}cs);/m'), array('', '$1, '), file_get_contents($aResult['script_info_path']))), $aResult['std_out']);
+        $this->assertEquals(0, $aResult['exit_code']);
         $this->assertEquals("[SUPERVISOR] START
 Title:
 ┆   level 1
@@ -378,9 +388,9 @@ Title:
 %2\$sOK
 
 (i) Supervisor log file: $this->sTmpDir/supervisor.info.log
-(i) Execution log file: $this->sTmpDir/$sScriptName.%1\$s.info.log
-";
+(i) Execution log file: $this->sTmpDir/$sScriptName.%1\$s.info.log";
         $this->assertEquals(sprintf($sExpectedStdOut, $aResult['exec_id'], preg_replace(array('/^.*;\[SUPERVISOR\] .*$\n/m', '/^([0-9: -]{22}cs);/m'), array('', '$1, '), file_get_contents($aResult['script_info_path']))), $aResult['std_out']);
+        $this->assertEquals(0, $aResult['exit_code']);
         $this->assertEquals("[SUPERVISOR] START
 Title:
 ┆   level 1

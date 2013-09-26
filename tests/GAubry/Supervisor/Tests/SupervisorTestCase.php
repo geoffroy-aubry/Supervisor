@@ -48,11 +48,14 @@ class SupervisorTestCase extends \PHPUnit_Framework_TestCase
             $sCmd = $sParameters;
         }
 
+        $iExitCode = 0;
+        $sOutputPath = tempnam($this->sTmpDir, 'stdout-');
         try {
-            $sStdOut = $this->exec($sCmd, $bStripBashColors);
+            $sStdOut = $this->exec($sCmd, $bStripBashColors, $sOutputPath);
         } catch (\RuntimeException $oException) {
             if (substr($oException->getMessage(), 0, strlen('Exit code not null: ')) == 'Exit code not null: ') {
-                $sStdOut = '';
+                $sStdOut = $this->stripBashColors(rtrim(file_get_contents($sOutputPath)), $bStripBashColors);
+                $iExitCode = $oException->getCode();
             } else {
                 throw $oException;
             }
@@ -106,6 +109,7 @@ class SupervisorTestCase extends \PHPUnit_Framework_TestCase
         return array(
             'exec_id'                 => $sExecId,
             'std_out'                 => $sStdOut,
+            'exit_code'               => $iExitCode,
             'script_info_path'        => $sScriptInfoPath,
             'script_info_content'     => $sScriptInfoContent,
             'script_err_path'         => $sScriptErrPath,
@@ -149,22 +153,19 @@ class SupervisorTestCase extends \PHPUnit_Framework_TestCase
         return $this->exec($sShellCodeCall, $bStripBashColors);
     }
 
-    protected function exec ($sCmd, $bStripBashColors = true)
+    protected function exec ($sCmd, $bStripBashColors = true, $sOutputPath = '')
     {
         try {
-            $aResult = Helpers::exec($sCmd);
+            $aResult = Helpers::exec($sCmd, $sOutputPath);
         } catch (\RuntimeException $oException) {
             if ($oException->getMessage() != '') {
-                $sMsg = $oException->getMessage();
-                if ($bStripBashColors) {
-                    $sMsg = Helpers::stripBashColors($sMsg);
-                }
+                $sMsg = $this->stripBashColors($oException->getMessage(), $bStripBashColors);
             } else {
                 $sMsg = '-- no message --';
             }
             throw new \RuntimeException($sMsg, $oException->getCode(), $oException);
         }
-        $sResult = $this->stripBashColors(implode("\n", $aResult), $bStripBashColors);
+        $sResult = $this->stripBashColors(rtrim(implode("\n", $aResult)), $bStripBashColors);
         return $sResult;
     }
 }
