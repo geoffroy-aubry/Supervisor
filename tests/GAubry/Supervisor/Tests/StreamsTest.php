@@ -6,6 +6,30 @@ use GAubry\Helpers\Helpers;
 
 class StreamsTest extends SupervisorTestCase
 {
+    private function filterScriptInfo ($sScriptInfoPath)
+    {
+        return preg_replace(
+            array(
+                '/^.*;(┆   )*\[(SUPERVISOR|DEBUG)\].*$\n/m',
+                '/^([0-9: -]{22}cs);/m'
+            ),
+            array('', '$1, '),
+            file_get_contents($sScriptInfoPath)
+        );
+    }
+
+    private function getExpectedSupervisorStdOut ($sScriptPath, $sExecId, $sScriptInfoFiltered)
+    {
+        $sScriptName = strrchr($sScriptPath, '/');
+        $sExpectedStdOut = "
+(i) Starting script '$sScriptPath' with id '%1\$s'
+%2\$sOK
+
+(i) Supervisor log file: $this->sTmpDir/supervisor.info.log
+(i) Execution log file: {$this->sTmpDir}$sScriptName.%1\$s.info.log";
+        return sprintf($sExpectedStdOut, $sExecId, $sScriptInfoFiltered);
+    }
+
     /**
      */
     public function testWithoutScript ()
@@ -57,13 +81,8 @@ class StreamsTest extends SupervisorTestCase
         $sScriptName = 'empty_executable';
         $sScriptPath = RESOURCES_DIR . "/$sScriptName";
         $aResult = $this->execSupervisor($sScriptPath);
-        $sExpectedStdOut = "
-(i) Starting script '$sScriptPath' with id '%1\$s'
-OK
-
-(i) Supervisor log file: $this->sTmpDir/supervisor.info.log
-(i) Execution log file: $this->sTmpDir/$sScriptName.%1\$s.info.log";
-        $this->assertEquals(sprintf($sExpectedStdOut, $aResult['exec_id']), $aResult['std_out']);
+        $sExpectedStdOut = $this->getExpectedSupervisorStdOut($sScriptPath, $aResult['exec_id'], '');
+        $this->assertEquals($sExpectedStdOut, $aResult['std_out']);
         $this->assertEquals(0, $aResult['exit_code']);
         $this->assertEquals("[SUPERVISOR] START\n[SUPERVISOR] OK\n", $aResult['script_info_content']);
         $this->assertEquals('', $aResult['script_err_content']);
@@ -78,13 +97,9 @@ OK
         $sScriptName = 'bash_colored_simple.sh';
         $sScriptPath = RESOURCES_DIR . "/$sScriptName";
         $aResult = $this->execSupervisor($sScriptPath);
-        $sExpectedStdOut = "
-(i) Starting script '$sScriptPath' with id '%1\$s'
-%2\$sOK
-
-(i) Supervisor log file: $this->sTmpDir/supervisor.info.log
-(i) Execution log file: $this->sTmpDir/$sScriptName.%1\$s.info.log";
-        $this->assertEquals(sprintf($sExpectedStdOut, $aResult['exec_id'], preg_replace(array('/^.*;\[SUPERVISOR\] .*$\n/m', '/^([0-9: -]{22}cs);/m'), array('', '$1, '), file_get_contents($aResult['script_info_path']))), $aResult['std_out']);
+        $sScriptInfoFiltered = $this->filterScriptInfo($aResult['script_info_path']);
+        $sExpectedStdOut = $this->getExpectedSupervisorStdOut($sScriptPath, $aResult['exec_id'], $sScriptInfoFiltered);
+        $this->assertEquals($sExpectedStdOut, $aResult['std_out']);
         $this->assertEquals(0, $aResult['exit_code']);
         $this->assertEquals("[SUPERVISOR] START
 Title:
@@ -353,13 +368,9 @@ PHP   1. {main}() $sScriptPath:0
         $sCmd = "($sCmdA) > /dev/null 2>&1 & sleep .2 && ($sCmdB)";
 
         $aResult = $this->execSupervisor($sCmd, array('conf_without-lock-A.sh', 'conf_without-lock-B.sh'));
-        $sExpectedStdOut = "
-(i) Starting script '$sScriptPath' with id '%1\$s'
-%2\$sOK
-
-(i) Supervisor log file: $this->sTmpDir/supervisor.info.log
-(i) Execution log file: $this->sTmpDir/$sScriptName.%1\$s.info.log";
-        $this->assertEquals(sprintf($sExpectedStdOut, $aResult['exec_id'], preg_replace(array('/^.*;\[SUPERVISOR\] .*$\n/m', '/^([0-9: -]{22}cs);/m'), array('', '$1, '), file_get_contents($aResult['script_info_path']))), $aResult['std_out']);
+        $sScriptInfoFiltered = $this->filterScriptInfo($aResult['script_info_path']);
+        $sExpectedStdOut = $this->getExpectedSupervisorStdOut($sScriptPath, $aResult['exec_id'], $sScriptInfoFiltered);
+        $this->assertEquals($sExpectedStdOut, $aResult['std_out']);
         $this->assertEquals(0, $aResult['exit_code']);
         $this->assertEquals("[SUPERVISOR] START
 Title:
@@ -383,13 +394,9 @@ Title:
         $sCmd = "($sCmdA) > /dev/null 2>&1 & sleep .2 && ($sCmdB)";
 
         $aResult = $this->execSupervisor($sCmd, array('conf_lock-A.sh', 'conf_lock-B.sh'));
-        $sExpectedStdOut = "
-(i) Starting script '$sScriptPath' with id '%1\$s'
-%2\$sOK
-
-(i) Supervisor log file: $this->sTmpDir/supervisor.info.log
-(i) Execution log file: $this->sTmpDir/$sScriptName.%1\$s.info.log";
-        $this->assertEquals(sprintf($sExpectedStdOut, $aResult['exec_id'], preg_replace(array('/^.*;\[SUPERVISOR\] .*$\n/m', '/^([0-9: -]{22}cs);/m'), array('', '$1, '), file_get_contents($aResult['script_info_path']))), $aResult['std_out']);
+        $sScriptInfoFiltered = $this->filterScriptInfo($aResult['script_info_path']);
+        $sExpectedStdOut = $this->getExpectedSupervisorStdOut($sScriptPath, $aResult['exec_id'], $sScriptInfoFiltered);
+        $this->assertEquals($sExpectedStdOut, $aResult['std_out']);
         $this->assertEquals(0, $aResult['exit_code']);
         $this->assertEquals("[SUPERVISOR] START
 Title:
@@ -409,13 +416,9 @@ Title:
         $sScriptName = 'bash_additional_parameters.sh';
         $sScriptPath = RESOURCES_DIR . "/$sScriptName";
         $aResult = $this->execSupervisor("$sScriptPath 'one two'");
-        $sExpectedStdOut = "
-(i) Starting script '$sScriptPath' with id '%1\$s'
-%2\$sOK
-
-(i) Supervisor log file: $this->sTmpDir/supervisor.info.log
-(i) Execution log file: $this->sTmpDir/$sScriptName.%1\$s.info.log";
-        $this->assertEquals(sprintf($sExpectedStdOut, $aResult['exec_id'], preg_replace(array('/^.*;\[SUPERVISOR\] .*$\n/m', '/^([0-9: -]{22}cs);/m'), array('', '$1, '), file_get_contents($aResult['script_info_path']))), $aResult['std_out']);
+        $sScriptInfoFiltered = $this->filterScriptInfo($aResult['script_info_path']);
+        $sExpectedStdOut = $this->getExpectedSupervisorStdOut($sScriptPath, $aResult['exec_id'], $sScriptInfoFiltered);
+        $this->assertEquals($sExpectedStdOut, $aResult['std_out']);
         $this->assertEquals(0, $aResult['exit_code']);
         $this->assertEquals("[SUPERVISOR] START
 Parameter: 'one'
@@ -439,18 +442,9 @@ Parameter: '" . $aResult['script_err_path'] . "'
         $sCmd = "($sCmdA) > /dev/null 2>&1 & sleep .2 && ($sCmdB)";
 
         $aResult = $this->execSupervisor($sCmd, array('conf_lock-A.sh', 'conf_lock-B.sh'));
-        $sExpectedStdOut = "
-(i) Starting script '$sScriptPath' with id '%1\$s'
-%2\$sOK
-
-(i) Supervisor log file: $this->sTmpDir/supervisor.info.log
-(i) Execution log file: $this->sTmpDir/$sScriptName.%1\$s.info.log";
-        $sScriptInfoContent = preg_replace(
-            array('/^.*;(┆   )*\[(SUPERVISOR|DEBUG)\].*$\n/m', '/^([0-9: -]{22}cs);/m'),
-            array('', '$1, '),
-            file_get_contents($aResult['script_info_path'])
-        );
-        $this->assertEquals(sprintf($sExpectedStdOut, $aResult['exec_id'], $sScriptInfoContent), $aResult['std_out']);
+        $sScriptInfoFiltered = $this->filterScriptInfo($aResult['script_info_path']);
+        $sExpectedStdOut = $this->getExpectedSupervisorStdOut($sScriptPath, $aResult['exec_id'], $sScriptInfoFiltered);
+        $this->assertEquals($sExpectedStdOut, $aResult['std_out']);
         $this->assertEquals(0, $aResult['exit_code']);
         $this->assertEquals("[SUPERVISOR] START
 Title:
