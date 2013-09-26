@@ -427,4 +427,42 @@ Parameter: '" . $aResult['script_err_path'] . "'
         $this->assertEquals("$sScriptPath;START\n$sScriptPath;OK\n", $aResult['supervisor_info_content']);
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
+
+    /**
+     */
+    public function testDebugMessages ()
+    {
+        $sScriptName = 'bash_debug.sh';
+        $sScriptPath = RESOURCES_DIR . "/$sScriptName";
+        $sCmdA = SRC_DIR . "/supervisor.sh -c '$this->sTmpDir/conf_lock-A.sh' bash_colored_simple_sleep.sh";
+        $sCmdB = SRC_DIR . "/supervisor.sh -c '$this->sTmpDir/conf_lock-B.sh' $sScriptPath";
+        $sCmd = "($sCmdA) > /dev/null 2>&1 & sleep .2 && ($sCmdB)";
+
+        $aResult = $this->execSupervisor($sCmd, array('conf_lock-A.sh', 'conf_lock-B.sh'));
+        $sExpectedStdOut = "
+(i) Starting script '$sScriptPath' with id '%1\$s'
+%2\$sOK
+
+(i) Supervisor log file: $this->sTmpDir/supervisor.info.log
+(i) Execution log file: $this->sTmpDir/$sScriptName.%1\$s.info.log";
+        $sScriptInfoContent = preg_replace(
+            array('/^.*;(┆   )*\[(SUPERVISOR|DEBUG)\].*$\n/m', '/^([0-9: -]{22}cs);/m'),
+            array('', '$1, '),
+            file_get_contents($aResult['script_info_path'])
+        );
+        $this->assertEquals(sprintf($sExpectedStdOut, $aResult['exec_id'], $sScriptInfoContent), $aResult['std_out']);
+        $this->assertEquals(0, $aResult['exit_code']);
+        $this->assertEquals("[SUPERVISOR] START
+Title:
+┆   level 1
+┆   [DEBUG]debug message 1
+┆   ┆   yellow level 2
+┆   ┆   [DEBUG]debug message 2
+  END with spaces" . '  ' . "
+[DEBUG]   debug message 3
+[SUPERVISOR] OK\n", $aResult['script_info_content']);
+        $this->assertEquals('', $aResult['script_err_content']);
+        $this->assertEquals("$sScriptPath;START\n$sScriptPath;OK\n", $aResult['supervisor_info_content']);
+        $this->assertEquals('', $aResult['supervisor_err_content']);
+    }
 }

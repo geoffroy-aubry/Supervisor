@@ -199,7 +199,7 @@ function displayScriptMsg {
         CUI_displayMsg warning "$msg"
         warning_messages[$nb_warnings]="$tmsg"
         let nb_warnings++
-    elif [ "${tmsg:0:6}" = 'DEBUG ' ] || [ "${tmsg:0:7}" = '[DEBUG]' ]; then
+    elif [ "${tmsg:0:7}" = '[DEBUG]' ]; then
         : #CUI_displayMsg processing "$msg"
     elif [ "${tmsg:0:7}" = 'MAILTO ' ] || [ "${tmsg:0:8}" = '[MAILTO]' ]; then
         SUPERVISOR_MAIL_TO="$SUPERVISOR_MAIL_TO ${tmsg:8}"

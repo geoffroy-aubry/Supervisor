@@ -23,3 +23,5 @@ Quelques caractéristiques :
  – couche de tests unitaires PHP sur le code du superviseur, avancée mais non encore terminée
  – publication open source en approche, avec sa documentation détaillée
 
+ – les tags sont de la forme '[tag]' et doivent toujours commencer en début de ligne ou n'être précédés que de tabulations (SUPERVISOR_LOG_TABULATION)
+ – tag DEBUG masque le message dans STDOUT du superviseur, mais le message reste présent dans le log <script>_<exec_id>.info.log
