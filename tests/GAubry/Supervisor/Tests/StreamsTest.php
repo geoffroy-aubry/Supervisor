@@ -401,4 +401,30 @@ Title:
         $this->assertEquals("$sScriptPath;START\n$sScriptPath;OK\n", $aResult['supervisor_info_content']);
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
+
+    /**
+     */
+    public function testAdditionalParameters ()
+    {
+        $sScriptName = 'bash_additional_parameters.sh';
+        $sScriptPath = RESOURCES_DIR . "/$sScriptName";
+        $aResult = $this->execSupervisor("$sScriptPath 'one two'");
+        $sExpectedStdOut = "
+(i) Starting script '$sScriptPath' with id '%1\$s'
+%2\$sOK
+
+(i) Supervisor log file: $this->sTmpDir/supervisor.info.log
+(i) Execution log file: $this->sTmpDir/$sScriptName.%1\$s.info.log";
+        $this->assertEquals(sprintf($sExpectedStdOut, $aResult['exec_id'], preg_replace(array('/^.*;\[SUPERVISOR\] .*$\n/m', '/^([0-9: -]{22}cs);/m'), array('', '$1, '), file_get_contents($aResult['script_info_path']))), $aResult['std_out']);
+        $this->assertEquals(0, $aResult['exit_code']);
+        $this->assertEquals("[SUPERVISOR] START
+Parameter: 'one'
+Parameter: 'two'
+Parameter: '" . $aResult['exec_id'] . "'
+Parameter: '" . $aResult['script_err_path'] . "'
+[SUPERVISOR] OK\n", $aResult['script_info_content']);
+        $this->assertEquals('', $aResult['script_err_content']);
+        $this->assertEquals("$sScriptPath;START\n$sScriptPath;OK\n", $aResult['supervisor_info_content']);
+        $this->assertEquals('', $aResult['supervisor_err_content']);
+    }
 }
