@@ -36,6 +36,7 @@ SUPERVISOR_MAIL_ADD_ATTACHMENT=''
 CUSTOMIZED_MAILS=''
 SUPERVISOR_PREFIX_EXT_PARAM='EXT_'
 EXIT_CODE=0
+WARNING_MSG=()
 
 function getOpts () {
     local j=0
@@ -101,8 +102,6 @@ exec 2> >(tee -a $SUPERVISOR_ERROR_LOG_FILE >&2)
 initScriptLogs
 initExecutionOfScript
 checkScriptCalled
-nb_warnings=0
-warning_messages=()
 executeScript
 displayResult
 exit $EXIT_CODE

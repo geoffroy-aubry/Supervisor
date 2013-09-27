@@ -56,14 +56,14 @@ Error log file: $(dirname $SCRIPT_ERROR_LOG_FILE)/<b>$(basename $SCRIPT_ERROR_LO
 
 function parentSendMailOnWarning () {
     local plural
-    [ "$nb_warnings" -gt 1 ] && plural='s' || plural=''
+    [ "${#WARNING_MSG[*]}" -gt 1 ] && plural='s' || plural=''
     local warning_html=''
-    for msg in "${warning_messages[@]}"; do
+    for msg in "${WARNING_MSG[@]}"; do
         warning_html="$warning_html<li>$msg</li>"
     done
 
     local mail_msg="<h3 style=\"color: #FF8C00\">Warning in execution of script '<b>$SCRIPT_NAME</b>' with id '<b>$EXECUTION_ID</b>'.</h3>\
-<b style=\"color: #FF8C00\">Completed with $nb_warnings warning$plural.</b>\
+<b style=\"color: #FF8C00\">Completed with ${#WARNING_MSG[*]} warning$plural.</b>\
 $(getMailInstigator)$(getMailMsgCmdAndServer)$(getMailMsgInfoLogFiles)\
 Error log file: <i>N.A.</i><br /><br />\
 <p style=\"color: #FF8C00\"><b>Warning$plural</b> <i>(see attached files for more details)</i>:<ol>$warning_html</ol></p>"

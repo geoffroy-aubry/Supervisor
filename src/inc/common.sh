@@ -136,13 +136,13 @@ function displayResult () {
         [ "$SUPERVISOR_MAIL_SEND_ON_ERROR" -eq 1 ] && sendMailOnError
 
     # else if warnings:
-    elif [ "$nb_warnings" -gt 0 ]; then
+    elif [ "${#WARNING_MSG[*]}" -gt 0 ]; then
         local plural
         getDateWithCS; local datecs="$RETVAL"
         echo "$datecs;$EXECUTION_ID;$SCRIPT_NAME;WARNING" >> $SUPERVISOR_INFO_LOG_FILE
         echo "$datecs;${SUPERVISOR_PREFIX_MSG}WARNING" >> $SCRIPT_INFO_LOG_FILE
-        [ "$nb_warnings" -gt 1 ] && plural='S' || plural=''
-        CUI_displayMsg warning "$nb_warnings WARNING$plural"
+        [ "${#WARNING_MSG[*]}" -gt 1 ] && plural='S' || plural=''
+        CUI_displayMsg warning "${#WARNING_MSG[*]} WARNING$plural"
         echo
         CUI_displayMsg help "Supervisor log file: $(dirname $SUPERVISOR_INFO_LOG_FILE)/<b>$(basename $SUPERVISOR_INFO_LOG_FILE)</b>"
         CUI_displayMsg help "Execution log file: $(dirname $SCRIPT_INFO_LOG_FILE)/<b>$(basename $SCRIPT_INFO_LOG_FILE)</b>"
@@ -197,8 +197,7 @@ function displayScriptMsg {
         msg="${msg:$i}"
         msg="${msg//[^[:print:]]\[+([0-9;])[mK]/}"
         CUI_displayMsg warning "$msg"
-        warning_messages[$nb_warnings]="$tmsg"
-        let nb_warnings++
+        WARNING_MSG[${#WARNING_MSG[*]}]="$tmsg"
     elif [ "${tmsg:0:7}" = '[DEBUG]' ]; then
         : #CUI_displayMsg processing "$msg"
     elif [ "${tmsg:0:7}" = 'MAILTO ' ] || [ "${tmsg:0:8}" = '[MAILTO]' ]; then
