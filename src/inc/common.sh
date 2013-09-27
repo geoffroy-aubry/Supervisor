@@ -190,7 +190,7 @@ function displayScriptMsg {
     tmsg="${tmsg##+( )}"	# ltrim
     tmsg="${tmsg%%+( )}"	# rtrim
 
-    if [ "${tmsg:0:8}" = 'WARNING ' ] || [ "${tmsg:0:9}" = '[WARNING]' ]; then
+    if [ "${tmsg:0:9}" = '[WARNING]' ]; then
         echo -n $date
         i=$(( ${#msg} - ${#tmsg} ))
         echo -en "${msg:0:$i}"
@@ -200,10 +200,10 @@ function displayScriptMsg {
         WARNING_MSG[${#WARNING_MSG[*]}]="$tmsg"
     elif [ "${tmsg:0:7}" = '[DEBUG]' ]; then
         : #CUI_displayMsg processing "$msg"
-    elif [ "${tmsg:0:7}" = 'MAILTO ' ] || [ "${tmsg:0:8}" = '[MAILTO]' ]; then
+    elif [ "${tmsg:0:8}" = '[MAILTO]' ]; then
         SUPERVISOR_MAIL_TO="$SUPERVISOR_MAIL_TO ${tmsg:8}"
         : #CUI_displayMsg processing "$msg"
-    elif [ "${tmsg:0:16}" = 'MAIL_ATTACHMENT ' ] || [ "${tmsg:0:17}" = '[MAIL_ATTACHMENT]' ]; then
+    elif [ "${tmsg:0:17}" = '[MAIL_ATTACHMENT]' ]; then
         SUPERVISOR_MAIL_ADD_ATTACHMENT="$SUPERVISOR_MAIL_ADD_ATTACHMENT ${tmsg:17}"
     else
         echo -n $date

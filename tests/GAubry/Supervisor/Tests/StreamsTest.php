@@ -459,4 +459,39 @@ Title:
         $this->assertEquals("$sScriptPath;START\n$sScriptPath;OK\n", $aResult['supervisor_info_content']);
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
+
+    /**
+     */
+    public function testWarningMessages ()
+    {
+        $sScriptName = 'bash_warning.sh';
+        $sScriptPath = RESOURCES_DIR . "/$sScriptName";
+        $sCmdA = SRC_DIR . "/supervisor.sh -c '$this->sTmpDir/conf_lock-A.sh' bash_colored_simple_sleep.sh";
+        $sCmdB = SRC_DIR . "/supervisor.sh -c '$this->sTmpDir/conf_lock-B.sh' $sScriptPath";
+        $sCmd = "($sCmdA) > /dev/null 2>&1 & sleep .2 && ($sCmdB)";
+
+        $aResult = $this->execSupervisor($sCmd, array('conf_lock-A.sh', 'conf_lock-B.sh'));
+        $sScriptInfoFiltered = $this->filterScriptInfo($aResult['script_info_path']);
+        $sExpectedStdOut = "
+(i) Starting script '$sScriptPath' with id '%1\$s'
+%2\$s3 WARNINGS
+
+(i) Supervisor log file: $this->sTmpDir/supervisor.info.log
+(i) Execution log file: {$this->sTmpDir}/$sScriptName.%1\$s.info.log";
+        $sExpectedStdOut = sprintf($sExpectedStdOut, $aResult['exec_id'], $sScriptInfoFiltered);
+        $this->assertEquals($sExpectedStdOut, $aResult['std_out']);
+        $this->assertEquals(0, $aResult['exit_code']);
+        $this->assertEquals("[SUPERVISOR] START
+Title:
+┆   level 1
+┆   [WARNING]message 1
+┆   ┆   yellow level 2
+┆   ┆   [WARNING]message 2
+  END with spaces" . '  ' . "
+[WARNING]   message 3
+[SUPERVISOR] WARNING\n", $aResult['script_info_content']);
+        $this->assertEquals('', $aResult['script_err_content']);
+        $this->assertEquals("$sScriptPath;START\n$sScriptPath;WARNING\n", $aResult['supervisor_info_content']);
+        $this->assertEquals('', $aResult['supervisor_err_content']);
+    }
 }
