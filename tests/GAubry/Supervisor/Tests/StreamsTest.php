@@ -30,8 +30,6 @@ class StreamsTest extends SupervisorTestCase
         return sprintf($sExpectedStdOut, $sExecId, $sScriptInfoFiltered);
     }
 
-    /**
-     */
     public function testWithoutScript ()
     {
         $aResult = $this->execSupervisor('');
@@ -44,8 +42,6 @@ class StreamsTest extends SupervisorTestCase
         $this->assertEquals("/!\\ Missing script name!\n", $aResult['supervisor_err_content']);
     }
 
-    /**
-     */
     public function testScriptNotFound ()
     {
         $sScriptPath = RESOURCES_DIR . '/not_exists';
@@ -59,8 +55,6 @@ class StreamsTest extends SupervisorTestCase
         $this->assertEquals("/!\ Script '$sScriptPath' not found!\n", $aResult['supervisor_err_content']);
     }
 
-    /**
-     */
     public function testNotExecutableScript ()
     {
         $sScriptPath = RESOURCES_DIR . '/not_executable';
@@ -74,8 +68,6 @@ class StreamsTest extends SupervisorTestCase
         $this->assertEquals("/!\ Script '$sScriptPath' is not executable!\n", $aResult['supervisor_err_content']);
     }
 
-    /**
-     */
     public function testEmptyExecutableScript ()
     {
         $sScriptName = 'empty_executable';
@@ -90,8 +82,6 @@ class StreamsTest extends SupervisorTestCase
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
-    /**
-     */
     public function testBashColoredSimpleScript ()
     {
         $sScriptName = 'bash_colored_simple.sh';
@@ -112,8 +102,6 @@ Title:
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
-    /**
-     */
     public function testBashExit ()
     {
         $sScriptName = 'bash_exit_not_null.sh';
@@ -136,8 +124,6 @@ Title:
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
-    /**
-     */
     public function testBashStdErr ()
     {
         $sScriptName = 'bash_std_err.sh';
@@ -161,8 +147,6 @@ Title:
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
-    /**
-     */
     public function testBashStdErrAndExit ()
     {
         $sScriptName = 'bash_std_err_and_exit_not_null.sh';
@@ -186,8 +170,6 @@ Title:
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
-    /**
-     */
     public function testPhpExit ()
     {
         $sScriptName = 'php_exit_not_null.php';
@@ -210,8 +192,6 @@ Title:
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
-    /**
-     */
     public function testPhpStdErr ()
     {
         $sScriptName = 'php_std_err.php';
@@ -235,8 +215,6 @@ Title:
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
-    /**
-     */
     public function testPhpException ()
     {
         $sScriptName = 'php_exception.php';
@@ -269,8 +247,6 @@ Stack trace:
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
-    /**
-     */
     public function testPhpNotice ()
     {
         $sScriptName = 'php_notice.php';
@@ -299,8 +275,6 @@ PHP   1. {main}() $sScriptPath:0
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
-    /**
-     */
     public function testPhpFatalError ()
     {
         $sScriptName = 'php_fatal_error.php';
@@ -329,8 +303,6 @@ PHP   1. {main}() $sScriptPath:0
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
-    /**
-     */
     public function testBlockingLocks ()
     {
         $sScriptName = 'bash_colored_simple_sleep.sh';
@@ -357,8 +329,6 @@ PHP   1. {main}() $sScriptPath:0
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
-    /**
-     */
     public function testWithoutLocks ()
     {
         $sScriptName = 'bash_colored_simple_sleep.sh';
@@ -383,8 +353,6 @@ Title:
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
-    /**
-     */
     public function testNonBlockingLocks ()
     {
         $sScriptName = 'bash_colored_simple.sh';
@@ -409,8 +377,6 @@ Title:
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
-    /**
-     */
     public function testAdditionalParameters ()
     {
         $sScriptName = 'bash_additional_parameters.sh';
@@ -431,8 +397,6 @@ Parameter: '" . $aResult['script_err_path'] . "'
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
-    /**
-     */
     public function testDebugMessages ()
     {
         $sScriptName = 'bash_debug.sh';
@@ -456,8 +420,6 @@ Title:
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
-    /**
-     */
     public function testWarningMessages ()
     {
         $sScriptName = 'bash_warning.sh';
@@ -487,8 +449,6 @@ Title:
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
-    /**
-     */
     public function testWarningMessagesWithTrueTab ()
     {
         $sScriptName = 'bash_warning_with_tab.sh';
@@ -518,8 +478,6 @@ Title:
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
-    /**
-     */
     public function testWarningMessagesWithSpacesInsteadOfTab ()
     {
         $sScriptName = 'bash_warning_with_spaces.sh';
