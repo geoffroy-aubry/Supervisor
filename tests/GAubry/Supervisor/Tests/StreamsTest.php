@@ -548,4 +548,30 @@ Title:
         $this->assertEquals("$sScriptPath;START\n$sScriptPath;WARNING\n", $aResult['supervisor_info_content']);
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
+
+    public function testBashStdErrWithMailTags ()
+    {
+        $sScriptName = 'bash_std_err_with_mail_to.sh';
+        $sScriptPath = RESOURCES_DIR . "/$sScriptName";
+        $aResult = $this->execSupervisor($sScriptPath);
+        $sExpectedStdOut = "
+(i) Starting script '$sScriptPath' with id '%1\$s'
+/!\ Script '$sScriptPath' FAILED!
+
+(i) Supervisor log file: $this->sTmpDir/supervisor.info.log:
+%2\$s
+(i) Execution log file: $this->sTmpDir/$sScriptName.%1\$s.info.log
+(i) Error log file: $this->sTmpDir/$sScriptName.%1\$s.error.log:
+/!\ It's an error!
+[SUPERVISOR] Exit code changed from 0 to 68 due to errors.";
+        $this->assertEquals(sprintf($sExpectedStdOut, $aResult['exec_id'], file_get_contents($aResult['supervisor_info_path'])), $aResult['std_out']);
+        $this->assertEquals(68, $aResult['exit_code']);
+        $this->assertEquals("[SUPERVISOR] START
+[MAILTO]test1@xyz.com
+┆   ┆       [MAILTO]  test2@xyz.com  test3@xyz.com" . ' ' . "
+[SUPERVISOR] ERROR\n", $aResult['script_info_content']);
+        $this->assertEquals("It's an error!\n[SUPERVISOR] Exit code changed from 0 to 68 due to errors.\n", $aResult['script_err_content']);
+        $this->assertEquals("$sScriptPath;START\n$sScriptPath;ERROR\n", $aResult['supervisor_info_content']);
+        $this->assertEquals('', $aResult['supervisor_err_content']);
+    }
 }

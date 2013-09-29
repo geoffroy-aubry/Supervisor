@@ -183,4 +183,18 @@ class SentMailsTest extends SupervisorTestCase
                         . "mutt -e 'set content_type=text/html' -s '[DW] $sScriptName > WARNING ($sExecId)' $sAttachment -- $sMailTo";
         $this->assertEquals($sExpectedMails, $aResult['sent_mails']);
     }
+
+    public function testMailsWithMailTags ()
+    {
+        $sScriptName = 'bash_std_err_with_mail_to.sh';
+        $sScriptPath = RESOURCES_DIR . "/$sScriptName";
+        $aResult = $this->execSupervisor($sScriptPath, 'conf_mail-all.sh');
+        $sExecId = $aResult['exec_id'];
+        $sMailTo = "'abc@def.com' 'ghi@jkl.com'";
+        $sAddMailTo = " 'test1@xyz.com' 'test2@xyz.com' 'test3@xyz.com'";
+        $sAttachment = "-a '$this->sTmpDir/supervisor.info.log.$sExecId.gz' '$this->sTmpDir/$sScriptName.$sExecId.info.log.gz' '$this->sTmpDir/$sScriptName.$sExecId.error.log.gz'";
+        $sExpectedMails = "mutt -e 'set content_type=text/html' -s '[DW] $sScriptName > STARTING ($sExecId)' -- $sMailTo\n"
+        . "mutt -e 'set content_type=text/html' -s '[DW] $sScriptName > ERROR ($sExecId)' $sAttachment -- $sMailTo$sAddMailTo";
+        $this->assertEquals($sExpectedMails, $aResult['sent_mails']);
+    }
 }
