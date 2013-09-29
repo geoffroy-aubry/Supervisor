@@ -31,7 +31,7 @@ CONFIG_FILE="$(dirname $0)/../conf/supervisor.sh"
 SCRIPT_NAME=''
 SCRIPT_PARAMETERS=''
 EXECUTION_ID="$(date +'%Y%m%d%H%M%S')_$(printf '%05d' $RANDOM)"
-INSTIGATOR_EMAIL=''
+MAIL_INSTIGATOR=''
 SUPERVISOR_MAIL_ADD_ATTACHMENT=''
 CUSTOMIZED_MAILS=''
 SUPERVISOR_PREFIX_EXT_PARAM='EXT_'
@@ -57,7 +57,7 @@ function getOpts () {
 
             --conf=*)             CONFIG_FILE=${i#*=} ;;
             --customized-mails=*) CUSTOMIZED_MAILS=${i#*=} ;;
-            --instigator-email=*) INSTIGATOR_EMAIL=' '${i#*=} ;;
+            --instigator-email=*) MAIL_INSTIGATOR=' '${i#*=} ;;
 
             --param=*)
                 parameter=${i#*=}

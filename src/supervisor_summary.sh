@@ -41,4 +41,4 @@ for day in $days; do
 done
 
 mail_subject="$SUPERVISOR_MAIL_SUBJECT_PREFIX > Summary"
-echo "$mail_msg" | $SUPERVISOR_MAIL_MUTT_CMD -e "$SUPERVISOR_MAIL_MUTT_CFG" -s "$mail_subject" -- $SUPERVISOR_MAIL_TO $INSTIGATOR_EMAIL
+echo "$mail_msg" | $SUPERVISOR_MAIL_MUTT_CMD -e "$SUPERVISOR_MAIL_MUTT_CFG" -s "$mail_subject" -- $SUPERVISOR_MAIL_TO $MAIL_INSTIGATOR

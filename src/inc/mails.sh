@@ -7,7 +7,7 @@ function getMailSubject () {
 
 function getMailInstigator () {
     echo -n '<br />Instigator: '
-    [ -z "$INSTIGATOR_EMAIL" ] && echo -n '<i>not specified</i>' || echo -n "$INSTIGATOR_EMAIL"
+    [ -z "$MAIL_INSTIGATOR" ] && echo -n '<i>not specified</i>' || echo -n "$MAIL_INSTIGATOR"
     echo '<br /><br />'
 }
 
@@ -40,7 +40,7 @@ function sendMail () {
 
     [ ! -z "$attachment" ] && attachment="-a $attachment"
     echo "$mail_msg" | $SUPERVISOR_MAIL_MUTT_CMD \
-        -e "$SUPERVISOR_MAIL_MUTT_CFG" -s "$mail_subject" $attachment -- $SUPERVISOR_MAIL_TO$INSTIGATOR_EMAIL
+        -e "$SUPERVISOR_MAIL_MUTT_CFG" -s "$mail_subject" $attachment -- $SUPERVISOR_MAIL_TO$MAIL_INSTIGATOR
 }
 
 function parentSendMailOnError () {
