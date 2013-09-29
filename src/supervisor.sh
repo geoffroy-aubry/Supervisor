@@ -92,6 +92,8 @@ if [ ! -z "$CUSTOMIZED_MAILS" ]; then
         die "Customized mails file not found: '<b>$CUSTOMIZED_MAILS</b>'" 71
     fi
 fi
+# to normalize string representation:
+SUPERVISOR_LOG_TABULATION=$(echo -e "$SUPERVISOR_LOG_TABULATION")
 
 # Duplicate stderr:
 exec 2> >(tee -a $SUPERVISOR_ERROR_LOG_FILE >&2)

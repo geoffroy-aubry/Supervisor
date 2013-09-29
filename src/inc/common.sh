@@ -178,31 +178,26 @@ function displayResult () {
 function displayScriptMsg {
     local date="$(CUI_displayMsg processing "$1, ")"
     local msg="$2"
-    local tmsg i
+    local msg_wo_tab msg_wo_color tmsg i
 
     # Trim:
-    tmsg="$msg"
-    tmsg="$(echo "$tmsg" | sed -r 's:(\033|\x1B)\[[0-9;]*[mK]::ig')"
-    if [ ! -z "$SUPERVISOR_LOG_TABULATION" ]; then
-        #tmsg="${tmsg//[^[:print:]]\[+([0-9;])[mK]/}"
-        tmsg="${tmsg##+($SUPERVISOR_LOG_TABULATION)}"
-    fi
-    tmsg="${tmsg##+( )}"	# ltrim
-    tmsg="${tmsg%%+( )}"	# rtrim
+    msg_wo_tab="$msg"
+    while [ "${msg_wo_tab:0:${#SUPERVISOR_LOG_TABULATION}}" = "$SUPERVISOR_LOG_TABULATION" ]; do
+        msg_wo_tab="${msg_wo_tab:${#SUPERVISOR_LOG_TABULATION}}"
+    done
+    msg_wo_color="${msg_wo_tab//[^[:print:]]\[+([0-9;])[mK]/}"
+    tmsg="${msg_wo_color##+( )}"	# ltrim
 
     if [ "${tmsg:0:9}" = '[WARNING]' ]; then
         echo -n $date
-        i=$(( ${#msg} - ${#tmsg} ))
+        i=$(( ${#msg} - ${#msg_wo_tab} ))
         echo -en "${msg:0:$i}"
-        msg="${msg:$i}"
-        msg="${msg//[^[:print:]]\[+([0-9;])[mK]/}"
-        CUI_displayMsg warning "$msg"
-        WARNING_MSG[${#WARNING_MSG[*]}]="$tmsg"
+        CUI_displayMsg warning "$msg_wo_color"
+        WARNING_MSG[${#WARNING_MSG[*]}]="$msg_wo_color"
     elif [ "${tmsg:0:7}" = '[DEBUG]' ]; then
-        : #CUI_displayMsg processing "$msg"
+        :
     elif [ "${tmsg:0:8}" = '[MAILTO]' ]; then
         SUPERVISOR_MAIL_TO="$SUPERVISOR_MAIL_TO ${tmsg:8}"
-        : #CUI_displayMsg processing "$msg"
     elif [ "${tmsg:0:17}" = '[MAIL_ATTACHMENT]' ]; then
         SUPERVISOR_MAIL_ADD_ATTACHMENT="$SUPERVISOR_MAIL_ADD_ATTACHMENT ${tmsg:17}"
     else
