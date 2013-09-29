@@ -188,17 +188,17 @@ function displayScriptMsg {
     msg_wo_color="${msg_wo_tab//[^[:print:]]\[+([0-9;])[mK]/}"
     tmsg="${msg_wo_color##+( )}"	# ltrim
 
-    if [ "${tmsg:0:9}" = '[WARNING]' ]; then
+    if [ "${tmsg:0:9}" = "$SUPERVISOR_WARNING_TAG" ]; then
         echo -n $date
         i=$(( ${#msg} - ${#msg_wo_tab} ))
         echo -en "${msg:0:$i}"
         CUI_displayMsg warning "$msg_wo_color"
         WARNING_MSG[${#WARNING_MSG[*]}]="$msg_wo_color"
-    elif [ "${tmsg:0:7}" = '[DEBUG]' ]; then
+    elif [ "${tmsg:0:7}" = "$SUPERVISOR_DEBUG_TAG" ]; then
         :
-    elif [ "${tmsg:0:8}" = '[MAILTO]' ]; then
+    elif [ "${tmsg:0:8}" = "$SUPERVISOR_MAILTO_TAG" ]; then
         SUPERVISOR_MAIL_TO="$SUPERVISOR_MAIL_TO ${tmsg:8}"
-    elif [ "${tmsg:0:17}" = '[MAIL_ATTACHMENT]' ]; then
+    elif [ "${tmsg:0:17}" = "$SUPERVISOR_MAIL_ATTACHMENT_TAG" ]; then
         SUPERVISOR_MAIL_ADD_ATTACHMENT="$SUPERVISOR_MAIL_ADD_ATTACHMENT ${tmsg:17}"
     else
         echo -n $date
