@@ -213,3 +213,40 @@ function die () {
     echo
     exit $exit_code
 }
+
+# 7 derniers jours concernés (pas forcément consécutifs)
+function summarize () {
+    local max_nb_days="$1"
+    local actions="START;OK;WARNING;ERROR;INIT ERROR"
+    local mail_msg=''
+    local data=('Date' 'Script' 'Start' 'OK' 'Warning' 'Error' 'Init error')
+    declare -A stats
+
+    days="$(cat "$SUPERVISOR_INFO_LOG_FILE" | cut -d' ' -f1 | uniq | sort -r | tail -n$max_nb_days)"
+    for day in $days; do
+        scripts="$(cat "$SUPERVISOR_INFO_LOG_FILE" | grep "^$day " | grep ";START$" | cut -d';' -f3 | sort | uniq)"
+        IFS=$'\n'
+        for script in $scripts; do
+            data+=("$day" "$script")
+            IFS=';'
+            for action in $actions; do
+                stats[$action]="$(cat "$SUPERVISOR_INFO_LOG_FILE" | grep "^$day " | grep ";$action$" \
+                    | cut -d';' -f3 | grep -- "$script" | wc -l)"
+            done
+            for action in $actions; do
+                data+=("${stats[$action]}")
+            done
+        done
+    done
+    unset IFS
+
+    printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "${data[@]}" \
+        | column -t -s $'\t' \
+        | awk '{if (NR == 1) print "\033[1;37m" $0 "\033[0m"; else print $0}'
+
+    printf -v header '<tr><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th></tr>\n' "${data[@]:0:7}"
+    printf -v rows '<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n' "${data[@]:7}"
+    mail_msg="<table border=1 cellspacing=0>$header$rows</table>"
+    mail_subject="$SUPERVISOR_MAIL_SUBJECT_PREFIX > Summary"
+    echo "$mail_msg" | $SUPERVISOR_MAIL_MUTT_CMD -e "$SUPERVISOR_MAIL_MUTT_CFG" -s "$mail_subject" -- $SUPERVISOR_MAIL_TO $MAIL_INSTIGATOR
+}

@@ -37,6 +37,8 @@ CUSTOMIZED_MAILS=''
 SUPERVISOR_PREFIX_EXT_PARAM='EXT_'
 EXIT_CODE=0
 WARNING_MSG=()
+ACTION='supervise'
+SUMMARIZE_NB_DAYS=0
 
 function getOpts () {
     local j=0
@@ -64,6 +66,11 @@ function getOpts () {
                 name=$SUPERVISOR_PREFIX_EXT_PARAM${parameter%=*}
                 value=${parameter#*=}
                 declare -rg -- $name="$value"    # readonly and global
+                ;;
+
+            --summarize=*)
+                ACTION='summarize'
+                SUMMARIZE_NB_DAYS=${i#*=}
                 ;;
 
             *)
@@ -101,9 +108,18 @@ exec 2> >(tee -a $SUPERVISOR_ERROR_LOG_FILE >&2)
 [ -x "$(echo "$SUPERVISOR_MAIL_MUTT_CMD" | cut -d' ' -f1)" ] \
     || die "Invalid Mutt command: '<b>$SUPERVISOR_MAIL_MUTT_CMD</b>'" 72
 
-initScriptLogs
-initExecutionOfScript
-checkScriptCalled
-executeScript
-displayResult
-exit $EXIT_CODE
+case "$ACTION" in
+    supervise)
+        initScriptLogs
+        initExecutionOfScript
+        checkScriptCalled
+        executeScript
+        displayResult
+        exit $EXIT_CODE
+        ;;
+
+    summarize)
+        summarize $SUMMARIZE_NB_DAYS
+        ;;
+
+esac
