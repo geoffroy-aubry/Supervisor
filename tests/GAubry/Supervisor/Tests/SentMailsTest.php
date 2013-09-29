@@ -186,15 +186,29 @@ class SentMailsTest extends SupervisorTestCase
 
     public function testMailsWithMailTags ()
     {
-        $sScriptName = 'bash_std_err_with_mail_to.sh';
+        $sScriptName = 'bash_mail_to_tags.sh';
         $sScriptPath = RESOURCES_DIR . "/$sScriptName";
         $aResult = $this->execSupervisor($sScriptPath, 'conf_mail-all.sh');
         $sExecId = $aResult['exec_id'];
         $sMailTo = "'abc@def.com' 'ghi@jkl.com'";
         $sAddMailTo = " 'test1@xyz.com' 'test2@xyz.com' 'test3@xyz.com'";
-        $sAttachment = "-a '$this->sTmpDir/supervisor.info.log.$sExecId.gz' '$this->sTmpDir/$sScriptName.$sExecId.info.log.gz' '$this->sTmpDir/$sScriptName.$sExecId.error.log.gz'";
+        $sAttachment = "-a '$this->sTmpDir/supervisor.info.log.$sExecId.gz' '$this->sTmpDir/$sScriptName.$sExecId.info.log.gz'";
         $sExpectedMails = "mutt -e 'set content_type=text/html' -s '[DW] $sScriptName > STARTING ($sExecId)' -- $sMailTo\n"
-        . "mutt -e 'set content_type=text/html' -s '[DW] $sScriptName > ERROR ($sExecId)' $sAttachment -- $sMailTo$sAddMailTo";
+        . "mutt -e 'set content_type=text/html' -s '[DW] $sScriptName > SUCCESS ($sExecId)' $sAttachment -- $sMailTo$sAddMailTo";
+        $this->assertEquals($sExpectedMails, $aResult['sent_mails']);
+    }
+
+    public function testMailsWithMailAttachmentTags ()
+    {
+        $sScriptName = 'bash_mail_attachment_tags.sh';
+        $sScriptPath = RESOURCES_DIR . "/$sScriptName";
+        $aResult = $this->execSupervisor($sScriptPath, 'conf_mail-all.sh');
+        $sExecId = $aResult['exec_id'];
+        $sMailTo = "'abc@def.com' 'ghi@jkl.com'";
+        $sAttachment = "-a '$this->sTmpDir/supervisor.info.log.$sExecId.gz' '$this->sTmpDir/$sScriptName.$sExecId.info.log.gz'"
+                     . " '/path/to/file1' '/path/to/file2' '/path/to/file3'";
+        $sExpectedMails = "mutt -e 'set content_type=text/html' -s '[DW] $sScriptName > STARTING ($sExecId)' -- $sMailTo\n"
+        . "mutt -e 'set content_type=text/html' -s '[DW] $sScriptName > SUCCESS ($sExecId)' $sAttachment -- $sMailTo";
         $this->assertEquals($sExpectedMails, $aResult['sent_mails']);
     }
 }
