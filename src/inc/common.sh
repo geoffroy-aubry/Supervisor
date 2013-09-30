@@ -214,7 +214,7 @@ function die () {
     exit $exit_code
 }
 
-# 7 derniers jours concernés (pas forcément consécutifs)
+# N derniers jours concernés (pas forcément consécutifs)
 function summarize () {
     local max_nb_days="$1"
     local actions="START;OK;WARNING;ERROR;INIT ERROR"

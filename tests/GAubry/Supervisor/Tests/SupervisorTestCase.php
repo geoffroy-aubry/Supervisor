@@ -17,6 +17,9 @@ class SupervisorTestCase extends \PHPUnit_Framework_TestCase
             '{log_dir}' => $this->sTmpDir
         );
         $sContent = strtr($sContent, $aReplace);
+        if (dirname($this->sTmpDir . '/' . $sConfigFilename) != $this->sTmpDir) {
+            mkdir(dirname($this->sTmpDir . '/' . $sConfigFilename), 0777, true);
+        }
         file_put_contents($this->sTmpDir . '/' . $sConfigFilename, $sContent);
     }
 
@@ -67,7 +70,11 @@ class SupervisorTestCase extends \PHPUnit_Framework_TestCase
         $sExecId = '';
         $sScriptName = '';
         $sSupervisorInfoPath = $this->sTmpDir . '/supervisor.info.log';
-        $sSupervisorInfo = $this->stripBashColors(implode('', file($sSupervisorInfoPath)), $bStripBashColors);
+        if (file_exists($sSupervisorInfoPath)) {
+            $sSupervisorInfo = $this->stripBashColors(implode('', file($sSupervisorInfoPath)), $bStripBashColors);
+        } else {
+            $sSupervisorInfo = '';
+        }
         $aFilteredSupervisorInfo = array();
         foreach(explode("\n", $sSupervisorInfo) as $sLine) {
             if (empty($sLine)) {

@@ -62,5 +62,4 @@ declare -A CUI_COLORS=(
     [processing]='\033[1;30m'
     [warning]='\033[0;33m'
     [warning.bold]='\033[1;33m'
-    [warning.header]='\033[1m\033[4;33m/!\\\033[0;37m '
 )
