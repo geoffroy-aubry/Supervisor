@@ -112,6 +112,7 @@ class StreamsTest extends SupervisorTestCase
      * @shcovers inc/common.sh::executeScript
      * @shcovers inc/common.sh::displayResult
      * @shcovers inc/common.sh::displayScriptMsg
+     * @shcovers inc/common.sh::doAction
      */
     public function testBashColoredSimpleScript ()
     {

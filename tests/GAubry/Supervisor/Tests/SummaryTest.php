@@ -8,6 +8,7 @@ class SummaryTest extends SupervisorTestCase
 {
     /**
      * @shcovers inc/common.sh::summarize
+     * @shcovers inc/common.sh::doAction
      */
     public function testSummarize ()
     {

@@ -61,6 +61,7 @@ function getOpts () {
             --conf=*)             CONFIG_FILE=${i#*=} ;;
             --customized-mails=*) CUSTOMIZED_MAILS=${i#*=} ;;
             --instigator-email=*) MAIL_INSTIGATOR=' '${i#*=} ;;
+            --monitor)            ACTION='monitor' ;;
 
             --param=*)
                 parameter=${i#*=}
