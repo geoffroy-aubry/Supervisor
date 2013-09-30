@@ -30,6 +30,13 @@ class StreamsTest extends SupervisorTestCase
         return sprintf($sExpectedStdOut, $sExecId, $sScriptInfoFiltered);
     }
 
+    /**
+     * @shcovers inc/common.sh::checkScriptCalled
+     * @shcovers inc/common.sh::die
+     * @shcovers inc/common.sh::initExecutionOfScript
+     * @shcovers inc/common.sh::initScriptLogs
+     * @shcovers inc/tools.sh::getDateWithCS
+     */
     public function testWithoutScript ()
     {
         $aResult = $this->execSupervisor('');
@@ -42,6 +49,13 @@ class StreamsTest extends SupervisorTestCase
         $this->assertEquals("/!\\ Missing script name!\n", $aResult['supervisor_err_content']);
     }
 
+    /**
+     * @shcovers inc/common.sh::checkScriptCalled
+     * @shcovers inc/common.sh::die
+     * @shcovers inc/common.sh::initExecutionOfScript
+     * @shcovers inc/common.sh::initScriptLogs
+     * @shcovers inc/tools.sh::getDateWithCS
+     */
     public function testScriptNotFound ()
     {
         $sScriptPath = RESOURCES_DIR . '/not_exists';
@@ -55,6 +69,13 @@ class StreamsTest extends SupervisorTestCase
         $this->assertEquals("/!\ Script '$sScriptPath' not found!\n", $aResult['supervisor_err_content']);
     }
 
+    /**
+     * @shcovers inc/common.sh::checkScriptCalled
+     * @shcovers inc/common.sh::die
+     * @shcovers inc/common.sh::initExecutionOfScript
+     * @shcovers inc/common.sh::initScriptLogs
+     * @shcovers inc/tools.sh::getDateWithCS
+     */
     public function testNotExecutableScript ()
     {
         $sScriptPath = RESOURCES_DIR . '/not_executable';
@@ -68,6 +89,11 @@ class StreamsTest extends SupervisorTestCase
         $this->assertEquals("/!\ Script '$sScriptPath' is not executable!\n", $aResult['supervisor_err_content']);
     }
 
+    /**
+     * @shcovers inc/common.sh::executeScript
+     * @shcovers inc/common.sh::displayResult
+     * @shcovers inc/common.sh::displayScriptMsg
+     */
     public function testEmptyExecutableScript ()
     {
         $sScriptName = 'empty_executable';
@@ -82,6 +108,11 @@ class StreamsTest extends SupervisorTestCase
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
+    /**
+     * @shcovers inc/common.sh::executeScript
+     * @shcovers inc/common.sh::displayResult
+     * @shcovers inc/common.sh::displayScriptMsg
+     */
     public function testBashColoredSimpleScript ()
     {
         $sScriptName = 'bash_colored_simple.sh';
@@ -102,6 +133,11 @@ Title:
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
+    /**
+     * @shcovers inc/common.sh::executeScript
+     * @shcovers inc/common.sh::displayResult
+     * @shcovers inc/common.sh::displayScriptMsg
+     */
     public function testBashExit ()
     {
         $sScriptName = 'bash_exit_not_null.sh';
@@ -124,6 +160,11 @@ Title:
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
+    /**
+     * @shcovers inc/common.sh::executeScript
+     * @shcovers inc/common.sh::displayResult
+     * @shcovers inc/common.sh::displayScriptMsg
+     */
     public function testBashStdErr ()
     {
         $sScriptName = 'bash_std_err.sh';
@@ -147,6 +188,11 @@ Title:
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
+    /**
+     * @shcovers inc/common.sh::executeScript
+     * @shcovers inc/common.sh::displayResult
+     * @shcovers inc/common.sh::displayScriptMsg
+     */
     public function testBashStdErrAndExit ()
     {
         $sScriptName = 'bash_std_err_and_exit_not_null.sh';
@@ -170,6 +216,11 @@ Title:
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
+    /**
+     * @shcovers inc/common.sh::executeScript
+     * @shcovers inc/common.sh::displayResult
+     * @shcovers inc/common.sh::displayScriptMsg
+     */
     public function testPhpExit ()
     {
         $sScriptName = 'php_exit_not_null.php';
@@ -192,6 +243,11 @@ Title:
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
+    /**
+     * @shcovers inc/common.sh::executeScript
+     * @shcovers inc/common.sh::displayResult
+     * @shcovers inc/common.sh::displayScriptMsg
+     */
     public function testPhpStdErr ()
     {
         $sScriptName = 'php_std_err.php';
@@ -215,6 +271,11 @@ Title:
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
+    /**
+     * @shcovers inc/common.sh::executeScript
+     * @shcovers inc/common.sh::displayResult
+     * @shcovers inc/common.sh::displayScriptMsg
+     */
     public function testPhpException ()
     {
         $sScriptName = 'php_exception.php';
@@ -247,6 +308,11 @@ Stack trace:
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
+    /**
+     * @shcovers inc/common.sh::executeScript
+     * @shcovers inc/common.sh::displayResult
+     * @shcovers inc/common.sh::displayScriptMsg
+     */
     public function testPhpNotice ()
     {
         $sScriptName = 'php_notice.php';
@@ -275,6 +341,11 @@ PHP   1. {main}() $sScriptPath:0
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
+    /**
+     * @shcovers inc/common.sh::executeScript
+     * @shcovers inc/common.sh::displayResult
+     * @shcovers inc/common.sh::displayScriptMsg
+     */
     public function testPhpFatalError ()
     {
         $sScriptName = 'php_fatal_error.php';
@@ -303,6 +374,12 @@ PHP   1. {main}() $sScriptPath:0
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
+    /**
+     * @shcovers inc/common.sh::executeScript
+     * @shcovers inc/common.sh::displayResult
+     * @shcovers inc/common.sh::displayScriptMsg
+     * @shcovers inc/tools.sh::getLock
+     */
     public function testBlockingLocks ()
     {
         $sScriptName = 'bash_colored_simple_sleep.sh';
@@ -329,6 +406,12 @@ PHP   1. {main}() $sScriptPath:0
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
+    /**
+     * @shcovers inc/common.sh::executeScript
+     * @shcovers inc/common.sh::displayResult
+     * @shcovers inc/common.sh::displayScriptMsg
+     * @shcovers inc/tools.sh::getLock
+     */
     public function testWithoutLocks ()
     {
         $sScriptName = 'bash_colored_simple_sleep.sh';
@@ -353,6 +436,12 @@ Title:
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
+    /**
+     * @shcovers inc/common.sh::executeScript
+     * @shcovers inc/common.sh::displayResult
+     * @shcovers inc/common.sh::displayScriptMsg
+     * @shcovers inc/tools.sh::getLock
+     */
     public function testNonBlockingLocks ()
     {
         $sScriptName = 'bash_colored_simple.sh';
@@ -377,6 +466,11 @@ Title:
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
+    /**
+     * @shcovers inc/common.sh::executeScript
+     * @shcovers inc/common.sh::displayResult
+     * @shcovers inc/common.sh::displayScriptMsg
+     */
     public function testAdditionalParameters ()
     {
         $sScriptName = 'bash_additional_parameters.sh';
@@ -397,6 +491,11 @@ Parameter: '" . $aResult['script_err_path'] . "'
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
+    /**
+     * @shcovers inc/common.sh::executeScript
+     * @shcovers inc/common.sh::displayResult
+     * @shcovers inc/common.sh::displayScriptMsg
+     */
     public function testDebugMessages ()
     {
         $sScriptName = 'bash_debug.sh';
@@ -420,6 +519,11 @@ Title:
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
+    /**
+     * @shcovers inc/common.sh::executeScript
+     * @shcovers inc/common.sh::displayResult
+     * @shcovers inc/common.sh::displayScriptMsg
+     */
     public function testWarningMessages ()
     {
         $sScriptName = 'bash_warning.sh';
@@ -449,6 +553,11 @@ Title:
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
+    /**
+     * @shcovers inc/common.sh::executeScript
+     * @shcovers inc/common.sh::displayResult
+     * @shcovers inc/common.sh::displayScriptMsg
+     */
     public function testWarningMessagesWithTrueTab ()
     {
         $sScriptName = 'bash_warning_with_tab.sh';
@@ -478,6 +587,11 @@ Title:
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
+    /**
+     * @shcovers inc/common.sh::executeScript
+     * @shcovers inc/common.sh::displayResult
+     * @shcovers inc/common.sh::displayScriptMsg
+     */
     public function testWarningMessagesWithSpacesInsteadOfTab ()
     {
         $sScriptName = 'bash_warning_with_spaces.sh';
@@ -507,6 +621,11 @@ Title:
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
+    /**
+     * @shcovers inc/common.sh::executeScript
+     * @shcovers inc/common.sh::displayResult
+     * @shcovers inc/common.sh::displayScriptMsg
+     */
     public function testBashWithMailTags ()
     {
         $sScriptName = 'bash_mail_to_tags.sh';
@@ -528,6 +647,11 @@ END
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
+    /**
+     * @shcovers inc/common.sh::executeScript
+     * @shcovers inc/common.sh::displayResult
+     * @shcovers inc/common.sh::displayScriptMsg
+     */
     public function testBashWithMailAttachmentTags ()
     {
         $sScriptName = 'bash_mail_attachment_tags.sh';

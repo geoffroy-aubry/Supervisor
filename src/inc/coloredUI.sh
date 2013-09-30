@@ -69,7 +69,7 @@ declare -A CUI_COLORS
 #
 # @param string $1 key to check
 # @return int 0 if key exists, else 1
-# @testedby TwgitCUITest
+# @testedby ColoredUiTest
 #
 function CUI_isSet () {
     local key="$1"
@@ -85,7 +85,7 @@ function CUI_isSet () {
 # @param string $1 type of the message (error, title, ...)
 # @param string $2..$n message
 # @see $CUI_COLORS
-# @testedby TwgitCUITest
+# @testedby ColoredUiTest
 #
 function CUI_displayMsg () {
     local type=$1; shift

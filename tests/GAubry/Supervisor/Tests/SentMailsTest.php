@@ -6,6 +6,14 @@ use GAubry\Helpers\Helpers;
 
 class SentMailsTest extends SupervisorTestCase
 {
+    /**
+     * @shcovers inc/mails.sh::getMailInstigator
+     * @shcovers inc/mails.sh::getMailMsgCmdAndServer
+     * @shcovers inc/mails.sh::getMailSubject
+     * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::sendMail
+     * @shcovers inc/mails.sh::sendMailOnInit
+     */
     public function testInitMailWithPhpNotice ()
     {
         $sScriptName = 'php_notice.php';
@@ -17,6 +25,20 @@ class SentMailsTest extends SupervisorTestCase
         $this->assertEquals($sExpectedMails, $aResult['sent_mails']);
     }
 
+    /**
+     * @shcovers inc/mails.sh::getMailInstigator
+     * @shcovers inc/mails.sh::getMailMsgCmdAndServer
+     * @shcovers inc/mails.sh::getMailSubject
+     * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::sendMail
+     * @shcovers inc/mails.sh::sendMailOnInit
+     *
+     * @shcovers inc/mails.sh::compressAttachedFiles
+     * @shcovers inc/mails.sh::getMailMsgInfoLogFiles
+     * @shcovers inc/mails.sh::parentSendMailOnError
+     * @shcovers inc/mails.sh::removeAttachedFiles
+     * @shcovers inc/mails.sh::sendMailOnError
+     */
     public function testAllMailsWithPhpNotice ()
     {
         $sScriptName = 'php_notice.php';
@@ -30,6 +52,20 @@ class SentMailsTest extends SupervisorTestCase
         $this->assertEquals($sExpectedMails, $aResult['sent_mails']);
     }
 
+    /**
+     * @shcovers inc/mails.sh::getMailInstigator
+     * @shcovers inc/mails.sh::getMailMsgCmdAndServer
+     * @shcovers inc/mails.sh::getMailSubject
+     * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::sendMail
+     * @shcovers inc/mails.sh::sendMailOnInit
+     *
+     * @shcovers inc/mails.sh::compressAttachedFiles
+     * @shcovers inc/mails.sh::getMailMsgInfoLogFiles
+     * @shcovers inc/mails.sh::parentSendMailOnError
+     * @shcovers inc/mails.sh::removeAttachedFiles
+     * @shcovers inc/mails.sh::sendMailOnError
+     */
     public function testAllMailsWithPhpFatalError ()
     {
         $sScriptName = 'php_fatal_error.php';
@@ -43,6 +79,18 @@ class SentMailsTest extends SupervisorTestCase
         $this->assertEquals($sExpectedMails, $aResult['sent_mails']);
     }
 
+    /**
+     * @shcovers inc/mails.sh::getMailInstigator
+     * @shcovers inc/mails.sh::getMailMsgCmdAndServer
+     * @shcovers inc/mails.sh::getMailSubject
+     * @shcovers inc/mails.sh::sendMail
+     *
+     * @shcovers inc/mails.sh::compressAttachedFiles
+     * @shcovers inc/mails.sh::getMailMsgInfoLogFiles
+     * @shcovers inc/mails.sh::parentSendMailOnError
+     * @shcovers inc/mails.sh::removeAttachedFiles
+     * @shcovers inc/mails.sh::sendMailOnError
+     */
     public function testWarningErrorMailsWithPhpNotice ()
     {
         $sScriptName = 'php_notice.php';
@@ -55,6 +103,20 @@ class SentMailsTest extends SupervisorTestCase
         $this->assertEquals($sExpectedMails, $aResult['sent_mails']);
     }
 
+    /**
+     * @shcovers inc/mails.sh::getMailInstigator
+     * @shcovers inc/mails.sh::getMailMsgCmdAndServer
+     * @shcovers inc/mails.sh::getMailSubject
+     * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::sendMail
+     * @shcovers inc/mails.sh::sendMailOnInit
+     *
+     * @shcovers inc/mails.sh::compressAttachedFiles
+     * @shcovers inc/mails.sh::getMailMsgInfoLogFiles
+     * @shcovers inc/mails.sh::parentSendMailOnSuccess
+     * @shcovers inc/mails.sh::removeAttachedFiles
+     * @shcovers inc/mails.sh::sendMailOnSuccess
+     */
     public function testAllMailsWithBashColoredSimple ()
     {
         $sScriptName = 'bash_colored_simple.sh';
@@ -68,6 +130,20 @@ class SentMailsTest extends SupervisorTestCase
         $this->assertEquals($sExpectedMails, $aResult['sent_mails']);
     }
 
+    /**
+     * @shcovers inc/mails.sh::getMailInstigator
+     * @shcovers inc/mails.sh::getMailMsgCmdAndServer
+     * @shcovers inc/mails.sh::getMailSubject
+     * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::sendMail
+     * @shcovers inc/mails.sh::sendMailOnInit
+     *
+     * @shcovers inc/mails.sh::compressAttachedFiles
+     * @shcovers inc/mails.sh::getMailMsgInfoLogFiles
+     * @shcovers inc/mails.sh::parentSendMailOnSuccess
+     * @shcovers inc/mails.sh::removeAttachedFiles
+     * @shcovers inc/mails.sh::sendMailOnSuccess
+     */
     public function testAllMailsWithInstigator ()
     {
         $sScriptName = 'bash_colored_simple.sh';
@@ -81,6 +157,21 @@ class SentMailsTest extends SupervisorTestCase
         $this->assertEquals($sExpectedMails, $aResult['sent_mails']);
     }
 
+    /**
+     * @shcovers inc/mails.sh::getMailInstigator
+     * @shcovers inc/mails.sh::getMailMsgCmdAndServer
+     * @shcovers inc/mails.sh::getMailSubject
+     * @shcovers inc/mails.sh::sendMail
+     *
+     * @shcovers inc/mails.sh::compressAttachedFiles
+     * @shcovers inc/mails.sh::getMailMsgInfoLogFiles
+     * @shcovers inc/mails.sh::parentSendMailOnError
+     * @shcovers inc/mails.sh::removeAttachedFiles
+     * @shcovers inc/mails.sh::sendMailOnError
+     *
+     * @shcovers inc/mails.sh::parentSendMailOnWarning
+     * @shcovers inc/mails.sh::sendMailOnWarning
+     */
     public function testWarningErrorMailsWithBashColoredSimple ()
     {
         $sScriptName = 'bash_colored_simple.sh';
@@ -89,6 +180,20 @@ class SentMailsTest extends SupervisorTestCase
         $this->assertEquals('', $aResult['sent_mails']);
     }
 
+    /**
+     * @shcovers inc/mails.sh::getMailInstigator
+     * @shcovers inc/mails.sh::getMailMsgCmdAndServer
+     * @shcovers inc/mails.sh::getMailSubject
+     * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::sendMail
+     * @shcovers inc/mails.sh::sendMailOnInit
+     *
+     * @shcovers inc/mails.sh::compressAttachedFiles
+     * @shcovers inc/mails.sh::getMailMsgInfoLogFiles
+     * @shcovers inc/mails.sh::parentSendMailOnError
+     * @shcovers inc/mails.sh::removeAttachedFiles
+     * @shcovers inc/mails.sh::sendMailOnError
+     */
     public function testMailsWithoutScript ()
     {
         $sScriptName = '';
@@ -102,6 +207,20 @@ class SentMailsTest extends SupervisorTestCase
         $this->assertEquals($sExpectedMails, $aResult['sent_mails']);
     }
 
+    /**
+     * @shcovers inc/mails.sh::getMailInstigator
+     * @shcovers inc/mails.sh::getMailMsgCmdAndServer
+     * @shcovers inc/mails.sh::getMailSubject
+     * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::sendMail
+     * @shcovers inc/mails.sh::sendMailOnInit
+     *
+     * @shcovers inc/mails.sh::compressAttachedFiles
+     * @shcovers inc/mails.sh::getMailMsgInfoLogFiles
+     * @shcovers inc/mails.sh::parentSendMailOnError
+     * @shcovers inc/mails.sh::removeAttachedFiles
+     * @shcovers inc/mails.sh::sendMailOnError
+     */
     public function testMailsWithScriptNotFound ()
     {
         $sScriptName = 'not_exists';
@@ -115,6 +234,20 @@ class SentMailsTest extends SupervisorTestCase
         $this->assertEquals($sExpectedMails, $aResult['sent_mails']);
     }
 
+    /**
+     * @shcovers inc/mails.sh::getMailInstigator
+     * @shcovers inc/mails.sh::getMailMsgCmdAndServer
+     * @shcovers inc/mails.sh::getMailSubject
+     * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::sendMail
+     * @shcovers inc/mails.sh::sendMailOnInit
+     *
+     * @shcovers inc/mails.sh::compressAttachedFiles
+     * @shcovers inc/mails.sh::getMailMsgInfoLogFiles
+     * @shcovers inc/mails.sh::parentSendMailOnError
+     * @shcovers inc/mails.sh::removeAttachedFiles
+     * @shcovers inc/mails.sh::sendMailOnError
+     */
     public function testMailsWithNotExecutableScript ()
     {
         $sScriptName = 'not_executable';
@@ -128,6 +261,20 @@ class SentMailsTest extends SupervisorTestCase
         $this->assertEquals($sExpectedMails, $aResult['sent_mails']);
     }
 
+    /**
+     * @shcovers inc/mails.sh::getMailInstigator
+     * @shcovers inc/mails.sh::getMailMsgCmdAndServer
+     * @shcovers inc/mails.sh::getMailSubject
+     * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::sendMail
+     * @shcovers inc/mails.sh::sendMailOnInit
+     *
+     * @shcovers inc/mails.sh::compressAttachedFiles
+     * @shcovers inc/mails.sh::getMailMsgInfoLogFiles
+     * @shcovers inc/mails.sh::parentSendMailOnError
+     * @shcovers inc/mails.sh::removeAttachedFiles
+     * @shcovers inc/mails.sh::sendMailOnError
+     */
     public function testBlockingLocks ()
     {
         $sScriptName = 'bash_colored_simple_sleep2.sh';
@@ -145,6 +292,9 @@ class SentMailsTest extends SupervisorTestCase
         $this->assertEquals($sExpectedMails, $aResult['sent_mails']);
     }
 
+    /**
+     * @shcovers inc/common.sh::loadCustomizedMails
+     */
     public function testCustomMailWithParameter ()
     {
         $sScriptName = 'php_notice.php';
@@ -158,6 +308,9 @@ class SentMailsTest extends SupervisorTestCase
         $this->assertEquals($sExpectedMails, $aResult['sent_mails']);
     }
 
+    /**
+     * @shcovers inc/common.sh::loadCustomizedMails
+     */
     public function testCustomMailWithMultipleParameters ()
     {
         $sScriptName = 'php_notice.php';
@@ -171,6 +324,20 @@ class SentMailsTest extends SupervisorTestCase
         $this->assertEquals($sExpectedMails, $aResult['sent_mails']);
     }
 
+    /**
+     * @shcovers inc/mails.sh::getMailInstigator
+     * @shcovers inc/mails.sh::getMailMsgCmdAndServer
+     * @shcovers inc/mails.sh::getMailSubject
+     * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::sendMail
+     * @shcovers inc/mails.sh::sendMailOnInit
+     *
+     * @shcovers inc/mails.sh::compressAttachedFiles
+     * @shcovers inc/mails.sh::getMailMsgInfoLogFiles
+     * @shcovers inc/mails.sh::parentSendMailOnWarning
+     * @shcovers inc/mails.sh::removeAttachedFiles
+     * @shcovers inc/mails.sh::sendMailOnWarning
+     */
     public function testAllMailsWithWarnings ()
     {
         $sScriptName = 'bash_warning.sh';
@@ -184,6 +351,20 @@ class SentMailsTest extends SupervisorTestCase
         $this->assertEquals($sExpectedMails, $aResult['sent_mails']);
     }
 
+    /**
+     * @shcovers inc/mails.sh::getMailInstigator
+     * @shcovers inc/mails.sh::getMailMsgCmdAndServer
+     * @shcovers inc/mails.sh::getMailSubject
+     * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::sendMail
+     * @shcovers inc/mails.sh::sendMailOnInit
+     *
+     * @shcovers inc/mails.sh::compressAttachedFiles
+     * @shcovers inc/mails.sh::getMailMsgInfoLogFiles
+     * @shcovers inc/mails.sh::parentSendMailOnSuccess
+     * @shcovers inc/mails.sh::removeAttachedFiles
+     * @shcovers inc/mails.sh::sendMailOnSuccess
+     */
     public function testMailsWithMailTags ()
     {
         $sScriptName = 'bash_mail_to_tags.sh';
@@ -198,6 +379,20 @@ class SentMailsTest extends SupervisorTestCase
         $this->assertEquals($sExpectedMails, $aResult['sent_mails']);
     }
 
+    /**
+     * @shcovers inc/mails.sh::getMailInstigator
+     * @shcovers inc/mails.sh::getMailMsgCmdAndServer
+     * @shcovers inc/mails.sh::getMailSubject
+     * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::sendMail
+     * @shcovers inc/mails.sh::sendMailOnInit
+     *
+     * @shcovers inc/mails.sh::compressAttachedFiles
+     * @shcovers inc/mails.sh::getMailMsgInfoLogFiles
+     * @shcovers inc/mails.sh::parentSendMailOnSuccess
+     * @shcovers inc/mails.sh::removeAttachedFiles
+     * @shcovers inc/mails.sh::sendMailOnSuccess
+     */
     public function testMailsWithMailAttachmentTags ()
     {
         $sScriptName = 'bash_mail_attachment_tags.sh';

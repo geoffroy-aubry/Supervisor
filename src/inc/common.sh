@@ -250,3 +250,30 @@ function summarize () {
     mail_subject="$SUPERVISOR_MAIL_SUBJECT_PREFIX > Summary"
     echo "$mail_msg" | $SUPERVISOR_MAIL_MUTT_CMD -e "$SUPERVISOR_MAIL_MUTT_CFG" -s "$mail_subject" -- $SUPERVISOR_MAIL_TO $MAIL_INSTIGATOR
 }
+
+function loadCustomizedMails () {
+    if [ ! -z "$CUSTOMIZED_MAILS" ]; then
+        if [ -f "$CUSTOMIZED_MAILS" ]; then
+            . "$CUSTOMIZED_MAILS"
+        else
+            die "Customized mails file not found: '<b>$CUSTOMIZED_MAILS</b>'" 71
+        fi
+    fi
+}
+
+function doAction () {
+    case "$ACTION" in
+        supervise)
+            initScriptLogs
+            initExecutionOfScript
+            checkScriptCalled
+            executeScript
+            displayResult
+            exit $EXIT_CODE
+            ;;
+
+        summarize)
+            summarize $SUMMARIZE_NB_DAYS
+            ;;
+    esac
+}

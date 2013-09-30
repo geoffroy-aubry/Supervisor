@@ -90,7 +90,18 @@ You will receive another email at the end of execution."
     sendMail "$(getMailSubject STARTING)" "$mail_msg" ''
 }
 
-function sendMailOnError   () { parentSendMailOnError;   }
-function sendMailOnWarning () { parentSendMailOnWarning; }
-function sendMailOnSuccess () { parentSendMailOnSuccess; }
-function sendMailOnInit    () { parentSendMailOnInit;    }
+function sendMailOnError () {
+    parentSendMailOnError
+}
+
+function sendMailOnWarning () {
+    parentSendMailOnWarning
+}
+
+function sendMailOnSuccess () {
+    parentSendMailOnSuccess
+}
+
+function sendMailOnInit () {
+    parentSendMailOnInit
+}

@@ -48,6 +48,7 @@ function getOpts () {
     local value
 
     for i in "$@"; do
+        # Converting short option into long option:
         if [ ! -z "$long_option" ]; then
             i="$long_option=$i"
             long_option=''
@@ -92,13 +93,8 @@ getOpts "$@"
 . $(dirname $0)/../conf/supervisor-dist.sh
 . $CONFIG_FILE
 . $INC_DIR/common.sh
-if [ ! -z "$CUSTOMIZED_MAILS" ]; then
-    if [ -f "$CUSTOMIZED_MAILS" ]; then
-        . "$CUSTOMIZED_MAILS"
-    else
-        die "Customized mails file not found: '<b>$CUSTOMIZED_MAILS</b>'" 71
-    fi
-fi
+loadCustomizedMails
+
 # to normalize string representation:
 SUPERVISOR_LOG_TABULATION=$(echo -e "$SUPERVISOR_LOG_TABULATION")
 
@@ -108,18 +104,4 @@ exec 2> >(tee -a $SUPERVISOR_ERROR_LOG_FILE >&2)
 [ -x "$(echo "$SUPERVISOR_MAIL_MUTT_CMD" | cut -d' ' -f1)" ] \
     || die "Invalid Mutt command: '<b>$SUPERVISOR_MAIL_MUTT_CMD</b>'" 72
 
-case "$ACTION" in
-    supervise)
-        initScriptLogs
-        initExecutionOfScript
-        checkScriptCalled
-        executeScript
-        displayResult
-        exit $EXIT_CODE
-        ;;
-
-    summarize)
-        summarize $SUMMARIZE_NB_DAYS
-        ;;
-
-esac
+doAction
