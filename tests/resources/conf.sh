@@ -10,6 +10,7 @@ LOG_DIR="{log_dir}"
 SUPERVISOR_ERROR_LOG_FILE=$LOG_DIR/supervisor.error.log
 SUPERVISOR_INFO_LOG_FILE=$LOG_DIR/supervisor.info.log
 SUPERVISOR_MONITORING_LOG_FILE=$LOG_DIR/supervisor.monitoring.log
+SUPERVISOR_ARCHIVING_PATTERN=$LOG_DIR/supervisor_archive_%s.tar.gz
 
 # Lock script against parallel run (0|1)
 SUPERVISOR_LOCK_SCRIPT=0

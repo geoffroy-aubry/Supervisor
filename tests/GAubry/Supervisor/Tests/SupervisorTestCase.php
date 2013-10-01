@@ -17,7 +17,9 @@ class SupervisorTestCase extends \PHPUnit_Framework_TestCase
             '{log_dir}' => $this->sTmpDir
         );
         $sContent = strtr($sContent, $aReplace);
-        if (dirname($this->sTmpDir . '/' . $sConfigFilename) != $this->sTmpDir) {
+        if (! file_exists($this->sTmpDir . '/' . $sConfigFilename)
+            && dirname($this->sTmpDir . '/' . $sConfigFilename) != $this->sTmpDir
+        ) {
             mkdir(dirname($this->sTmpDir . '/' . $sConfigFilename), 0777, true);
         }
         file_put_contents($this->sTmpDir . '/' . $sConfigFilename, $sContent);

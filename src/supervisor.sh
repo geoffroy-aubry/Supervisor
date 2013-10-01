@@ -39,6 +39,9 @@ EXIT_CODE=0
 WARNING_MSG=()
 ACTION='supervise'
 SUMMARIZE_NB_DAYS=0
+MIN_DAYS_BEFORE_ARCHIVING=1
+SCRIPT_INFO_LOG_FILE=''
+SCRIPT_ERROR_LOG_FILE=''
 
 function getOpts () {
     local j=0
@@ -57,6 +60,11 @@ function getOpts () {
         case $i in
             -c) long_option="--conf" ;;
             -p) long_option="--param" ;;
+
+            --archive=*)
+                ACTION='archive'
+                MIN_DAYS_BEFORE_ARCHIVING=${i#*=}
+                ;;
 
             --conf=*)             CONFIG_FILE=${i#*=} ;;
             --customized-mails=*) CUSTOMIZED_MAILS=${i#*=} ;;
