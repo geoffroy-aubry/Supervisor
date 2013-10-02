@@ -15,6 +15,11 @@ SUPERVISOR_ARCHIVING_PATTERN=$LOG_DIR/supervisor_archive_%s.tar.gz
 # Lock script against parallel run (0|1)
 SUPERVISOR_LOCK_SCRIPT=0
 
+# 1 = Do nothing
+# 2 = Do not add timestamp when inner timestamp already exists
+# 3 = Remove inner timestamp
+SUPERVISOR_ABOVE_SUPERVISOR_STRATEGY=1
+
 # Space separated list of emails :
 SUPERVISOR_MAIL_TO="gaubry@hi-media.com geoff.abury@gmail.com"
 SUPERVISOR_MAIL_SUBJECT_PREFIX='[DW] '

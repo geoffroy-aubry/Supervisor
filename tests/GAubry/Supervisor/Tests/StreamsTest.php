@@ -673,4 +673,142 @@ END
         $this->assertEquals("$sScriptPath;START\n$sScriptPath;OK\n", $aResult['supervisor_info_content']);
         $this->assertEquals('', $aResult['supervisor_err_content']);
     }
+
+    /**
+     * @shcovers inc/common.sh::executeScript
+     */
+    public function testInnerSupervisorWithStrategy1 ()
+    {
+        $sScriptName = 'bash_inner_supervisor.sh';
+        $sScriptPath = RESOURCES_DIR . "/$sScriptName";
+        $aResult = $this->execSupervisor($sScriptPath);
+        $sSupervisorInfoFiltered = preg_replace('/^[0-9: -]{22}cs, /m', '…, ', $aResult['std_out']);
+        $sExpectedStdOut = "
+(i) Starting script '$sScriptPath' with id '" . $aResult['exec_id'] . "'
+…," . ' ' . "
+…, (i) Starting script 'tests/resources/bash_colored_simple.sh' with id '20131002075605_28465'
+…, 2013-10-02 07:56:05 69cs, Title:
+…, 2013-10-02 07:56:05 70cs, ┆   level 1
+…, 2013-10-02 07:56:05 71cs, ┆   ┆   yellow level 2
+…, 2013-10-02 07:56:05 73cs,   END with spaces" . '  ' . "
+…, OK
+…," . ' ' . "
+…, (i) Supervisor log file: /var/log/supervisor/supervisor.info.log
+…, (i) Execution log file: /var/log/supervisor/bash_colored_simple.sh.20131002075605_28465.info.log
+…," . ' ' . "
+OK
+
+(i) Supervisor log file: $this->sTmpDir/supervisor.info.log
+(i) Execution log file: $this->sTmpDir/bash_inner_supervisor.sh." . $aResult['exec_id'] . ".info.log";
+        $this->assertEquals($sExpectedStdOut, $sSupervisorInfoFiltered);
+        $this->assertEquals(0, $aResult['exit_code']);
+        $this->assertEquals("[SUPERVISOR] START
+
+(i) Starting script 'tests/resources/bash_colored_simple.sh' with id '20131002075605_28465'
+2013-10-02 07:56:05 69cs, Title:
+2013-10-02 07:56:05 70cs, ┆   level 1
+2013-10-02 07:56:05 71cs, ┆   ┆   yellow level 2
+2013-10-02 07:56:05 73cs,   END with spaces" . '  ' . "
+OK
+
+(i) Supervisor log file: /var/log/supervisor/supervisor.info.log
+(i) Execution log file: /var/log/supervisor/bash_colored_simple.sh.20131002075605_28465.info.log
+
+[SUPERVISOR] OK\n", $aResult['script_info_content']);
+        $this->assertEquals('', $aResult['script_err_content']);
+        $this->assertEquals("$sScriptPath;START\n$sScriptPath;OK\n", $aResult['supervisor_info_content']);
+        $this->assertEquals('', $aResult['supervisor_err_content']);
+    }
+
+    /**
+     * @shcovers inc/common.sh::executeScript
+     */
+    public function testInnerSupervisorWithStrategy2 ()
+    {
+        $sScriptName = 'bash_inner_supervisor.sh';
+        $sScriptPath = RESOURCES_DIR . "/$sScriptName";
+        $aResult = $this->execSupervisor($sScriptPath, 'conf_strategy2.sh');
+        $sSupervisorInfoFiltered = preg_replace('/^(?!2013-10-02 07:56:05)[0-9: -]{22}cs, /m', '…, ', $aResult['std_out']);
+        $sExpectedStdOut = "
+(i) Starting script '$sScriptPath' with id '" . $aResult['exec_id'] . "'
+…," . ' ' . "
+…, (i) Starting script 'tests/resources/bash_colored_simple.sh' with id '20131002075605_28465'
+2013-10-02 07:56:05 69cs, Title:
+2013-10-02 07:56:05 70cs, ┆   level 1
+2013-10-02 07:56:05 71cs, ┆   ┆   yellow level 2
+2013-10-02 07:56:05 73cs,   END with spaces" . '  ' . "
+…, OK
+…," . ' ' . "
+…, (i) Supervisor log file: /var/log/supervisor/supervisor.info.log
+…, (i) Execution log file: /var/log/supervisor/bash_colored_simple.sh.20131002075605_28465.info.log
+…," . ' ' . "
+OK
+
+(i) Supervisor log file: $this->sTmpDir/supervisor.info.log
+(i) Execution log file: $this->sTmpDir/bash_inner_supervisor.sh." . $aResult['exec_id'] . ".info.log";
+        $this->assertEquals($sExpectedStdOut, $sSupervisorInfoFiltered);
+        $this->assertEquals(0, $aResult['exit_code']);
+        $this->assertEquals("[SUPERVISOR] START
+
+(i) Starting script 'tests/resources/bash_colored_simple.sh' with id '20131002075605_28465'
+Title:
+┆   level 1
+┆   ┆   yellow level 2
+  END with spaces" . '  ' . "
+OK
+
+(i) Supervisor log file: /var/log/supervisor/supervisor.info.log
+(i) Execution log file: /var/log/supervisor/bash_colored_simple.sh.20131002075605_28465.info.log
+
+[SUPERVISOR] OK\n", $aResult['script_info_content']);
+        $this->assertEquals('', $aResult['script_err_content']);
+        $this->assertEquals("$sScriptPath;START\n$sScriptPath;OK\n", $aResult['supervisor_info_content']);
+        $this->assertEquals('', $aResult['supervisor_err_content']);
+    }
+
+    /**
+     * @shcovers inc/common.sh::executeScript
+     */
+    public function testInnerSupervisorWithStrategy3 ()
+    {
+        $sScriptName = 'bash_inner_supervisor.sh';
+        $sScriptPath = RESOURCES_DIR . "/$sScriptName";
+        $aResult = $this->execSupervisor($sScriptPath, 'conf_strategy3.sh');
+        $sSupervisorInfoFiltered = preg_replace('/^(?!2013-10-02 07:56:05)[0-9: -]{22}cs, /m', '…, ', $aResult['std_out']);
+        $sExpectedStdOut = "
+(i) Starting script '$sScriptPath' with id '" . $aResult['exec_id'] . "'
+…," . ' ' . "
+…, (i) Starting script 'tests/resources/bash_colored_simple.sh' with id '20131002075605_28465'
+…, Title:
+…, ┆   level 1
+…, ┆   ┆   yellow level 2
+…,   END with spaces" . '  ' . "
+…, OK
+…," . ' ' . "
+…, (i) Supervisor log file: /var/log/supervisor/supervisor.info.log
+…, (i) Execution log file: /var/log/supervisor/bash_colored_simple.sh.20131002075605_28465.info.log
+…," . ' ' . "
+OK
+
+(i) Supervisor log file: $this->sTmpDir/supervisor.info.log
+(i) Execution log file: $this->sTmpDir/bash_inner_supervisor.sh." . $aResult['exec_id'] . ".info.log";
+        $this->assertEquals($sExpectedStdOut, $sSupervisorInfoFiltered);
+        $this->assertEquals(0, $aResult['exit_code']);
+        $this->assertEquals("[SUPERVISOR] START
+
+(i) Starting script 'tests/resources/bash_colored_simple.sh' with id '20131002075605_28465'
+Title:
+┆   level 1
+┆   ┆   yellow level 2
+  END with spaces" . '  ' . "
+OK
+
+(i) Supervisor log file: /var/log/supervisor/supervisor.info.log
+(i) Execution log file: /var/log/supervisor/bash_colored_simple.sh.20131002075605_28465.info.log
+
+[SUPERVISOR] OK\n", $aResult['script_info_content']);
+        $this->assertEquals('', $aResult['script_err_content']);
+        $this->assertEquals("$sScriptPath;START\n$sScriptPath;OK\n", $aResult['supervisor_info_content']);
+        $this->assertEquals('', $aResult['supervisor_err_content']);
+    }
 }

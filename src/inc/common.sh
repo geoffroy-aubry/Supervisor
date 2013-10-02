@@ -87,9 +87,28 @@ function executeScript () {
         pid=$!
 
         local now
+        local color_start="$(echo -e "${CUI_COLORS['processing']}")"
+        local color_end=$'\E'\[0m
+        local pattern='[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} [0-9]{2}cs, '
         while IFS='' read line; do
             IFS="$src_ifs"
             getDateWithCS; now="$RETVAL"
+
+            if [ "$SUPERVISOR_ABOVE_SUPERVISOR_STRATEGY" -ne 1 ]; then
+                if [[ "$line" =~ ^("$color_start"$pattern"$color_end") ]]; then
+
+                    # Do not add timestamp when inner timestamp exists:
+                    if [ "$SUPERVISOR_ABOVE_SUPERVISOR_STRATEGY" -eq 2 ]; then
+                        now="${line:7:24}"	# on ne garde que la date, sans les couleurs et sans ', '
+                        line="${line:37}"	# on ne garde que la partie suivant la date
+
+                    # Remove inner timestamp:
+                    else
+                        line="${line:37}"	# on ne garde que la partie suivant la date
+                    fi
+                fi
+            fi
+
             echo "$now;$line" | sed -r 's:(\033|\x1B)\[[0-9;]*[mK]::ig' >> $SCRIPT_INFO_LOG_FILE
             displayScriptMsg "$now" "$line"
         done < $pipe
