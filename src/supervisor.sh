@@ -37,7 +37,7 @@ CUSTOMIZED_MAILS=''
 SUPERVISOR_PREFIX_EXT_PARAM='EXT_'
 EXIT_CODE=0
 WARNING_MSG=()
-ACTION='supervise'
+ACTION='help'
 SUMMARIZE_NB_DAYS=0
 MIN_DAYS_BEFORE_ARCHIVING=1
 SCRIPT_INFO_LOG_FILE=''
@@ -59,6 +59,7 @@ function getOpts () {
 
         case $i in
             -c) long_option="--conf" ;;
+            -h) ACTION='help' ;;
             -p) long_option="--param" ;;
 
             --archive=*)
@@ -68,6 +69,7 @@ function getOpts () {
 
             --conf=*)             CONFIG_FILE=${i#*=} ;;
             --customized-mails=*) CUSTOMIZED_MAILS=${i#*=} ;;
+            --help)               ACTION='help' ;;
             --instigator-email=*) MAIL_INSTIGATOR=' '${i#*=} ;;
             --monitor)            ACTION='monitor' ;;
 
@@ -85,7 +87,7 @@ function getOpts () {
 
             *)
                 case $j in
-                    0) SCRIPT_NAME="$i" ;;
+                    0) SCRIPT_NAME="$i"; ACTION='supervise' ;;
                     1) SCRIPT_PARAMETERS="$i" ;;
                     *) ;;
                 esac

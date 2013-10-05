@@ -301,6 +301,7 @@ function loadCustomizedMails () {
 function doAction () {
     case "$ACTION" in
         archive)    archive $MIN_DAYS_BEFORE_ARCHIVING ;;
+        help)       displayHelp ;;
         monitor)    monitor ;;
         summarize)  summarize $SUMMARIZE_NB_DAYS ;;
 
@@ -439,4 +440,68 @@ function archive () {
             oldest_date="$(date -d "$oldest_date + 1 day" +%Y-%m-%d)";
         done
     fi
+}
+
+##
+# @codeCoverageIgnore
+#
+function displayHelp () {
+    local normal='\033[0;37m'
+    local title='\033[1;37m'
+    local tab='\033[0;30m┆\033[0m   '$normal
+    local opt='\033[1;33m'
+    local param='\033[1;36m'
+    local cmd='\033[0;36m'
+
+    echo -e "
+${title}Description
+${tab}Oversee script execution, recording stdout, stderr and exit code with timestamping,
+${tab}and ensure email notifications will be sent (on start, success, warning or error).
+
+${title}Usage
+$tab${cmd}$(basename $0) $normal[${opt}OPTION$normal]… $param<script-path> $normal[$param<script-parameters>$normal]
+$tab${cmd}$(basename $0) $normal[${opt}-c $param<conf-file>$normal] ${opt}--archive$normal=$param<min-days>$normal
+$tab${cmd}$(basename $0) $normal[${opt}-c $param<conf-file>$normal] ${opt}--monitor$normal
+$tab${cmd}$(basename $0) $normal[${opt}-c $param<conf-file>$normal] ${opt}--summarize$normal
+
+${title}Options
+$tab$opt--archive$normal=$param<min-days>
+$tab${tab}Archive in Gzip supervisor's logs older than $param<min-days>$normal.
+$tab
+$tab$opt-c $param<conf-file>$normal, $opt--conf$normal=$param<conf-file>
+$tab${tab}Specify a configuration file to load in addition to the default one.
+$tab
+$tab$opt--customized-mails$normal=$param<file>
+$tab${tab}Path to a Bash script customizing sent mails by redefining some of
+$tab${tab}the ${cmd}sendMailOn$normal[${cmd}Init$normal|${cmd}Success$normal|${cmd}Warning$normal|${cmd}Error$normal]${cmd}()$normal functions.
+$tab${tab}See $opt--param$normal=$param<key>=<value>$normal option.
+$tab
+$tab$opt-h$normal, $opt--help
+$tab${tab}Display this help.
+$tab
+$tab$opt--instigator-email$normal=$param<email>
+$tab${tab}Specify who executed the supervisor.
+$tab
+$tab$opt--monitor
+$tab${tab}Check whether supervisor's error log file is empty. If not, then send critical
+$tab${tab}email notifications using an exponential backoff algorithm in minute increments.
+$tab${tab}Typically called every minute with a cron job:
+$tab${tab}    ${cmd}* * * * * <user> /path/to/supervisor.sh $opt--conf$normal=$param<conf-file> $opt--monitor
+$tab
+$tab$opt-p $param<key>=<value>$normal, $opt--param$normal=$param<key>=<value>
+$tab${tab}Allow to inject multiple external parameters into customized emails.
+$tab${tab}Assign the value $param<value>$normal to the Bash variable ${cmd}\$EXT_$param<key>$normal.
+$tab${tab}See $opt--customized-mails$normal option.
+$tab
+$tab$opt--summarize$normal=$param<max-nb-days>
+$tab${tab}Display a summary of supervisor's activity during last $param<max-nb-days>$normal days,
+$tab${tab}including final status per day and per supervised script.
+$tab${tab}Also send this summary by email.
+$tab
+$tab$param<script-path>
+$tab${tab}Executable script to oversee.
+$tab
+$tab$param<script-parameters>
+$tab${tab}Optional oversaw script's parameters.
+"
 }
