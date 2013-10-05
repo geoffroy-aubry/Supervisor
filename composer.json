@@ -1,5 +1,15 @@
 {
     "name": "geoffroy-aubry/supervisor",
+    "description":  "Oversee script execution, recording stdout, stderr and exit code with timestamping, and ensure email notifications will be sent (on start, success, warning or error).",
+    "keywords":     ["supervisor", "monitoring", "notification", "bash"],
+    "type":         "library",
+    "license":      "LGPL-3.0+",
+    "authors":      [
+        {
+            "name":     "Geoffroy Aubry",
+            "email":    "geoffroy.aubry@free.fr"
+        }
+    ],
     "require-dev": {
         "php"                   : ">=5.3.3",
         "phpunit/phpunit"       : ">=3.7",
