@@ -235,10 +235,19 @@ function die () {
 
 # N derniers jours concernés (pas forcément consécutifs)
 function summarize () {
+    local title='\033[1;37m'
+    local date='\033[0;35m'
+    local normal='\033[0;37m'
+    local zero='\033[0;30m'
+    local warning='\033[1;33m'
+    local error='\033[1;31m'
+    local ok='\033[1;32m'
+
     local max_nb_days="$1"
     local actions="START;OK;WARNING;ERROR;INIT ERROR"
     local mail_msg=''
-    local data=('Date' 'Script' 'Start' 'OK' 'Warning' 'Error' 'Init error')
+    local header=('Date' 'Script' 'Start' 'OK' 'Warning' 'Error' 'Init error')
+    local data=()
     declare -A stats
 
     days="$(cat "$SUPERVISOR_INFO_LOG_FILE" | cut -d' ' -f1 | uniq | sort -r | tail -n$max_nb_days)"
@@ -259,9 +268,18 @@ function summarize () {
     done
     unset IFS
 
-    printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "${data[@]}" \
+    echo
+    ( printf "$title%s\t$title%s\t%s\t$title%s\t$title%s\t$title%s\t$title%s\n" "${header[@]}"; \
+      printf "$date%s\t$normal%s\t%s\t$ok%s\t$warning%s\t$error%s\t$error%s\n" "${data[@]}" ) \
         | column -t -s $'\t' \
-        | awk '{if (NR == 1) print "\033[1;37m" $0 "\033[0m"; else print $0}'
+        | awk -v cOk="$ok" -v cNormal="$normal" -v cError="$error" -v cZero="$zero" -v cWarning="$warning" \
+            '{
+                L=$0
+                while ((s=index(L, cOk"0")) > 0 || (s=index(L, cWarning"0")) > 0 || (s=index(L, cError"0")) > 0) {
+                    L=substr(L, 0, s) cZero "0" cNormal substr(L, s+7+1)
+                }
+                print L
+            }'
 
     printf -v header '<tr><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th></tr>\n' "${data[@]:0:7}"
     printf -v rows '<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n' "${data[@]:7}"
