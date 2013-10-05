@@ -396,14 +396,21 @@ Error:<br /><pre>$(cat $SUPERVISOR_ERROR_LOG_FILE)</pre>"
 # CRON: 40 0 * * * root supervisor --archive=3
 #
 function archive () {
+    local normal='\033[0;37m'
+    local title='\033[1;37m'
+    local title_bold='\033[1;33m'
+    local date='\033[0;35m'
+    local ok='\033[0;32m'
+    local ok_bold='\033[1;32m'
+
     local min_days="$1"
     local newest_date="$(date -d "- $min_days days" +%Y-%m-%d)"
     local oldest_date="$(ls -g --no-group "$LOG_DIR"/*.log --sort=time --reverse 2>/dev/null | head -n1 | awk '{print $4}')"
     local archiving_path files nb_files plural
 
-    echo -e "\n\033[1;33mArchiving from \033[1;37m$oldest_date \033[1;33mto \033[1;37m$newest_date \033[1;33minclusive:"
+    echo -e "\n${title}Archiving from $title_bold$oldest_date ${title}to $title_bold$newest_date ${title}inclusive:"
     if [ "$(date -d "$oldest_date" +%s)" -gt "$(date -d "$newest_date" +%s)" ]; then
-        echo -e '    \033[0mNo date to process…'
+        echo -e "    ${normal}No date to process…"
     else
         while [ "$(date -d "$oldest_date" +%s)" -le "$(date -d "$newest_date" +%s)" ]; do
             archiving_path="$(printf "$SUPERVISOR_ARCHIVING_PATTERN" "$oldest_date")"
@@ -415,16 +422,16 @@ function archive () {
                     -e "$(basename "$SUPERVISOR_MONITORING_LOG_FILE")" \
             )"
             nb_files="$(echo "$files" | wc -l)"
-            echo -en "    \033[0;35m$oldest_date\033[0m ⇒ "
+            echo -en "    $date$oldest_date $normal⇒ "
             if [ ! -z "$files" ] && [ "$nb_files" -gt 0 ]; then
                 if [ ! -e "$archiving_path" ]; then
                     [ "$nb_files" -gt 1 ] && plural='s' || plural=''
-                    echo -e "\033[0;32marchiving \033[1;32m$nb_files \033[0;32mfile$plural into \033[1;32m$archiving_path"
+                    echo -e "${ok}archiving $ok_bold$nb_files ${ok}file$plural into $ok_bold$archiving_path"
                     echo "$files" \
                         | xargs tar --directory=$LOG_DIR -czvf "$archiving_path" \
-                        | sed "s|^|$LOG_DIR/|" | xargs rm
+                        | sed "s|^|$LOG_DIR/|" #| xargs rm
                 else
-                    echo -e "\033[0;32malready archived into \033[1;32m$archiving_path"
+                    echo -e "${ok}already archived into $ok_bold$archiving_path"
                 fi
             else
                 echo -e "no file to archive"
