@@ -430,7 +430,7 @@ function archive () {
                     echo -e "${ok}archiving $ok_bold$nb_files ${ok}file$plural into $ok_bold$archiving_path"
                     echo "$files" \
                         | xargs tar --directory=$LOG_DIR -czvf "$archiving_path" \
-                        | sed "s|^|$LOG_DIR/|" #| xargs rm
+                        | sed "s|^|$LOG_DIR/|" | xargs rm
                 else
                     echo -e "${ok}already archived into $ok_bold$archiving_path"
                 fi

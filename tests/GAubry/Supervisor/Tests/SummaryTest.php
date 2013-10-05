@@ -13,7 +13,8 @@ class SummaryTest extends SupervisorTestCase
     public function testSummarize ()
     {
         $aResult = $this->execSupervisor('--summarize=7', 'summarize/conf.sh');
-        $sExpectedStdOut = "Date        Script                                         Start  OK  Warning  Error  Init error
+        $sExpectedStdOut = "
+Date        Script                                         Start  OK  Warning  Error  Init error
 2013-09-29  NO SCRIPT                                      2      0   0        0      2
 2013-09-29  tests/resources/bash_std_err_with_mail_to      2      0   0        1      1
 2013-09-29  tests/resources/bash_std_err_with_mail_to.sh   1      0   0        1      0

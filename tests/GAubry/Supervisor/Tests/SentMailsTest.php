@@ -199,11 +199,7 @@ class SentMailsTest extends SupervisorTestCase
         $sScriptName = '';
         $sScriptPath = '';
         $aResult = $this->execSupervisor($sScriptPath, 'conf_mail-all.sh');
-        $sExecId = $aResult['exec_id'];
-        $sMailTo = "'abc@def.com' 'ghi@jkl.com'";
-        $sAttachment = "-a '$this->sTmpDir/supervisor.info.log.$sExecId.gz' '$this->sTmpDir/$sScriptName.$sExecId.info.log.gz' '$this->sTmpDir/$sScriptName.$sExecId.error.log.gz'";
-        $sExpectedMails = "mutt -e 'set content_type=text/html' -s '[DW] $sScriptName > STARTING ($sExecId)' -- $sMailTo\n"
-                        . "mutt -e 'set content_type=text/html' -s '[DW] $sScriptName > ERROR ($sExecId)' $sAttachment -- $sMailTo";
+        $sExpectedMails = '';
         $this->assertEquals($sExpectedMails, $aResult['sent_mails']);
     }
 

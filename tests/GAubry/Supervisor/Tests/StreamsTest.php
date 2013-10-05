@@ -40,13 +40,15 @@ class StreamsTest extends SupervisorTestCase
     public function testWithoutScript ()
     {
         $aResult = $this->execSupervisor('');
-        $sExpectedStdOut = "\n(i) Starting script 'NO SCRIPT' with id '" . $aResult['exec_id'] . "'";
-        $this->assertEquals($sExpectedStdOut, $aResult['std_out']);
-        $this->assertEquals(65, $aResult['exit_code']);
-        $this->assertEquals("[SUPERVISOR] START\n[SUPERVISOR] ERROR\n", $aResult['script_info_content']);
+        $sExpectedStdOut = "\nDescription
+┆   Oversee script execution, recording stdout, stderr and exit code with timestamping,
+┆   and ensure email notifications will be sent (on start, success, warning or error).";
+        $this->assertContains($sExpectedStdOut, $aResult['std_out']);
+        $this->assertEquals(0, $aResult['exit_code']);
+        $this->assertEquals('', $aResult['script_info_content']);
         $this->assertEquals('', $aResult['script_err_content']);
-        $this->assertEquals("NO SCRIPT;START\nNO SCRIPT;INIT ERROR\n", $aResult['supervisor_info_content']);
-        $this->assertEquals("/!\\ Missing script name!\n", $aResult['supervisor_err_content']);
+        $this->assertEquals('', $aResult['supervisor_info_content']);
+        $this->assertEquals('', $aResult['supervisor_err_content']);
     }
 
     /**
