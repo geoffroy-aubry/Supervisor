@@ -28,7 +28,6 @@
 # 67 Script '…' is not executable!
 # 68 Exit code changed from 0 to 68 due to errors.
 # 69 Another instance of '…' is still running with supervisor!
-# 70 Config file missing: '…'
 # 71 Customized mails file not found: '…'
 # 72 Invalid Mutt command: '…'
 # Any code not null returned by user script
@@ -46,7 +45,7 @@ set -o pipefail
 shopt -s extglob
 
 # Globales :
-CONFIG_FILE="$(dirname $(readlink -f "$BASH_SOURCE"))/../conf/supervisor.sh"
+CONFIG_FILE=''
 SCRIPT_NAME=''
 SCRIPT_PARAMETERS=''
 EXECUTION_ID="$(date +'%Y%m%d%H%M%S')_$(printf '%05d' $RANDOM)"
@@ -117,11 +116,10 @@ function getOpts () {
 }
 
 getOpts "$@"
-[ -f "$CONFIG_FILE" ] || die "Config file missing: '<b>$CONFIG_FILE</b>'" 70
 
 # Includes:
 . $(dirname $(readlink -f "$BASH_SOURCE"))/../conf/supervisor-dist.sh
-. $CONFIG_FILE
+[ -f "$CONFIG_FILE" ] && . $CONFIG_FILE
 . $INC_DIR/common.sh
 loadCustomizedMails
 
