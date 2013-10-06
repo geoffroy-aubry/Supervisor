@@ -42,12 +42,12 @@ SUPERVISOR_LOCK_SCRIPT=1
 SUPERVISOR_ABOVE_SUPERVISOR_STRATEGY=1
 
 # Space separated list of emails :
-SUPERVISOR_MAIL_TO="gaubry@hi-media.com"
-SUPERVISOR_MAIL_SUBJECT_PREFIX='[common.db.dev] '
+SUPERVISOR_MAIL_TO="supervisor@xyz.com"
+SUPERVISOR_MAIL_SUBJECT_PREFIX='[supervisor] '
 SUPERVISOR_MAIL_MUTT_CMD='/usr/bin/mutt'
 SUPERVISOR_MAIL_MUTT_CFG="set content_type=text/html; \
-my_hdr From: COMMON-DB Supervisor <gaubry@hi-media.com>; \
-my_hdr Reply-To: Geoffroy Aubry <gaubry@hi-media.com>"
+my_hdr From: Supervisor <supervisor@xyz.com>; \
+my_hdr Reply-To: Supervisor <supervisor@xyz.com>"
 SUPERVISOR_MAIL_SEND_ON_INIT=1
 SUPERVISOR_MAIL_SEND_ON_SUCCESS=1
 SUPERVISOR_MAIL_SEND_ON_WARNING=1
