@@ -34,13 +34,19 @@
 # Any code not null returned by user script
 #
 
-
+# Treat unset variables and parameters other than the special parameters ‘@’ or ‘*’ as an error
+# when performing parameter expansion. An error message will be written to the standard error,
+# and a non-interactive shell will exit.
 set -o nounset
+
+# The return value of a pipeline is the value of the last (rightmost) command to exit with a non-zero status,
+# or zero if all commands in the pipeline exit successfully:
 set -o pipefail
+
 shopt -s extglob
 
 # Globales :
-CONFIG_FILE="$(dirname $0)/../conf/supervisor.sh"
+CONFIG_FILE="$(dirname $(readlink -f "$BASH_SOURCE"))/../conf/supervisor.sh"
 SCRIPT_NAME=''
 SCRIPT_PARAMETERS=''
 EXECUTION_ID="$(date +'%Y%m%d%H%M%S')_$(printf '%05d' $RANDOM)"
@@ -114,7 +120,7 @@ getOpts "$@"
 [ -f "$CONFIG_FILE" ] || die "Config file missing: '<b>$CONFIG_FILE</b>'" 70
 
 # Includes:
-. $(dirname $0)/../conf/supervisor-dist.sh
+. $(dirname $(readlink -f "$BASH_SOURCE"))/../conf/supervisor-dist.sh
 . $CONFIG_FILE
 . $INC_DIR/common.sh
 loadCustomizedMails

@@ -22,7 +22,7 @@
 
 
 # PATHS
-ROOT_DIR=$(cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd)
+ROOT_DIR=$(cd "$(dirname "$(readlink -f "$BASH_SOURCE")")/.." && pwd)
 CONF_DIR=$ROOT_DIR/conf
 SRC_DIR=$ROOT_DIR/src
 INC_DIR=$SRC_DIR/inc
