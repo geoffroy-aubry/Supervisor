@@ -33,6 +33,21 @@ use GAubry\Helpers\Helpers;
 class ArchivingTest extends SupervisorTestCase
 {
     /**
+     * This method is called before the first test of this test class is run.
+     */
+    public static function setUpBeforeClass()
+    {
+        $sCmd =
+            'bash -c \'for f in $(ls -1 tests/resources/archiving/*.log | grep -v supervisor); do
+                d="$(echo "$f" | sed -r "s/^.*([0-9]{14}).*$/\\1/")"
+                touch -t ${d:0:-2} "$f"
+            done\'';
+        Helpers::exec($sCmd);
+        $sCmd = 'for f in $(ls -1 tests/resources/archiving/supervisor*.log); do touch -t 201310011200 "$f"; done';
+        Helpers::exec($sCmd);
+    }
+
+    /**
      * Sets up the fixture, for example, open a network connection.
      * This method is called before a test is executed.
      */
