@@ -10,7 +10,7 @@ before_script:
   - curl -s http://getcomposer.org/installer | php
   - php composer.phar install --dev --no-interaction
 
-script: vendor/bin/phpunit --conf/phpunit-dist.xml
+script: vendor/bin/phpunit -c conf/phpunit-dist.xml
 
 after_script:
   - tests/inc/codeCoverage.sh src/ tests/
