@@ -2,8 +2,7 @@
 
 [![Latest stable version](https://poser.pugx.org/geoffroy-aubry/Supervisor/v/stable.png "Latest stable version")](https://packagist.org/packages/geoffroy-aubry/Supervisor)
 [![Build Status](https://secure.travis-ci.org/geoffroy-aubry/Supervisor.png?branch=stable)](http://travis-ci.org/geoffroy-aubry/Supervisor)
-
-[Estimated code coverage](https://travis-ci.org/geoffroy-aubry/Supervisor): 90% (453 of 504 lines).
+&nbsp;_[Estimated code coverage](https://travis-ci.org/geoffroy-aubry/Supervisor): 90% (453 of 504 lines)._
 
 Oversee script execution, recording `stdout`, `stderr` and exit code with timestamping, 
 and ensure email notifications will be sent (on startup, success, warning or error)… plus many other features.
@@ -112,7 +111,7 @@ $ supervisor.sh [-h|--help]
         supervisor.sh [-c <conf-file>] --monitor
         supervisor.sh [-c <conf-file>] --summarize
     
-    *Options*
+    Options
         --archive=<min-days>
             Archive in Gzip supervisor's logs older than <min-days>.
         
@@ -264,7 +263,7 @@ PHP   1. {main}() /usr/local/lib/supervisor/tests/resources/php_fatal_error.php:
 
 #### Other errors
 
-Similarly, the scripts provided below end with an error status.
+Similarly, scripts provided below end with an error status.
 
 It should be noted that when `stderr` is not-empty while exit status is `0`, 
 then Supervisor change exit status from `0` to `68` (see [Exit status](#exit-status)).
@@ -468,7 +467,7 @@ See [CHANGELOG](CHANGELOG.md) file for details.
 ## Continuous integration
 
 [![Build Status](https://secure.travis-ci.org/geoffroy-aubry/Supervisor.png?branch=stable)](http://travis-ci.org/geoffroy-aubry/Supervisor)
-[Estimated code coverage](https://travis-ci.org/geoffroy-aubry/Supervisor): 90% (453 of 504 lines).
+&nbsp;_[Estimated code coverage](https://travis-ci.org/geoffroy-aubry/Supervisor): 90% (453 of 504 lines)._
 
 Unit tests with [PHPUnit](https://github.com/sebastianbergmann/phpunit/):
 
