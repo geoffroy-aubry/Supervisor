@@ -7,4 +7,5 @@
 composer.phar
 /cache.properties
 /.twgit*
-
+/conf/phpunit.php
+/conf/supervisor.sh

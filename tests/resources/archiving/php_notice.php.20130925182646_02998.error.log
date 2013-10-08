@@ -1,0 +1,3 @@
+PHP Notice:  Undefined variable: b in /home/geoffroy/eclipse-workspace-4.2/github.perso.supervisor/tests/resources/php_notice.php on line 4
+PHP Stack trace:
+PHP   1. {main}() /home/geoffroy/eclipse-workspace-4.2/github.perso.supervisor/tests/resources/php_notice.php:0
