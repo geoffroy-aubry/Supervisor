@@ -9,6 +9,7 @@ before_script:
   - cp conf/phpunit-dist.php conf/phpunit.php
   - curl -s http://getcomposer.org/installer | php
   - php composer.phar install --dev --no-interaction
+  - phpenv config-add .travis.php.ini
 
 script: vendor/bin/phpunit -c conf/phpunit-dist.xml
 
