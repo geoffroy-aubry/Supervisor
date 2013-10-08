@@ -427,7 +427,7 @@ function archive () {
 
     local min_days="$1"
     local newest_date="$(date -d "- $min_days days" +%Y-%m-%d)"
-    local oldest_date="$(ls -g --no-group "$LOG_DIR"/*.log --sort=time --reverse 2>/dev/null | head -n1 | awk '{print $4}')"
+    local oldest_date="$(ls -g --no-group --time-style='+%Y-%m-%d %H:%M' "$LOG_DIR"/*.log --sort=time --reverse 2>/dev/null | head -n1 | awk '{print $4}')"
     local archiving_path files nb_files plural
 
     echo -e "\n${title}Archiving from $title_bold$oldest_date ${title}to $title_bold$newest_date ${title}inclusive:"
