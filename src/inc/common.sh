@@ -436,7 +436,8 @@ function archive () {
     else
         while [ "$(date -d "$oldest_date" +%s)" -le "$(date -d "$newest_date" +%s)" ]; do
             archiving_path="$(printf "$SUPERVISOR_ARCHIVING_PATTERN" "$oldest_date")"
-            files="$(ls -g --no-group "$LOG_DIR"/*.log --sort=time --reverse | grep "$oldest_date" | awk '{print $6}' \
+            files="$(ls -g --no-group --time-style='+%Y-%m-%d %H:%M' "$LOG_DIR"/*.log --sort=time --reverse \
+                | grep "$oldest_date" | awk '{print $6}' \
                 | sed "s|^$LOG_DIR/||" \
                 | grep -v \
                     -e "$(basename "$SUPERVISOR_INFO_LOG_FILE")" \

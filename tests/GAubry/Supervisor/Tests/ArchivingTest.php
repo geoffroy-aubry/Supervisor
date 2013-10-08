@@ -42,16 +42,10 @@ class ArchivingTest extends SupervisorTestCase
                 d="$(echo "$f" | sed -r "s/^.*([0-9]{14}).*$/\\1/")"
                 touch -t ${d:0:-2} "$f"
             done\'';
-        $aOutput = Helpers::exec($sCmd);
-        var_dump($sCmd);
-        var_dump($aOutput);
+        Helpers::exec($sCmd);
 
         $sCmd = 'for f in $(ls -1 "' . RESOURCES_DIR . '"/archiving/supervisor*.log); do touch -t 201310011200 "$f"; done';
-        $aOutput = Helpers::exec($sCmd);
-        var_dump($sCmd);
-        var_dump($aOutput);
-
-        print_r(Helpers::exec('ls -l "' . RESOURCES_DIR . '/archiving"'));
+        Helpers::exec($sCmd);
     }
 
     /**
@@ -62,7 +56,6 @@ class ArchivingTest extends SupervisorTestCase
     {
         parent::setUp();
         $sCmd = 'cp -a "' . RESOURCES_DIR . '/archiving" "' . $this->sTmpDir . '/archiving"';
-        var_dump($sCmd);
         $this->exec($sCmd);
     }
 
