@@ -57,9 +57,8 @@ Date        Script                                         Start  OK  Warning  E
 2013-03-13  /usr/local/lib/data_warehouse/core/dw-job.php  1      0   0        1      0";
 
         // I didn't understand why i need this for travis-ci while it works well on localhost:
-        if (ctype_xdigit($sExpectedStdOut)) {
-            $sExpectedStdOut = pack("H*" , $sExpectedStdOut);
-            $sExpectedStdOut = preg_replace('/\\0330/', '0', $sExpectedStdOut);
+        if (ctype_xdigit($aResult['std_out'])) {
+            $aResult['std_out'] = preg_replace('/\\0330/', '0', pack("H*" , $aResult['std_out']));
         }
 
         $this->assertEquals($sExpectedStdOut, $aResult['std_out']);
