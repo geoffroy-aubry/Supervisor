@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit
+    backupGlobals="false"
+    backupStaticAttributes="false"
+    bootstrap="../tests/inc/bootstrap.php"
+    convertErrorsToExceptions="true"
+    convertNoticesToExceptions="true"
+    convertWarningsToExceptions="true"
+    syntaxCheck="true"
+    processIsolation="false"
+    colors="false"
+    strict="true"
+    verbose="true"
+    stopOnFailure="false"
+    timeoutForSmallTests="20"
+    timeoutForMediumTests="40"
+    timeoutForLargeTests="60"
+>
+    <testsuites>
+        <testsuite name="GAubry/Supervisor">
+            <directory suffix="Test.php">../tests</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

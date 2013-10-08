@@ -1,0 +1,6 @@
+PHP Fatal error:  Uncaught exception 'RuntimeException' with message 'It's an error!
+' in /home/geoffroy/eclipse-workspace-4.2/github.perso.supervisor/tests/resources/php_exception.php:4
+Stack trace:
+#0 {main}
+  thrown in /home/geoffroy/eclipse-workspace-4.2/github.perso.supervisor/tests/resources/php_exception.php on line 4
+[SUPERVISOR] Exit code not null: 255

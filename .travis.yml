@@ -1,0 +1,21 @@
+# See: http://about.travis-ci.org/docs/user/build-configuration/
+
+language: php
+php:
+  - 5.3
+
+before_script:
+  - cp conf/supervisor-dist.sh conf/supervisor.sh
+  - cp conf/phpunit-dist.php conf/phpunit.php
+  - curl -s http://getcomposer.org/installer | php
+  - php composer.phar install --dev --no-interaction
+  - phpenv config-add .travis.php.ini
+
+script: vendor/bin/phpunit -c conf/phpunit-dist.xml
+
+after_script:
+  - tests/inc/codeCoverage.sh src/ tests/
+
+notifications:
+  on_success: always
+  on_failure: always

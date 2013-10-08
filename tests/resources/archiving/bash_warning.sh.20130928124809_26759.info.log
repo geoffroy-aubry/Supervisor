@@ -1,0 +1,8 @@
+2013-09-28 12:48:09 35cs;[SUPERVISOR] START
+2013-09-28 12:48:09 36cs;Title:
+2013-09-28 12:48:09 37cs;┆   level 1
+2013-09-28 12:48:09 39cs;┆   [WARNING]message 1
+2013-09-28 12:48:09 40cs;┆   ┆   yellow level 2
+2013-09-28 12:48:09 41cs;┆   ┆   [WARNING]colored message 2
+2013-09-28 12:48:09 42cs;  END with spaces  
+2013-09-28 12:48:09 43cs;[WARNING]   message 3
