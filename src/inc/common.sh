@@ -225,7 +225,7 @@ function displayScriptMsg {
     while [ "${msg_wo_tab:0:${#SUPERVISOR_LOG_TABULATION}}" = "$SUPERVISOR_LOG_TABULATION" ]; do
         msg_wo_tab="${msg_wo_tab:${#SUPERVISOR_LOG_TABULATION}}"
     done
-    msg_wo_color="${msg_wo_tab//[^[:print:]]\[+([0-9;])[mK]/}"
+    msg_wo_color="$(echo "$msg_wo_tab" | sed -r 's:(\033|\x1B)\[[0-9;]*[mK]::ig')"
     tmsg="${msg_wo_color##+( )}"	# ltrim
 
     if [ "${tmsg:0:9}" = "$SUPERVISOR_WARNING_TAG" ]; then
