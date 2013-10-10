@@ -571,9 +571,9 @@ Title:
         $this->assertEquals("[SUPERVISOR] START
 Title:
 ┆   level 1
-┆   [WARNING]message 1
+┆   [WARNING] utf-8 aïe
 ┆   ┆   yellow level 2
-┆   ┆       [WARNING]colored message 2
+┆   ┆       [WARNING]colored message 2…
   END with spaces" . '  ' . "
   [WARNING]   message 3
 [SUPERVISOR] WARNING\n", $aResult['script_info_content']);
