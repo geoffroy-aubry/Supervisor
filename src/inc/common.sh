@@ -403,7 +403,7 @@ Supervisor error file: $(dirname $SUPERVISOR_ERROR_LOG_FILE)/<b>$(basename $SUPE
 Error:<br /><pre>$(cat $SUPERVISOR_ERROR_LOG_FILE)</pre>"
             tail -n 50 "$SUPERVISOR_INFO_LOG_FILE" | gzip > "$SUPERVISOR_INFO_LOG_FILE.gz"
             gzip -c "$SUPERVISOR_ERROR_LOG_FILE" > "$SUPERVISOR_ERROR_LOG_FILE.gz"
-            sendMail "$mail_subject" "$mail_msg" "$SUPERVISOR_INFO_LOG_FILE.gz $SUPERVISOR_ERROR_LOG_FILE.gz"
+            rawSendMail "$mail_subject" "$mail_msg" "$SUPERVISOR_INFO_LOG_FILE.gz $SUPERVISOR_ERROR_LOG_FILE.gz"
             rm -f "$SUPERVISOR_INFO_LOG_FILE.gz"
             rm -f "$SUPERVISOR_ERROR_LOG_FILE.gz"
         fi
