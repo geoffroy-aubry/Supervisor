@@ -28,6 +28,7 @@ SRC_DIR=$ROOT_DIR/src
 INC_DIR=$SRC_DIR/inc
 LOG_DIR='/var/log/supervisor'
 
+# All these files must be in $LOG_DIR/ directory:
 SUPERVISOR_ERROR_LOG_FILE=$LOG_DIR/supervisor.error.log
 SUPERVISOR_INFO_LOG_FILE=$LOG_DIR/supervisor.info.log
 SUPERVISOR_MONITORING_LOG_FILE=$LOG_DIR/supervisor.monitoring.log
