@@ -27,7 +27,7 @@ SUPERVISOR_MAIL_MUTT_CMD="$ROOT_DIR/tests/resources/mutt.sh $LOG_DIR"
 SUPERVISOR_MAIL_MUTT_CFG="set content_type=text/html; \
 my_hdr From: Data Warehouse Supervisor <gaubry@hi-media.com>; \
 my_hdr Reply-To: Geoffroy Aubry <gaubry@hi-media.com>"
-SUPERVISOR_MAIL_SEND_ON_INIT=1
+SUPERVISOR_MAIL_SEND_ON_STARTUP=1
 SUPERVISOR_MAIL_SEND_ON_SUCCESS=1
 SUPERVISOR_MAIL_SEND_ON_WARNING=1
 SUPERVISOR_MAIL_SEND_ON_ERROR=1

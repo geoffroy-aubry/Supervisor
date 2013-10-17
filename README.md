@@ -2,9 +2,9 @@
 
 [![Latest stable version](https://poser.pugx.org/geoffroy-aubry/Supervisor/v/stable.png "Latest stable version")](https://packagist.org/packages/geoffroy-aubry/Supervisor)
 [![Build Status](https://secure.travis-ci.org/geoffroy-aubry/Supervisor.png?branch=stable)](http://travis-ci.org/geoffroy-aubry/Supervisor)
-&nbsp;_[Estimated code coverage](https://travis-ci.org/geoffroy-aubry/Supervisor): 90% (453 of 504 lines)._
+&nbsp;_[Estimated code coverage](https://travis-ci.org/geoffroy-aubry/Supervisor): 88% (503 of 572 lines)._
 
-Oversee script execution, recording `stdout`, `stderr` and exit code with timestamping, 
+Oversee script execution, recording `stdout`, `stderr` and exit code with timestamping,
 and ensure email notifications will be sent (on startup, success, warning or error)… plus many other features.
 
 *Technologies* : Supervisor is in Bash, only unit tests are in PHP.
@@ -41,8 +41,8 @@ and ensure email notifications will be sent (on startup, success, warning or err
 
   * Oversee script execution, recording `stdout`, `stderr` and exit code
   * Prefix each line of `stdout` with timestamps with hundredths of seconds.
-  * An execution ID uniquely identify each script execution. 
-    Used in: `supervisor.info.log`, `supervisor.error.log`, `<script>_<exec_id>.info.log` 
+  * An execution ID uniquely identify each script execution.
+    Used in: `supervisor.info.log`, `supervisor.error.log`, `<script>_<exec_id>.info.log`
     and `<script>_<exec_id>.error.log`.
   * Possibility to block parallel overseen script execution. Useful if an execution takes too long…
   * You can specify a configuration file to load in addition to the default one.
@@ -59,22 +59,22 @@ and ensure email notifications will be sent (on startup, success, warning or err
   * All mail contains content of `stdout` and `stderr` of executed script in Gzip attachment.
   * Mails are fully customizable. Just provide your file on command line.
   * Possibility to inject multiple external parameters on command line into customized emails.
-  * Supervisor itself is monitoring by another process, 
+  * Supervisor itself is monitoring by another process,
     sending critical email notifications using an exponential backoff algorithm in minute increments.
 
 ### Ergonomics
 
-  * During supervision and in addition of all log files, Supervisor displays in real time outputs, warning and errors 
+  * During supervision and in addition of all log files, Supervisor displays in real time outputs, warning and errors
     of overseen script, adding timestamp and respecting both colors and indentation.
     Name of all log files are printed too.
 
 ### Code quality
 
   * Bash code executed with following directives:
-    * `set -o nounset`: treat unset variables and parameters other than the special parameters `@` or `*` as an error 
-       when performing parameter expansion. An error message will be written to the standard error, 
+    * `set -o nounset`: treat unset variables and parameters other than the special parameters `@` or `*` as an error
+       when performing parameter expansion. An error message will be written to the standard error,
        and a non-interactive shell will exit.
-    * `set -o pipefail`: The return value of a pipeline is the value of the last (rightmost) command to exit 
+    * `set -o pipefail`: The return value of a pipeline is the value of the last (rightmost) command to exit
        with a non-zero status, or zero if all commands in the pipeline exit successfully.
   * A lot of unit tests (via [PHPUnit](https://github.com/sebastianbergmann/phpunit/) through a PHP wrapper)
     covering almost the whole application.
@@ -86,7 +86,7 @@ and ensure email notifications will be sent (on startup, success, warning or err
   - Unit tests require PHP >= 5.3.3
 
 Tested on Debian/Ubuntu Linux.
-  
+
 ## Usage
 
 ### Help on command prompt
@@ -104,50 +104,50 @@ $ supervisor.sh [-h|--help]
     Description
         Oversee script execution, recording stdout, stderr and exit code with timestamping,
         and ensure email notifications will be sent (on start, success, warning or error).
-    
+
     Usage
         supervisor.sh [OPTION]… <script-path> [<script-parameters>]
         supervisor.sh [-c <conf-file>] --archive=<min-days>
         supervisor.sh [-c <conf-file>] --monitor
         supervisor.sh [-c <conf-file>] --summarize
-    
+
     Options
         --archive=<min-days>
             Archive in Gzip supervisor's logs older than <min-days>.
-        
+
         -c <conf-file>, --conf=<conf-file>
             Specify a configuration file to load in addition to the default one.
-        
+
         --customized-mails=<file>
             Path to a Bash script customizing sent mails by redefining some of
             the sendMailOn[Init|Success|Warning|Error]() functions.
             See --param=<key>=<value> option.
-        
+
         -h, --help
             Display this help.
-        
-        --instigator-email=<email>
+
+        --mail-instigator=<email>
             Specify who executed the supervisor.
-        
+
         --monitor
             Check whether supervisor's error log file is empty. If not, then send critical
             email notifications using an exponential backoff algorithm in minute increments.
             Typically called every minute with a cron job:
                 * * * * * <user> /path/to/supervisor.sh --conf=<conf-file> --monitor
-        
+
         -p <key>=<value>, --param=<key>=<value>
             Allow to inject multiple external parameters into customized emails.
             Assign the value <value> to the Bash variable $EXT_<key>.
             See --customized-mails option.
-        
+
         --summarize=<max-nb-days>
             Display a summary of supervisor's activity during last <max-nb-days> days,
             including final status per day and per supervised script.
             Also send this summary by email.
-        
+
         <script-path>
             Executable script to oversee.
-        
+
         <script-parameters>
             Optional oversaw script's parameters.
 
@@ -164,7 +164,7 @@ List of exit status:
   * `71` Customized mails file not found: '…'
   * `72` Invalid Mutt command: '…'
   * Any code not null returned by user script
-  
+
 ### Successful execution
 
 An execution is successful if and only if `stderr` is empty, exit status is `0` and there are no warnings.
@@ -184,7 +184,7 @@ Output:
 
 ![Successful output](doc/screenshots/supervisor-successful-stdout.png)
 
-If `SUPERVISOR_MAIL_SEND_ON_INIT` is set to `1` in configuration file:
+If `SUPERVISOR_MAIL_SEND_ON_STARTUP` is set to `1` in configuration file:
 
 ![Mail on startup](doc/screenshots/supervisor-successful-mail-startup.png)
 
@@ -265,7 +265,7 @@ PHP   1. {main}() /usr/local/lib/supervisor/tests/resources/php_fatal_error.php:
 
 Similarly, scripts provided below end with an error status.
 
-It should be noted that when `stderr` is not-empty while exit status is `0`, 
+It should be noted that when `stderr` is not-empty while exit status is `0`,
 then Supervisor change exit status from `0` to `68` (see [Exit status](#exit-status)).
 
 ##### PHP notice
@@ -345,17 +345,24 @@ Result in `bash_exit_not_null.sh.[…].error.log.gz` attachment:
 
 ### Tags
 
-Tags are strings between square brackets, for example: `[warning]`.
-Tags must be at the beginning of a line or only preceded by tabulations (defined by `SUPERVISOR_LOG_TABULATION`).
-A tag concerns all the text to the right.
+Tags allow user scripts to send some information to supervisor.
 
-_TO DOCUMENT_
+Tags are strings between square brackets —for example: `[warning]`— used in output of supervised scripts.
+Tags must be at the beginning of a line or only preceded by tabulations —defined by `SUPERVISOR_LOG_TABULATION`— or spaces.
+A tag concerns all the line.
 
 #### Warnings
 
-Default configuration: `SUPERVISOR_WARNING_TAG='[WARNING]'`
+If a successful executed script contains warning tags in its output,
+then its status will be changed from **Success** to **Warning**.
 
-_TO DOCUMENT_
+Default configuration: `SUPERVISOR_WARNING_TAG='[WARNING]'`.
+
+If `SUPERVISOR_MAIL_SEND_ON_WARNING` is set to `1` in configuration file:
+
+![Mail on error](doc/screenshots/supervisor-warning-mail.png)
+
+Please note that warnings are listed with 2 lines of context.
 
 #### Debug traces
 
@@ -367,7 +374,7 @@ _TO DOCUMENT_
 
 #### E-mail related tags
 
-Default configuration: 
+Default configuration:
 
 ```
 SUPERVISOR_MAILTO_TAG='[MAILTO]'
@@ -467,15 +474,15 @@ See [CHANGELOG](CHANGELOG.md) file for details.
 ## Continuous integration
 
 [![Build Status](https://secure.travis-ci.org/geoffroy-aubry/Supervisor.png?branch=stable)](http://travis-ci.org/geoffroy-aubry/Supervisor)
-&nbsp;_[Estimated code coverage](https://travis-ci.org/geoffroy-aubry/Supervisor): 90% (453 of 504 lines)._
+&nbsp;_[Estimated code coverage](https://travis-ci.org/geoffroy-aubry/Supervisor): 88% (503 of 572 lines)._
 
 Unit tests with [PHPUnit](https://github.com/sebastianbergmann/phpunit/):
 
 ```bash
-$ vendor/bin/phpunit --configuration phpunit.xml
+$ vendor/bin/phpunit --configuration conf/phpunit-dist.xml
 ```
 
 ## Git branching model
 
-The git branching model used for development is the one described and assisted 
+The git branching model used for development is the one described and assisted
 by `twgit` tool: [https://github.com/Twenga/twgit](https://github.com/Twenga/twgit).

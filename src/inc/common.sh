@@ -82,7 +82,7 @@ function initExecutionOfScript () {
     local msg="Starting script '<b>$script_name</b>' with id '<b>$EXECUTION_ID</b>'"
     CUI_displayMsg help "$msg"
 
-    [ "$SUPERVISOR_MAIL_SEND_ON_INIT" -eq 1 ] && sendMailOnInit
+    [ "$SUPERVISOR_MAIL_SEND_ON_STARTUP" -eq 1 ] && sendMailOnInit
 }
 
 ##
@@ -218,7 +218,7 @@ function displayResult () {
 function displayScriptMsg {
     local date="$(CUI_displayMsg processing "$1, ")"
     local msg="$2"
-    local msg_wo_tab msg_wo_color tmsg i
+    local msg_wo_tab msg_wo_color tmsg i warning_msg
 
     # Trim:
     msg_wo_tab="$msg"
@@ -233,7 +233,9 @@ function displayScriptMsg {
         i=$(( ${#msg} - ${#msg_wo_tab} ))
         echo -en "${msg:0:$i}"
         CUI_displayMsg warning "$msg_wo_color"
-        WARNING_MSG[${#WARNING_MSG[*]}]="$msg_wo_color"
+        warning_msg="${tmsg:9}"
+        warning_msg="${warning_msg##+( )}"
+        WARNING_MSG[${#WARNING_MSG[*]}]="$1, $warning_msg"
     elif [ "${tmsg:0:7}" = "$SUPERVISOR_DEBUG_TAG" ]; then
         :
     elif [ "${tmsg:0:8}" = "$SUPERVISOR_MAILTO_TAG" ]; then
@@ -401,7 +403,7 @@ Supervisor error file: $(dirname $SUPERVISOR_ERROR_LOG_FILE)/<b>$(basename $SUPE
 Error:<br /><pre>$(cat $SUPERVISOR_ERROR_LOG_FILE)</pre>"
             tail -n 50 "$SUPERVISOR_INFO_LOG_FILE" | gzip > "$SUPERVISOR_INFO_LOG_FILE.gz"
             gzip -c "$SUPERVISOR_ERROR_LOG_FILE" > "$SUPERVISOR_ERROR_LOG_FILE.gz"
-            sendMail "$mail_subject" "$mail_msg" "$SUPERVISOR_INFO_LOG_FILE.gz $SUPERVISOR_ERROR_LOG_FILE.gz"
+            rawSendMail "$mail_subject" "$mail_msg" "$SUPERVISOR_INFO_LOG_FILE.gz $SUPERVISOR_ERROR_LOG_FILE.gz"
             rm -f "$SUPERVISOR_INFO_LOG_FILE.gz"
             rm -f "$SUPERVISOR_ERROR_LOG_FILE.gz"
         fi
@@ -501,7 +503,7 @@ $tab
 $tab$opt-h$normal, $opt--help
 $tab${tab}Display this help.
 $tab
-$tab$opt--instigator-email$normal=$param<email>
+$tab$opt--mail-instigator$normal=$param<email>
 $tab${tab}Specify who executed the supervisor.
 $tab
 $tab$opt--monitor

@@ -28,6 +28,7 @@ SRC_DIR=$ROOT_DIR/src
 INC_DIR=$SRC_DIR/inc
 LOG_DIR='/var/log/supervisor'
 
+# All these files must be in $LOG_DIR/ directory:
 SUPERVISOR_ERROR_LOG_FILE=$LOG_DIR/supervisor.error.log
 SUPERVISOR_INFO_LOG_FILE=$LOG_DIR/supervisor.info.log
 SUPERVISOR_MONITORING_LOG_FILE=$LOG_DIR/supervisor.monitoring.log
@@ -48,7 +49,7 @@ SUPERVISOR_MAIL_MUTT_CMD='/usr/bin/mutt'
 SUPERVISOR_MAIL_MUTT_CFG="set content_type=text/html; \
 my_hdr From: Supervisor <supervisor@xyz.com>; \
 my_hdr Reply-To: Supervisor <supervisor@xyz.com>"
-SUPERVISOR_MAIL_SEND_ON_INIT=1
+SUPERVISOR_MAIL_SEND_ON_STARTUP=1
 SUPERVISOR_MAIL_SEND_ON_SUCCESS=1
 SUPERVISOR_MAIL_SEND_ON_WARNING=1
 SUPERVISOR_MAIL_SEND_ON_ERROR=1

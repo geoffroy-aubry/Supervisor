@@ -34,9 +34,9 @@ class SentMailsTest extends SupervisorTestCase
 {
     /**
      * @shcovers inc/mails.sh::getMailInstigator
-     * @shcovers inc/mails.sh::getMailMsgCmdAndServer
      * @shcovers inc/mails.sh::getMailSubject
      * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::rawSendMail
      * @shcovers inc/mails.sh::sendMail
      * @shcovers inc/mails.sh::sendMailOnInit
      */
@@ -53,14 +53,13 @@ class SentMailsTest extends SupervisorTestCase
 
     /**
      * @shcovers inc/mails.sh::getMailInstigator
-     * @shcovers inc/mails.sh::getMailMsgCmdAndServer
      * @shcovers inc/mails.sh::getMailSubject
      * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::rawSendMail
      * @shcovers inc/mails.sh::sendMail
      * @shcovers inc/mails.sh::sendMailOnInit
      *
      * @shcovers inc/mails.sh::compressAttachedFiles
-     * @shcovers inc/mails.sh::getMailMsgInfoLogFiles
      * @shcovers inc/mails.sh::parentSendMailOnError
      * @shcovers inc/mails.sh::removeAttachedFiles
      * @shcovers inc/mails.sh::sendMailOnError
@@ -80,14 +79,13 @@ class SentMailsTest extends SupervisorTestCase
 
     /**
      * @shcovers inc/mails.sh::getMailInstigator
-     * @shcovers inc/mails.sh::getMailMsgCmdAndServer
      * @shcovers inc/mails.sh::getMailSubject
      * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::rawSendMail
      * @shcovers inc/mails.sh::sendMail
      * @shcovers inc/mails.sh::sendMailOnInit
      *
      * @shcovers inc/mails.sh::compressAttachedFiles
-     * @shcovers inc/mails.sh::getMailMsgInfoLogFiles
      * @shcovers inc/mails.sh::parentSendMailOnError
      * @shcovers inc/mails.sh::removeAttachedFiles
      * @shcovers inc/mails.sh::sendMailOnError
@@ -107,12 +105,11 @@ class SentMailsTest extends SupervisorTestCase
 
     /**
      * @shcovers inc/mails.sh::getMailInstigator
-     * @shcovers inc/mails.sh::getMailMsgCmdAndServer
      * @shcovers inc/mails.sh::getMailSubject
+     * @shcovers inc/mails.sh::rawSendMail
      * @shcovers inc/mails.sh::sendMail
      *
      * @shcovers inc/mails.sh::compressAttachedFiles
-     * @shcovers inc/mails.sh::getMailMsgInfoLogFiles
      * @shcovers inc/mails.sh::parentSendMailOnError
      * @shcovers inc/mails.sh::removeAttachedFiles
      * @shcovers inc/mails.sh::sendMailOnError
@@ -131,14 +128,13 @@ class SentMailsTest extends SupervisorTestCase
 
     /**
      * @shcovers inc/mails.sh::getMailInstigator
-     * @shcovers inc/mails.sh::getMailMsgCmdAndServer
      * @shcovers inc/mails.sh::getMailSubject
      * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::rawSendMail
      * @shcovers inc/mails.sh::sendMail
      * @shcovers inc/mails.sh::sendMailOnInit
      *
      * @shcovers inc/mails.sh::compressAttachedFiles
-     * @shcovers inc/mails.sh::getMailMsgInfoLogFiles
      * @shcovers inc/mails.sh::parentSendMailOnSuccess
      * @shcovers inc/mails.sh::removeAttachedFiles
      * @shcovers inc/mails.sh::sendMailOnSuccess
@@ -158,14 +154,13 @@ class SentMailsTest extends SupervisorTestCase
 
     /**
      * @shcovers inc/mails.sh::getMailInstigator
-     * @shcovers inc/mails.sh::getMailMsgCmdAndServer
      * @shcovers inc/mails.sh::getMailSubject
      * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::rawSendMail
      * @shcovers inc/mails.sh::sendMail
      * @shcovers inc/mails.sh::sendMailOnInit
      *
      * @shcovers inc/mails.sh::compressAttachedFiles
-     * @shcovers inc/mails.sh::getMailMsgInfoLogFiles
      * @shcovers inc/mails.sh::parentSendMailOnSuccess
      * @shcovers inc/mails.sh::removeAttachedFiles
      * @shcovers inc/mails.sh::sendMailOnSuccess
@@ -174,7 +169,7 @@ class SentMailsTest extends SupervisorTestCase
     {
         $sScriptName = 'bash_colored_simple.sh';
         $sScriptPath = RESOURCES_DIR . "/$sScriptName";
-        $aResult = $this->execSupervisor("--instigator-email=toto@fr $sScriptPath", 'conf_mail-all.sh');
+        $aResult = $this->execSupervisor("--mail-instigator=toto@fr $sScriptPath", 'conf_mail-all.sh');
         $sExecId = $aResult['exec_id'];
         $sMailTo = "'abc@def.com' 'ghi@jkl.com' 'toto@fr'";
         $sAttachment = "-a '$this->sTmpDir/supervisor.info.log.$sExecId.gz' '$this->sTmpDir/$sScriptName.$sExecId.info.log.gz'";
@@ -185,12 +180,11 @@ class SentMailsTest extends SupervisorTestCase
 
     /**
      * @shcovers inc/mails.sh::getMailInstigator
-     * @shcovers inc/mails.sh::getMailMsgCmdAndServer
      * @shcovers inc/mails.sh::getMailSubject
+     * @shcovers inc/mails.sh::rawSendMail
      * @shcovers inc/mails.sh::sendMail
      *
      * @shcovers inc/mails.sh::compressAttachedFiles
-     * @shcovers inc/mails.sh::getMailMsgInfoLogFiles
      * @shcovers inc/mails.sh::parentSendMailOnError
      * @shcovers inc/mails.sh::removeAttachedFiles
      * @shcovers inc/mails.sh::sendMailOnError
@@ -208,14 +202,13 @@ class SentMailsTest extends SupervisorTestCase
 
     /**
      * @shcovers inc/mails.sh::getMailInstigator
-     * @shcovers inc/mails.sh::getMailMsgCmdAndServer
      * @shcovers inc/mails.sh::getMailSubject
      * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::rawSendMail
      * @shcovers inc/mails.sh::sendMail
      * @shcovers inc/mails.sh::sendMailOnInit
      *
      * @shcovers inc/mails.sh::compressAttachedFiles
-     * @shcovers inc/mails.sh::getMailMsgInfoLogFiles
      * @shcovers inc/mails.sh::parentSendMailOnError
      * @shcovers inc/mails.sh::removeAttachedFiles
      * @shcovers inc/mails.sh::sendMailOnError
@@ -231,14 +224,13 @@ class SentMailsTest extends SupervisorTestCase
 
     /**
      * @shcovers inc/mails.sh::getMailInstigator
-     * @shcovers inc/mails.sh::getMailMsgCmdAndServer
      * @shcovers inc/mails.sh::getMailSubject
      * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::rawSendMail
      * @shcovers inc/mails.sh::sendMail
      * @shcovers inc/mails.sh::sendMailOnInit
      *
      * @shcovers inc/mails.sh::compressAttachedFiles
-     * @shcovers inc/mails.sh::getMailMsgInfoLogFiles
      * @shcovers inc/mails.sh::parentSendMailOnError
      * @shcovers inc/mails.sh::removeAttachedFiles
      * @shcovers inc/mails.sh::sendMailOnError
@@ -258,14 +250,13 @@ class SentMailsTest extends SupervisorTestCase
 
     /**
      * @shcovers inc/mails.sh::getMailInstigator
-     * @shcovers inc/mails.sh::getMailMsgCmdAndServer
      * @shcovers inc/mails.sh::getMailSubject
      * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::rawSendMail
      * @shcovers inc/mails.sh::sendMail
      * @shcovers inc/mails.sh::sendMailOnInit
      *
      * @shcovers inc/mails.sh::compressAttachedFiles
-     * @shcovers inc/mails.sh::getMailMsgInfoLogFiles
      * @shcovers inc/mails.sh::parentSendMailOnError
      * @shcovers inc/mails.sh::removeAttachedFiles
      * @shcovers inc/mails.sh::sendMailOnError
@@ -285,14 +276,13 @@ class SentMailsTest extends SupervisorTestCase
 
     /**
      * @shcovers inc/mails.sh::getMailInstigator
-     * @shcovers inc/mails.sh::getMailMsgCmdAndServer
      * @shcovers inc/mails.sh::getMailSubject
      * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::rawSendMail
      * @shcovers inc/mails.sh::sendMail
      * @shcovers inc/mails.sh::sendMailOnInit
      *
      * @shcovers inc/mails.sh::compressAttachedFiles
-     * @shcovers inc/mails.sh::getMailMsgInfoLogFiles
      * @shcovers inc/mails.sh::parentSendMailOnError
      * @shcovers inc/mails.sh::removeAttachedFiles
      * @shcovers inc/mails.sh::sendMailOnError
@@ -348,14 +338,13 @@ class SentMailsTest extends SupervisorTestCase
 
     /**
      * @shcovers inc/mails.sh::getMailInstigator
-     * @shcovers inc/mails.sh::getMailMsgCmdAndServer
      * @shcovers inc/mails.sh::getMailSubject
      * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::rawSendMail
      * @shcovers inc/mails.sh::sendMail
      * @shcovers inc/mails.sh::sendMailOnInit
      *
      * @shcovers inc/mails.sh::compressAttachedFiles
-     * @shcovers inc/mails.sh::getMailMsgInfoLogFiles
      * @shcovers inc/mails.sh::parentSendMailOnWarning
      * @shcovers inc/mails.sh::removeAttachedFiles
      * @shcovers inc/mails.sh::sendMailOnWarning
@@ -364,7 +353,7 @@ class SentMailsTest extends SupervisorTestCase
     {
         $sScriptName = 'bash_warning.sh';
         $sScriptPath = RESOURCES_DIR . "/$sScriptName";
-        $aResult = $this->execSupervisor("--instigator-email=toto@fr $sScriptPath", 'conf_mail-all.sh');
+        $aResult = $this->execSupervisor("--mail-instigator=toto@fr $sScriptPath", 'conf_mail-all.sh');
         $sExecId = $aResult['exec_id'];
         $sMailTo = "'abc@def.com' 'ghi@jkl.com' 'toto@fr'";
         $sAttachment = "-a '$this->sTmpDir/supervisor.info.log.$sExecId.gz' '$this->sTmpDir/$sScriptName.$sExecId.info.log.gz'";
@@ -375,14 +364,13 @@ class SentMailsTest extends SupervisorTestCase
 
     /**
      * @shcovers inc/mails.sh::getMailInstigator
-     * @shcovers inc/mails.sh::getMailMsgCmdAndServer
      * @shcovers inc/mails.sh::getMailSubject
      * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::rawSendMail
      * @shcovers inc/mails.sh::sendMail
      * @shcovers inc/mails.sh::sendMailOnInit
      *
      * @shcovers inc/mails.sh::compressAttachedFiles
-     * @shcovers inc/mails.sh::getMailMsgInfoLogFiles
      * @shcovers inc/mails.sh::parentSendMailOnSuccess
      * @shcovers inc/mails.sh::removeAttachedFiles
      * @shcovers inc/mails.sh::sendMailOnSuccess
@@ -403,14 +391,13 @@ class SentMailsTest extends SupervisorTestCase
 
     /**
      * @shcovers inc/mails.sh::getMailInstigator
-     * @shcovers inc/mails.sh::getMailMsgCmdAndServer
      * @shcovers inc/mails.sh::getMailSubject
      * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::rawSendMail
      * @shcovers inc/mails.sh::sendMail
      * @shcovers inc/mails.sh::sendMailOnInit
      *
      * @shcovers inc/mails.sh::compressAttachedFiles
-     * @shcovers inc/mails.sh::getMailMsgInfoLogFiles
      * @shcovers inc/mails.sh::parentSendMailOnSuccess
      * @shcovers inc/mails.sh::removeAttachedFiles
      * @shcovers inc/mails.sh::sendMailOnSuccess
