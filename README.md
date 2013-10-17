@@ -479,7 +479,7 @@ See [CHANGELOG](CHANGELOG.md) file for details.
 Unit tests with [PHPUnit](https://github.com/sebastianbergmann/phpunit/):
 
 ```bash
-$ vendor/bin/phpunit --configuration phpunit.xml
+$ vendor/bin/phpunit --configuration conf/phpunit-dist.xml
 ```
 
 ## Git branching model
