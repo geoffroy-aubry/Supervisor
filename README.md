@@ -126,7 +126,7 @@ $ supervisor.sh [-h|--help]
         -h, --help
             Display this help.
 
-        --instigator-email=<email>
+        --mail-instigator=<email>
             Specify who executed the supervisor.
 
         --monitor

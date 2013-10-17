@@ -174,7 +174,7 @@ class SentMailsTest extends SupervisorTestCase
     {
         $sScriptName = 'bash_colored_simple.sh';
         $sScriptPath = RESOURCES_DIR . "/$sScriptName";
-        $aResult = $this->execSupervisor("--instigator-email=toto@fr $sScriptPath", 'conf_mail-all.sh');
+        $aResult = $this->execSupervisor("--mail-instigator=toto@fr $sScriptPath", 'conf_mail-all.sh');
         $sExecId = $aResult['exec_id'];
         $sMailTo = "'abc@def.com' 'ghi@jkl.com' 'toto@fr'";
         $sAttachment = "-a '$this->sTmpDir/supervisor.info.log.$sExecId.gz' '$this->sTmpDir/$sScriptName.$sExecId.info.log.gz'";
@@ -364,7 +364,7 @@ class SentMailsTest extends SupervisorTestCase
     {
         $sScriptName = 'bash_warning.sh';
         $sScriptPath = RESOURCES_DIR . "/$sScriptName";
-        $aResult = $this->execSupervisor("--instigator-email=toto@fr $sScriptPath", 'conf_mail-all.sh');
+        $aResult = $this->execSupervisor("--mail-instigator=toto@fr $sScriptPath", 'conf_mail-all.sh');
         $sExecId = $aResult['exec_id'];
         $sMailTo = "'abc@def.com' 'ghi@jkl.com' 'toto@fr'";
         $sAttachment = "-a '$this->sTmpDir/supervisor.info.log.$sExecId.gz' '$this->sTmpDir/$sScriptName.$sExecId.info.log.gz'";

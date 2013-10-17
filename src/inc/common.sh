@@ -503,7 +503,7 @@ $tab
 $tab$opt-h$normal, $opt--help
 $tab${tab}Display this help.
 $tab
-$tab$opt--instigator-email$normal=$param<email>
+$tab$opt--mail-instigator$normal=$param<email>
 $tab${tab}Specify who executed the supervisor.
 $tab
 $tab$opt--monitor
