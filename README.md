@@ -354,9 +354,9 @@ A tag concerns all the line.
 #### Warnings
 
 If a successful executed script contains warning tags in its output,
-then its status will be changed from `Success` to `Warning`.
+then its status will be changed from **Success** to **Warning**.
 
-Default configuration: `SUPERVISOR_WARNING_TAG='[WARNING]'`
+Default configuration: `SUPERVISOR_WARNING_TAG='[WARNING]'`.
 
 If `SUPERVISOR_MAIL_SEND_ON_WARNING` is set to `1` in configuration file:
 
