@@ -184,7 +184,7 @@ Output:
 
 ![Successful output](doc/screenshots/supervisor-successful-stdout.png)
 
-If `SUPERVISOR_MAIL_SEND_ON_INIT` is set to `1` in configuration file:
+If `SUPERVISOR_MAIL_SEND_ON_STARTUP` is set to `1` in configuration file:
 
 ![Mail on startup](doc/screenshots/supervisor-successful-mail-startup.png)
 

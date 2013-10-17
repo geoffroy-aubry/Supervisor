@@ -48,7 +48,7 @@ SUPERVISOR_MAIL_MUTT_CMD='/usr/bin/mutt'
 SUPERVISOR_MAIL_MUTT_CFG="set content_type=text/html; \
 my_hdr From: Supervisor <supervisor@xyz.com>; \
 my_hdr Reply-To: Supervisor <supervisor@xyz.com>"
-SUPERVISOR_MAIL_SEND_ON_INIT=1
+SUPERVISOR_MAIL_SEND_ON_STARTUP=1
 SUPERVISOR_MAIL_SEND_ON_SUCCESS=1
 SUPERVISOR_MAIL_SEND_ON_WARNING=1
 SUPERVISOR_MAIL_SEND_ON_ERROR=1
