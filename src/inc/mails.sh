@@ -27,19 +27,35 @@ function getMailSubject () {
 }
 
 function getMailInstigator () {
-    echo -n '<br />Instigator: '
-    [ -z "$MAIL_INSTIGATOR" ] && echo -n '<i>not specified</i>' || echo -n "$MAIL_INSTIGATOR"
-    echo '<br /><br />'
+    if [ -z "$MAIL_INSTIGATOR" ]; then
+        echo -n '<i style="font-weight:normal">not specified</i>' | sed 's|\(/\)|\\\1|g'
+    else
+        echo -n "$MAIL_INSTIGATOR"
+    fi
 }
 
-function getMailMsgCmdAndServer () {
-    echo "Executed command: <pre>\$ $SCRIPT_NAME $SCRIPT_PARAMETERS $EXECUTION_ID $SCRIPT_ERROR_LOG_FILE 2>>$SCRIPT_ERROR_LOG_FILE</pre><br />"
-    echo "Server: $(hostname)<br />"
+function getElapsedTime () {
+    local t0="$(cat "$SCRIPT_INFO_LOG_FILE" | head -n1 | awk '{print $1" "$2}')"
+    local t1="$(cat "$SCRIPT_INFO_LOG_FILE" | tail -n1 | awk '{print $1" "$2}')"
+    local seconds=$(( $(date -d "$t1" +%s) - $(date -d "$t0" +%s) ))
+    [[ $seconds -eq 0 ]] && (( seconds=seconds+1 ))
+
+    local elapsed_time
+    if [ $seconds -ge 3600 ]; then
+        elapsed_time="$(date -u -d "@$seconds" +'%-Hh %Mmin %Ss')"
+    elif [ $seconds -ge 60 ]; then
+        elapsed_time="$(date -u -d "@$seconds" +'%-Mmin %Ss')"
+    else
+        elapsed_time="$(date -u -d "@$seconds" +'%-Ss')"
+    fi
+    echo -n "$elapsed_time"
 }
 
-function getMailMsgInfoLogFiles () {
-    echo "Supervisor log file: $(dirname $SUPERVISOR_INFO_LOG_FILE)/<b>$(basename $SUPERVISOR_INFO_LOG_FILE)</b><br />"
-    echo "Execution log file: $(dirname $SCRIPT_INFO_LOG_FILE)/<b>$(basename $SCRIPT_INFO_LOG_FILE)</b><br />"
+function getCmd () {
+    local parameters="$(echo "$SCRIPT_PARAMETERS" \
+        | sed -r -e "s/ +(--[a-z0-9_-]+=('[^']+'|\"[^\"]+\"|[^'][^ ]*))/\\\n\1\\\n/ig" -e 's/\n(\n|$)/\1/g')"
+    echo -n "$SCRIPT_NAME\n$parameters\n$EXECUTION_ID\n$SCRIPT_ERROR_LOG_FILE\n2>>$SCRIPT_ERROR_LOG_FILE" \
+        | sed -e 's/\\n *\\n/\\n/g' -e 's/\\n/\\n    /g' -e 's|\(/\)|\\\1|g'
 }
 
 function compressAttachedFiles () {
@@ -54,7 +70,7 @@ function removeAttachedFiles () {
     rm -f "$SCRIPT_ERROR_LOG_FILE.gz"
 }
 
-function sendMail () {
+function rawSendMail () {
     local mail_subject="$1"
     local mail_msg="$2"
     local attachment="$3"
@@ -64,51 +80,103 @@ function sendMail () {
         -e "$SUPERVISOR_MAIL_MUTT_CFG" -s "$mail_subject" $attachment -- $SUPERVISOR_MAIL_TO$MAIL_INSTIGATOR
 }
 
-function parentSendMailOnError () {
-    local mail_msg="<h3 style=\"color: #FF0000\">Error in execution of script '<b>$SCRIPT_NAME</b>' with id '<b>$EXECUTION_ID</b>'.</h3>\
-$(getMailInstigator)$(getMailMsgCmdAndServer)$(getMailMsgInfoLogFiles)\
-Error log file: $(dirname $SCRIPT_ERROR_LOG_FILE)/<b>$(basename $SCRIPT_ERROR_LOG_FILE)</b><br /><br />\
-<b style=\"color: #FF0000\">Error:</b><br /><pre>$(cat $SCRIPT_ERROR_LOG_FILE)</pre>"
+function sendMail () {
+    local mail_subject="$1"
+    local mail_msg="$2"
+    local add_attachment="$3"
     local attachment="$SUPERVISOR_INFO_LOG_FILE.$EXECUTION_ID.gz $SCRIPT_INFO_LOG_FILE.gz$SUPERVISOR_MAIL_ADD_ATTACHMENT"
     compressAttachedFiles
-    sendMail "$(getMailSubject ERROR)" "$mail_msg" "$attachment $SCRIPT_ERROR_LOG_FILE.gz"
+    rawSendMail "$mail_subject" "$mail_msg" "$attachment $add_attachment"
     removeAttachedFiles
+}
+
+function parentSendMailOnError () {
+    local script_name="$(echo "$SCRIPT_NAME" | sed 's|\(/\)|\\\1|g')"
+    local log_dir="$(dirname "$SUPERVISOR_INFO_LOG_FILE" | sed 's|\(/\)|\\\1|g')"
+    local error_msg="$(cat "$SCRIPT_ERROR_LOG_FILE" | awk 1 ORS='\\n' | sed 's|\(/\)|\\\1|g')"
+    local mail_msg=$(sed \
+        -e "s/{{elapsed_time}}/$(getElapsedTime)/g" \
+        -e "s/{{script}}/$script_name/g" \
+        -e "s/{{exec_id}}/$EXECUTION_ID/g" \
+        -e "s/{{server}}/$(hostname)/g" \
+        -e "s/{{instigator}}/$(getMailInstigator)/g" \
+        -e "s/{{cmd}}/$(getCmd)/g" \
+        -e "s/{{log_dir}}/$log_dir/g" \
+        -e "s/{{supervisor_info_log_file}}/$(basename "$SUPERVISOR_INFO_LOG_FILE")/g" \
+        -e "s/{{script_info_log_file}}/$(basename "$SCRIPT_INFO_LOG_FILE")/g" \
+        -e "s/{{script_error_log_file}}/$(basename "$SCRIPT_ERROR_LOG_FILE")/g" \
+        -e "s/{{error_msg}}/$error_msg/g" \
+        "$SRC_DIR/templates/error.html" \
+    )
+    sendMail "$(getMailSubject ERROR)" "$mail_msg" "$SCRIPT_ERROR_LOG_FILE.gz"
 }
 
 function parentSendMailOnWarning () {
+    local warning_context="$(cat "$SCRIPT_INFO_LOG_FILE" | grep -B2 --color=never -n '\[WARNING\]')"
+    echo "$warning_context" | head -n1 | grep -vq '^1\(-\|:\)' && warning_context=$'--\n'"$warning_context"
+    echo "$warning_context" | tail -n1 | grep -vq "^$(wc -l "$SCRIPT_INFO_LOG_FILE" | awk '{print $1}')" \
+        && warning_context="$warning_context"$'\n--'
+    local warning_html="$(echo "$warning_context" \
+        | sed -r \
+            -e 's|^[0-9]+-(.*)$|<span style="color:#9b8861">\1</span>|' \
+            -e 's|^--$|<span style="color:#9b8861">[…]</span>|' \
+            -e 's|^[0-9]+:||' \
+    )"
+
     local plural
     [ "${#WARNING_MSG[*]}" -gt 1 ] && plural='s' || plural=''
-    local warning_html=''
-    for msg in "${WARNING_MSG[@]}"; do
-        warning_html="$warning_html<li>$msg</li>"
-    done
+    local script_name="$(echo "$SCRIPT_NAME" | sed 's|\(/\)|\\\1|g')"
+    local log_dir="$(dirname "$SUPERVISOR_INFO_LOG_FILE" | sed 's|\(/\)|\\\1|g')"
+    local warning_msg="$(echo "$warning_html" | awk 1 ORS='\\n' | sed 's|\(/\)|\\\1|g')"
+    local mail_msg=$(sed \
+        -e "s/{{nb_warnings}}/${#WARNING_MSG[*]}/g" \
+        -e "s/{{warning_plural}}/$plural/g" \
+        -e "s/{{elapsed_time}}/$(getElapsedTime)/g" \
+        -e "s/{{script}}/$script_name/g" \
+        -e "s/{{exec_id}}/$EXECUTION_ID/g" \
+        -e "s/{{server}}/$(hostname)/g" \
+        -e "s/{{instigator}}/$(getMailInstigator)/g" \
+        -e "s/{{cmd}}/$(getCmd)/g" \
+        -e "s/{{log_dir}}/$log_dir/g" \
+        -e "s/{{supervisor_info_log_file}}/$(basename "$SUPERVISOR_INFO_LOG_FILE")/g" \
+        -e "s/{{script_info_log_file}}/$(basename "$SCRIPT_INFO_LOG_FILE")/g" \
+        -e "s/{{warning_msg}}/$warning_msg/g" \
+        "$SRC_DIR/templates/warning.html" \
+    )
 
-    local mail_msg="<h3 style=\"color: #FF8C00\">Warning in execution of script '<b>$SCRIPT_NAME</b>' with id '<b>$EXECUTION_ID</b>'.</h3>\
-<b style=\"color: #FF8C00\">Completed with ${#WARNING_MSG[*]} warning$plural.</b>\
-$(getMailInstigator)$(getMailMsgCmdAndServer)$(getMailMsgInfoLogFiles)\
-Error log file: <i>N.A.</i><br /><br />\
-<p style=\"color: #FF8C00\"><b>Warning$plural</b> <i>(see attached files for more details)</i>:<ol>$warning_html</ol></p>"
-    local attachment="$SUPERVISOR_INFO_LOG_FILE.$EXECUTION_ID.gz $SCRIPT_INFO_LOG_FILE.gz$SUPERVISOR_MAIL_ADD_ATTACHMENT"
-    compressAttachedFiles
-    sendMail "$(getMailSubject WARNING)" "$mail_msg" "$attachment"
-    removeAttachedFiles
+    sendMail "$(getMailSubject WARNING)" "$mail_msg" ''
 }
 
 function parentSendMailOnSuccess () {
-    local mail_msg="Successful execution of script '<b>$SCRIPT_NAME</b>' with id '<b>$EXECUTION_ID</b>'.\
-$(getMailInstigator)$(getMailMsgCmdAndServer)$(getMailMsgInfoLogFiles)\
-Error log file: <i>N.A.</i><br />No warnings."
-    local attachment="$SUPERVISOR_INFO_LOG_FILE.$EXECUTION_ID.gz $SCRIPT_INFO_LOG_FILE.gz$SUPERVISOR_MAIL_ADD_ATTACHMENT"
-    compressAttachedFiles
-    sendMail "$(getMailSubject SUCCESS)" "$mail_msg" "$attachment"
-    removeAttachedFiles
+    local script_name="$(echo "$SCRIPT_NAME" | sed 's|\(/\)|\\\1|g')"
+    local log_dir="$(dirname "$SUPERVISOR_INFO_LOG_FILE" | sed 's|\(/\)|\\\1|g')"
+    local mail_msg=$(sed \
+        -e "s/{{elapsed_time}}/$(getElapsedTime)/g" \
+        -e "s/{{script}}/$script_name/g" \
+        -e "s/{{exec_id}}/$EXECUTION_ID/g" \
+        -e "s/{{server}}/$(hostname)/g" \
+        -e "s/{{instigator}}/$(getMailInstigator)/g" \
+        -e "s/{{cmd}}/$(getCmd)/g" \
+        -e "s/{{log_dir}}/$log_dir/g" \
+        -e "s/{{supervisor_info_log_file}}/$(basename "$SUPERVISOR_INFO_LOG_FILE")/g" \
+        -e "s/{{script_info_log_file}}/$(basename "$SCRIPT_INFO_LOG_FILE")/g" \
+        "$SRC_DIR/templates/success.html" \
+    )
+    sendMail "$(getMailSubject SUCCESS)" "$mail_msg" ''
 }
 
 function parentSendMailOnInit () {
-    local mail_msg="<h3>Starting script '<b>$SCRIPT_NAME</b>' with id '<b>$EXECUTION_ID</b>'.</h3>\
-$(getMailInstigator)$(getMailMsgCmdAndServer)\
-You will receive another email at the end of execution."
-    sendMail "$(getMailSubject STARTING)" "$mail_msg" ''
+    local script_name="$(echo "$SCRIPT_NAME" | sed 's|\(/\)|\\\1|g')"
+    local mail_msg=$(sed \
+        -e "s/{{date}}/$(date +'%Y-%m-%d, %H:%M:%S')/g" \
+        -e "s/{{script}}/$script_name/g" \
+        -e "s/{{exec_id}}/$EXECUTION_ID/g" \
+        -e "s/{{server}}/$(hostname)/g" \
+        -e "s/{{instigator}}/$(getMailInstigator)/g" \
+        -e "s/{{cmd}}/$(getCmd)/g" \
+        "$SRC_DIR/templates/starting.html" \
+    )
+    rawSendMail "$(getMailSubject STARTING)" "$mail_msg" ''
 }
 
 function sendMailOnError () {
