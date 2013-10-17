@@ -1,0 +1,124 @@
+<!DOCTYPE html >
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+    </head>
+    <body>
+
+<p style="font-size:30px;color:#999999;margin:0;margin-bottom:30px">{&nbsp;<span style="font-size:30px;font-weight:bold;font-variant:small-caps;color:#000000">Supervisor</span>&nbsp;}</p>
+
+<table border="0" style="background-color:#cbf7be;padding:0;border:1px solid #349b1d;border-radius:5px;border-spacing:0;margin-top:20px;width:580px;color:#349b1d">
+    <thead style="border:0;padding:0;background-color:#cbf7be">
+        <tr style="border:0;padding:0;">
+            <td style="border-top-left-radius:5px;padding:10px;border-bottom:1px solid #a9ed99;">
+                <span style="line-height:24px;font-size:24px;vertical-align:middle;font-weight:normal">✓</span>
+                <span style="line-height:24px;font-size:20px;vertical-align:middle;font-variant:small-caps;font-weight:bold;margin-left:10px">Success</span>
+            </td>
+            <td align="right" style="border-top-right-radius:5px;padding:10px;border-bottom:1px solid #a9ed99;">
+                <span style="line-height:24px;font-size:24px;vertical-align:middle;font-weight:normal">⌛</span>
+                <span style="line-height:24px;font-size:16px;vertical-align:middle;font-weight:normal;margin-left:10px">≈ {{elapsed_time}}</span>
+            </td>
+        </tr>
+    </thead>
+    <tbody style="border:0;padding:0;background-color:#f4ffef">
+        <tr style="padding:0;border:0">
+            <td colspan="2" style="border-bottom-left-radius:5px;border-bottom-right-radius:5px;padding:10px;border:0; color:#34891c">
+
+                <table border="0" style="border:0;margin:0;padding:0">
+                    <tbody>
+                        <tr>
+                            <td style="white-space:nowrap;vertical-align:top">– Successful script:</td>
+                            <td><b><code style="color:#1d4b10;font-size:12px;display:inline;margin:0">{{script}}</code></b></td>
+                        </tr>
+                        <tr>
+                            <td style="white-space:nowrap;vertical-align:top">– Execution ID:</td>
+                            <td><b><code style="color:#1d4b10;font-size:12px;display:inline;margin:0">{{exec_id}}</code></b></td>
+                        </tr>
+                        <tr>
+                            <td style="white-space:nowrap;vertical-align:top">– Server:</td>
+                            <td><b style="color:#1d4b10">{{server}}</b></td>
+                        </tr>
+                        <tr>
+                            <td style="white-space:nowrap;vertical-align:top">– Instigator:</td>
+                            <td><b style="color:#1d4b10">{{instigator}}</b></td>
+                        </tr>
+                        <tr>
+                            <td style="white-space:nowrap;vertical-align:top">– Executed command:</td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><pre style="color:#1d4b10;font-size:10px;margin-left:20px;margin-top:0;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space:-o-pre-wrap;word-wrap:break-word">$ {{cmd}}</pre>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<table border="0" style="background-color:#cbf7be;padding:0;border:1px solid #349b1d;border-radius:5px;border-spacing:0;margin-top:20px;width:580px;color:#349b1d">
+    <thead style="border:0;padding:0;background-color:#cbf7be">
+        <tr style="border:0;padding:0">
+            <td style="border-top-left-radius:5px;border-top-right-radius:5px;padding:10px;border-bottom:1px solid #a9ed99">
+                <span style="line-height:24px;font-size:24px;vertical-align:middle;font-weight:normal">✎</span>
+                <span style="line-height:24px;font-size:20px;vertical-align:middle;font-variant:small-caps;font-weight:bold;margin-left:10px">Log details</span>
+            </td>
+        </tr>
+    </thead>
+    <tbody style="border:0;padding:0;background-color:#f4ffef">
+        <tr style="padding:0;border:0">
+            <td style="border-bottom-left-radius:5px;border-bottom-right-radius:5px;padding:10px;border:0;color:#34891c">
+
+                <table border="0" style="border:0;margin:0;padding:0">
+                    <tbody>
+                        <tr>
+                            <td colspan="2" style="font-style:italic;padding-bottom:16px">
+                                Log files are both in attachment
+                                and in <code style="color:#1d4b10;font-size:12px;display:inline;margin:0">{{log_dir}}</code> server's directory.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="white-space:nowrap;vertical-align:top">– Supervisor log file:</td>
+                            <td><b><code style="color:#1d4b10;font-size:12px;display:inline;margin:0">{{supervisor_info_log_file}}</code></b></td>
+                        </tr>
+                        <tr>
+                            <td style="white-space:nowrap;vertical-align:top">– Execution log file:</td>
+                            <td><b><code style="color:#1d4b10;font-size:12px;display:inline;margin:0">{{script_info_log_file}}</code></b></td>
+                        </tr>
+                        <tr>
+                            <td style="white-space:nowrap;vertical-align:top">– Error log file:</td>
+                            <td><i style="color:#1d4b10">N.A.</i></td>
+                        </tr>
+                        <tr>
+                            <td style="white-space:nowrap;vertical-align:top">– Error message:</td>
+                            <td><i style="color:#1d4b10">no error nor warning</i></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<table border="0" style="background-color:#e9e6e7;border-radius:5px;border:1px solid #adadad;padding:10px;margin-top:20px;width:580px">
+    <tbody>
+        <tr style="padding:0;border:0">
+            <td style="padding:0;border:0">
+                <span style="font-size:24px;line-height:24px;color:#606060;vertical-align:middle">ⓘ</span>
+            </td>
+            <td style="padding:0;padding-left:10px;border:0;font-size:12px;line-height:16px;color:#808080">
+                Mail sent by a <a href="https://github.com/geoffroy-aubry/Supervisor" style="text-decoration:underline;color:#606060" target="_blank">Supervisor</a> instance.<br />
+                Choose who receives these notification emails in your
+                <a href="https://github.com/geoffroy-aubry/Supervisor/blob/stable/conf/supervisor-dist.sh#L45" style="text-decoration:underline;color:#606060" target="_blank">configuration file</a>
+                or
+                <a href="https://github.com/geoffroy-aubry/Supervisor/blob/stable/conf/supervisor-dist.sh#L52" style="text-decoration:underline;color:#606060" target="_blank">deactivate them</a>.
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+    </body>
+</html>

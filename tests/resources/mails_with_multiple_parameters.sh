@@ -7,5 +7,5 @@ You will receive another email at the end of execution."
     local param1="${SUPERVISOR_PREFIX_EXT_PARAM}ETL"
     local param2="${SUPERVISOR_PREFIX_EXT_PARAM}etl"
     local mail_subject="${!param1}.${!param2}"
-    sendMail "$mail_subject" "$mail_msg" ''
+    rawSendMail "$mail_subject" "$mail_msg" ''
 }
