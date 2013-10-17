@@ -218,7 +218,7 @@ function displayResult () {
 function displayScriptMsg {
     local date="$(CUI_displayMsg processing "$1, ")"
     local msg="$2"
-    local msg_wo_tab msg_wo_color tmsg i
+    local msg_wo_tab msg_wo_color tmsg i warning_msg
 
     # Trim:
     msg_wo_tab="$msg"
@@ -233,7 +233,9 @@ function displayScriptMsg {
         i=$(( ${#msg} - ${#msg_wo_tab} ))
         echo -en "${msg:0:$i}"
         CUI_displayMsg warning "$msg_wo_color"
-        WARNING_MSG[${#WARNING_MSG[*]}]="$msg_wo_color"
+        warning_msg="${tmsg:9}"
+        warning_msg="${warning_msg##+( )}"
+        WARNING_MSG[${#WARNING_MSG[*]}]="$1, $warning_msg"
     elif [ "${tmsg:0:7}" = "$SUPERVISOR_DEBUG_TAG" ]; then
         :
     elif [ "${tmsg:0:8}" = "$SUPERVISOR_MAILTO_TAG" ]; then
