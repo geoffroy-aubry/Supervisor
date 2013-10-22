@@ -61,6 +61,15 @@ SUPERVISOR_DEBUG_TAG='[DEBUG]'
 SUPERVISOR_MAILTO_TAG='[MAILTO]'
 SUPERVISOR_MAIL_ATTACHMENT_TAG='[MAIL_ATTACHMENT]'
 
+# Expected output format: {'txt', 'csv'}
+SUPERVISOR_OUTPUT_FORMAT='txt'
+# Number of the output CSV's field containing messages to watch (1-based):
+SUPERVISOR_CSV_FIELD_TO_SCAN=2
+# Set the CSV field separator (one character only):
+SUPERVISOR_CSV_FIELD_SEPARATOR=','
+# Set the CSV field enclosure (one character only):
+SUPERVISOR_CSV_FIELD_ENCLOSURE='"'
+
 ##
 # Colors and decorations types.
 # MUST define following types:
