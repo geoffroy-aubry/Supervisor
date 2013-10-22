@@ -119,7 +119,7 @@ function parentSendMailOnWarning () {
     local warning_html="$(echo "$warning_context" \
         | sed -r \
             -e 's|^[0-9]+-(.*)$|<span style="color:#9b8861">\1</span>|' \
-            -e 's|^--$|<span style="color:#9b8861">[…]</span>|' \
+            -e 's|^--$|<span style="color:#9b8861;font-style:italic">[…]</span>|' \
             -e 's|^[0-9]+:||' \
     )"
 
