@@ -3,9 +3,45 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "fe96d5cea63f8e061e588aa8184339eb",
+    "hash": "ec0a1548374ba79ec90138d5991be5dc",
     "packages": [
-
+        {
+            "name": "geoffroy-aubry/awk-csv-parser",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/geoffroy-aubry/awk-csv-parser.git",
+                "reference": "88b54f5958d12bae3df2403f48ea18419463e1a5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/geoffroy-aubry/awk-csv-parser/zipball/88b54f5958d12bae3df2403f48ea18419463e1a5",
+                "reference": "88b54f5958d12bae3df2403f48ea18419463e1a5",
+                "shasum": ""
+            },
+            "bin": [
+                "src/awk-csv-parser.sh",
+                "src/csv-parser.awk"
+            ],
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0+"
+            ],
+            "authors": [
+                {
+                    "name": "Geoffroy Aubry",
+                    "email": "geoffroy.aubry@free.fr"
+                }
+            ],
+            "description": "AWK and Bash code to easily parse CSV files, with possibly embedded commas and quotes.",
+            "keywords": [
+                "awk",
+                "bash",
+                "csv parser"
+            ],
+            "time": "2013-10-22 20:58:12"
+        }
     ],
     "packages-dev": [
         {
