@@ -107,7 +107,7 @@ function executeScript () {
         $SCRIPT_NAME $SCRIPT_PARAMETERS $EXECUTION_ID $SCRIPT_ERROR_LOG_FILE 2>>$SCRIPT_ERROR_LOG_FILE > $pipe &
         pid=$!
 
-        local now
+        local now script_now
         local color_start="$(echo -e "${CUI_COLORS['processing']}")"
         local color_end=$'\E'\[0m
         local pattern='[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} [0-9]{2}cs, '
@@ -130,7 +130,12 @@ function executeScript () {
                 fi
             fi
 
-            echo "$now;$line" | sed -r 's:(\033|\x1B)\[[0-9;]*[mK]::ig' >> $SCRIPT_INFO_LOG_FILE
+            if [[ $SUPERVISOR_OUTPUT_FORMAT == 'csv' ]]; then
+                script_now="$SUPERVISOR_CSV_FIELD_ENCLOSURE$now$SUPERVISOR_CSV_FIELD_ENCLOSURE$SUPERVISOR_CSV_FIELD_SEPARATOR"
+            else
+                script_now="$now;"
+            fi
+            echo "$script_now$line" | sed -r 's:(\033|\x1B)\[[0-9;]*[mK]::ig' >> $SCRIPT_INFO_LOG_FILE
             displayScriptMsg "$now" "$line"
         done < $pipe
         rm -f $pipe
@@ -220,13 +225,28 @@ function displayScriptMsg {
     local msg="$2"
     local msg_wo_tab msg_wo_color tmsg i warning_msg
 
-    # Trim:
-    msg_wo_tab="$msg"
-    while [ "${msg_wo_tab:0:${#SUPERVISOR_LOG_TABULATION}}" = "$SUPERVISOR_LOG_TABULATION" ]; do
-        msg_wo_tab="${msg_wo_tab:${#SUPERVISOR_LOG_TABULATION}}"
-    done
-    msg_wo_color="$(echo "$msg_wo_tab" | sed -r 's:(\033|\x1B)\[[0-9;]*[mK]::ig')"
-    tmsg="${msg_wo_color##+( )}"	# ltrim
+    if [[ $SUPERVISOR_OUTPUT_FORMAT = 'csv' ]]; then
+        tmsg="$(echo "$msg" | awk -f $ROOT_DIR/vendor/bin/csv-parser.awk \
+            -v separator="$SUPERVISOR_CSV_FIELD_SEPARATOR" \
+            -v enclosure="$SUPERVISOR_CSV_FIELD_ENCLOSURE" \
+            -v target_column="$SUPERVISOR_CSV_FIELD_TO_SCAN" \
+            --source '{
+                csv_parse_record($0, separator, enclosure, csv)
+                print csv[target_column-1]
+            }' \
+        )"
+        msg_wo_tab="$msg"
+        msg_wo_color="$msg"
+    else
+        # Trim:
+        msg_wo_tab="$msg"
+        while [ "${msg_wo_tab:0:${#SUPERVISOR_LOG_TABULATION}}" = "$SUPERVISOR_LOG_TABULATION" ]; do
+            msg_wo_tab="${msg_wo_tab:${#SUPERVISOR_LOG_TABULATION}}"
+        done
+        msg_wo_color="$(echo "$msg_wo_tab" | sed -r 's:(\033|\x1B)\[[0-9;]*[mK]::ig')"
+        tmsg="${msg_wo_color##+( )}"	# ltrim
+    fi
+
 
     if [ "${tmsg:0:9}" = "$SUPERVISOR_WARNING_TAG" ]; then
         echo -n $date
