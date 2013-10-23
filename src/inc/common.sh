@@ -238,6 +238,7 @@ function displayScriptMsg {
     local msg="$2"
     local msg_wo_tab msg_wo_color tmsg i warning_msg
 
+    # Clean CSV message:
     if [[ $SUPERVISOR_OUTPUT_FORMAT = 'csv' ]]; then
         tmsg="$(echo "$msg" | awk -f $SUPERVISOR_CSV_PARSER \
             -v separator="$SUPERVISOR_CSV_FIELD_SEPARATOR" \
@@ -250,6 +251,8 @@ function displayScriptMsg {
         )"
         msg_wo_tab="$msg"
         msg_wo_color="$msg"
+
+    # …else clean simple TXT message:
     else
         # Trim:
         msg_wo_tab="$msg"
@@ -260,7 +263,7 @@ function displayScriptMsg {
         tmsg="${msg_wo_color##+( )}"	# ltrim
     fi
 
-
+    # Detect tags:
     if [ "${tmsg:0:9}" = "$SUPERVISOR_WARNING_TAG" ]; then
         echo -n $date
         i=$(( ${#msg} - ${#msg_wo_tab} ))
