@@ -51,6 +51,8 @@ and ensure email notifications will be sent (on startup, success, warning or err
   * Automatic log archiving mechanism.
   * Display a summary of supervisor's activity during last days,
     including final status per day and per supervised script.
+  * Handle CSV output, with definition of field separator, field enclosure and number of the field to watch
+    in configuration file.
 
 ### Notifications
 
@@ -440,26 +442,49 @@ Also send this summary by email to `SUPERVISOR_MAIL_TO` list.
 
 ## Installation
 
-1. Move to the directory where you wish to store the source.
+1. Move to the directory where you wish to store the source and clone the repository:
 
-2. Clone the repository:
-```bash
-$ git clone https://github.com/geoffroy-aubry/Supervisor.git
-```
+    ```bash
+    $ git clone https://github.com/geoffroy-aubry/Supervisor.git
+    ```
 
-3. You should be on `stable` branch. If not, switch your clone to that branch:
-```bash
-$ cd Supervisor && git checkout stable
-```
+2. You should be on `stable` branch. If not, switch your clone to that branch:
+
+    ```bash
+    $ cd Supervisor && git checkout stable
+    ```
+
+3. If you have to supervise scripts producing CSV output,
+   then install [Awk CSV parser](https://github.com/geoffroy-aubry/awk-csv-parser) component:
+    * Manually:
+        * See [Installation section](https://github.com/geoffroy-aubry/awk-csv-parser#installation)
+          of Awk CSV parser's `README.md`.
+
+        * Then update `SUPERVISOR_CSV_PARSER` constant in `/conf/supervisor.sh`:
+
+            ```bash
+            SUPERVISOR_CSV_PARSER="/path/to/csv-parser.awk"
+            ```
+    * Via [composer](http://getcomposer.org) *(require PHP >= 5.3.3)*:
+
+        ```bash
+        $ composer install
+        # or
+        $ php composer.phar install
+        ```
+
+        *See <http://getcomposer.org/doc/00-intro.md#installation-nix> for more information to install composer.*
 
 4. You can create a symlink to `supervisor.sh`:
-```bash
-$ sudo ln -s /path/to/src/supervisor.sh /usr/local/bin/supervisor
-```
 
-5. It's ready for use:
+    ```bash
+    $ sudo ln -s /path/to/src/supervisor.sh /usr/local/bin/supervisor
+    ```
+
+It's ready for use:
+
 ```bash
-$ supervisor
+$ supervisor --help
 ```
 
 ## Copyrights & licensing
