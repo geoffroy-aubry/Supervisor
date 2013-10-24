@@ -95,7 +95,7 @@ function getOpts () {
                 parameter=${i#*=}
                 name=$SUPERVISOR_PREFIX_EXT_PARAM${parameter%=*}
                 value=${parameter#*=}
-                declare -rg -- $name="$value"    # readonly and global
+                readonly $name="$value"    # readonly and global
                 ;;
 
             --summarize=*)
