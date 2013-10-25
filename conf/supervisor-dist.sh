@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ##
 # Copyright © 2013 Geoffroy Aubry <geoffroy.aubry@free.fr>
@@ -27,6 +27,7 @@ CONF_DIR=$ROOT_DIR/conf
 SRC_DIR=$ROOT_DIR/src
 INC_DIR=$SRC_DIR/inc
 LOG_DIR='/var/log/supervisor'
+EMAIL_TEMPLATES_DIR=$SRC_DIR/templates
 
 # All these files must be in $LOG_DIR/ directory:
 SUPERVISOR_ERROR_LOG_FILE=$LOG_DIR/supervisor.error.log
@@ -60,6 +61,22 @@ SUPERVISOR_WARNING_TAG='[WARNING]'
 SUPERVISOR_DEBUG_TAG='[DEBUG]'
 SUPERVISOR_MAILTO_TAG='[MAILTO]'
 SUPERVISOR_MAIL_ATTACHMENT_TAG='[MAIL_ATTACHMENT]'
+
+# Expected output format: {'txt', 'csv'}
+SUPERVISOR_OUTPUT_FORMAT='txt'
+
+# Number of the output CSV's field containing messages to watch (1-based):
+SUPERVISOR_CSV_FIELD_TO_SCAN=2
+
+# Set the CSV field separator (one character only):
+SUPERVISOR_CSV_FIELD_SEPARATOR=','
+
+# Set the CSV field enclosure (one character only):
+SUPERVISOR_CSV_FIELD_ENCLOSURE='"'
+
+# Path to 'csv-parser.awk' CSV parser
+# @see https://github.com/geoffroy-aubry/awk-csv-parser for more details.
+SUPERVISOR_CSV_PARSER="$ROOT_DIR/vendor/bin/csv-parser.awk"
 
 ##
 # Colors and decorations types.

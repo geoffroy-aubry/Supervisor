@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ##
 # Copyright © 2013 Geoffroy Aubry <geoffroy.aubry@free.fr>
@@ -29,8 +29,6 @@
 ##
 # Initialisation du répertoire de logs :
 #
-# @uses $EXECUTION_ID, $LOG_DIR, $SCRIPT_ERROR_LOG_FILE, $SCRIPT_INFO_LOG_FILE, $SCRIPT_NAME
-#
 function initScriptLogs () {
     [ -d "$LOG_DIR" ] || mkdir -p "$LOG_DIR"
     SCRIPT_ERROR_LOG_FILE=$LOG_DIR/$(basename "$SCRIPT_NAME").$EXECUTION_ID.error.log
@@ -40,28 +38,40 @@ function initScriptLogs () {
 }
 
 ##
+# Returns specified timestamp formatted in respect of $SUPERVISOR_OUTPUT_FORMAT.
+#
+# @param string $1 timestamp
+# @return string in global variable $RETVAL.
+#
+function getScriptFormattedTimestamp () {
+    local now="$1"
+    if [[ $SUPERVISOR_OUTPUT_FORMAT == 'csv' ]]; then
+        RETVAL="$SUPERVISOR_CSV_FIELD_ENCLOSURE$now$SUPERVISOR_CSV_FIELD_ENCLOSURE$SUPERVISOR_CSV_FIELD_SEPARATOR"
+    else
+        RETVAL="$now;"
+    fi
+}
+
+##
 # S'assure de l'existence du script à superviser.
 #
-# @uses $SCRIPT_NAME, $EXECUTION_ID, $SUPERVISOR_INFO_LOG_FILE, $SCRIPT_PARAMETERS.
-#
 function checkScriptCalled () {
-    local now
+    local datecs script_datecs
+    getDateWithCS; datecs="$RETVAL"
+    getScriptFormattedTimestamp "$datecs" && script_datecs="$RETVAL"
     if [ -z "$SCRIPT_NAME" ]; then
-        getDateWithCS; now="$RETVAL"
-        echo "$now;$EXECUTION_ID;NO SCRIPT;INIT ERROR" >> $SUPERVISOR_INFO_LOG_FILE
-        echo "$now;${SUPERVISOR_PREFIX_MSG}ERROR" >> $SCRIPT_INFO_LOG_FILE
+        echo "$datecs;$EXECUTION_ID;NO SCRIPT;INIT ERROR" >> $SUPERVISOR_INFO_LOG_FILE
+        echo "$script_datecs${SUPERVISOR_PREFIX_MSG}ERROR" >> $SCRIPT_INFO_LOG_FILE
         [ "$SUPERVISOR_MAIL_SEND_ON_ERROR" -eq 1 ] && sendMailOnError
         die "Missing script name!" 65
     elif [ ! -f "$SCRIPT_NAME" ]; then
-        getDateWithCS; now="$RETVAL"
-        echo "$now;$EXECUTION_ID;$SCRIPT_NAME;INIT ERROR" >> $SUPERVISOR_INFO_LOG_FILE
-        echo "$now;${SUPERVISOR_PREFIX_MSG}ERROR" >> $SCRIPT_INFO_LOG_FILE
+        echo "$datecs;$EXECUTION_ID;$SCRIPT_NAME;INIT ERROR" >> $SUPERVISOR_INFO_LOG_FILE
+        echo "$script_datecs${SUPERVISOR_PREFIX_MSG}ERROR" >> $SCRIPT_INFO_LOG_FILE
         [ "$SUPERVISOR_MAIL_SEND_ON_ERROR" -eq 1 ] && sendMailOnError
         die "Script '<b>$SCRIPT_NAME</b>' not found!" 66
     elif [ ! -x "$SCRIPT_NAME" ]; then
-        getDateWithCS; now="$RETVAL"
-        echo "$now;$EXECUTION_ID;$SCRIPT_NAME;INIT ERROR" >> $SUPERVISOR_INFO_LOG_FILE
-        echo "$now;${SUPERVISOR_PREFIX_MSG}ERROR" >> $SCRIPT_INFO_LOG_FILE
+        echo "$datecs;$EXECUTION_ID;$SCRIPT_NAME;INIT ERROR" >> $SUPERVISOR_INFO_LOG_FILE
+        echo "$script_datecs${SUPERVISOR_PREFIX_MSG}ERROR" >> $SCRIPT_INFO_LOG_FILE
         [ "$SUPERVISOR_MAIL_SEND_ON_ERROR" -eq 1 ] && sendMailOnError
         die "Script '<b>$SCRIPT_NAME</b>' is not executable!" 67
     fi
@@ -70,25 +80,23 @@ function checkScriptCalled () {
 ##
 # Initialisation des logs et notification du START.
 #
-# @uses $EXECUTION_ID, $SCRIPT_INFO_LOG_FILE, $SCRIPT_NAME, $SUPERVISOR_INFO_LOG_FILE, $SUPERVISOR_MAIL_SUBJECT_PREFIX
-#
 function initExecutionOfScript () {
     local script_name="${SCRIPT_NAME:-NO SCRIPT}"
-    getDateWithCS; local datecs="$RETVAL"
+    local datecs script_datecs
+    getDateWithCS; datecs="$RETVAL"
+    getScriptFormattedTimestamp "$datecs" && script_datecs="$RETVAL"
     echo "$datecs;$EXECUTION_ID;$script_name;START" >> $SUPERVISOR_INFO_LOG_FILE
-    echo "$datecs;${SUPERVISOR_PREFIX_MSG}START" >> $SCRIPT_INFO_LOG_FILE
+    echo "$script_datecs${SUPERVISOR_PREFIX_MSG}START" >> $SCRIPT_INFO_LOG_FILE
     echo
 
     local msg="Starting script '<b>$script_name</b>' with id '<b>$EXECUTION_ID</b>'"
     CUI_displayMsg help "$msg"
 
-    [ "$SUPERVISOR_MAIL_SEND_ON_STARTUP" -eq 1 ] && sendMailOnInit
+    [ "$SUPERVISOR_MAIL_SEND_ON_STARTUP" -eq 1 ] && sendMailOnStartup
 }
 
 ##
 # Appel du script passé en paramètres, en empilant le log d'erreurs à la suite des paramètres déjà fournis.
-#
-# @uses $EXECUTION_ID, $SCRIPT_ERROR_LOG_FILE, $SCRIPT_INFO_LOG_FILE, $SCRIPT_NAME, $SCRIPT_PARAMETERS
 #
 function executeScript () {
     local lock_failed=0
@@ -107,20 +115,20 @@ function executeScript () {
         $SCRIPT_NAME $SCRIPT_PARAMETERS $EXECUTION_ID $SCRIPT_ERROR_LOG_FILE 2>>$SCRIPT_ERROR_LOG_FILE > $pipe &
         pid=$!
 
-        local now
+        local datecs script_datecs
         local color_start="$(echo -e "${CUI_COLORS['processing']}")"
         local color_end=$'\E'\[0m
         local pattern='[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} [0-9]{2}cs, '
         while IFS='' read line; do
             IFS="$src_ifs"
-            getDateWithCS; now="$RETVAL"
+            getDateWithCS; datecs="$RETVAL"
 
             if [ "$SUPERVISOR_ABOVE_SUPERVISOR_STRATEGY" -ne 1 ]; then
                 if [[ "$line" =~ ^("$color_start"$pattern"$color_end") ]]; then
 
                     # Do not add timestamp when inner timestamp exists:
                     if [ "$SUPERVISOR_ABOVE_SUPERVISOR_STRATEGY" -eq 2 ]; then
-                        now="${line:7:24}"	# on ne garde que la date, sans les couleurs et sans ', '
+                        datecs="${line:7:24}"	# on ne garde que la date, sans les couleurs et sans ', '
                         line="${line:37}"	# on ne garde que la partie suivant la date
 
                     # Remove inner timestamp:
@@ -130,8 +138,9 @@ function executeScript () {
                 fi
             fi
 
-            echo "$now;$line" | sed -r 's:(\033|\x1B)\[[0-9;]*[mK]::ig' >> $SCRIPT_INFO_LOG_FILE
-            displayScriptMsg "$now" "$line"
+            getScriptFormattedTimestamp "$datecs" && script_datecs="$RETVAL"
+            echo "$script_datecs$line" | sed -r 's:(\033|\x1B)\[[0-9;]*[mK]::ig' >> $SCRIPT_INFO_LOG_FILE
+            displayScriptMsg "$datecs" "$line"
         done < $pipe
         rm -f $pipe
 
@@ -149,16 +158,17 @@ function executeScript () {
 ##
 # Gestion des erreurs, affichage et envoi de mails après exécution du script supervisé.
 #
-# @uses $EXECUTION_ID, $SCRIPT_ERROR_LOG_FILE, $SCRIPT_INFO_LOG_FILE, $SCRIPT_NAME, $SUPERVISOR_INFO_LOG_FILE, $SUPERVISOR_MAIL_SUBJECT_PREFIX
-#
 function displayResult () {
+    local datecs script_datecs
+    getDateWithCS; datecs="$RETVAL"
+    getScriptFormattedTimestamp "$datecs" && script_datecs="$RETVAL"
+
     # if error:
     if [ -s $SCRIPT_ERROR_LOG_FILE ]; then
         local src_ifs="$IFS"
 
-        getDateWithCS; local datecs="$RETVAL"
         echo "$datecs;$EXECUTION_ID;$SCRIPT_NAME;ERROR" >> $SUPERVISOR_INFO_LOG_FILE
-        echo "$datecs;${SUPERVISOR_PREFIX_MSG}ERROR" >> $SCRIPT_INFO_LOG_FILE
+        echo "$script_datecs${SUPERVISOR_PREFIX_MSG}ERROR" >> $SCRIPT_INFO_LOG_FILE
         CUI_displayMsg error "Script '<b>$SCRIPT_NAME</b>' FAILED!"
         echo
 
@@ -178,9 +188,8 @@ function displayResult () {
     # else if warnings:
     elif [ "${#WARNING_MSG[*]}" -gt 0 ]; then
         local plural
-        getDateWithCS; local datecs="$RETVAL"
         echo "$datecs;$EXECUTION_ID;$SCRIPT_NAME;WARNING" >> $SUPERVISOR_INFO_LOG_FILE
-        echo "$datecs;${SUPERVISOR_PREFIX_MSG}WARNING" >> $SCRIPT_INFO_LOG_FILE
+        echo "$script_datecs${SUPERVISOR_PREFIX_MSG}WARNING" >> $SCRIPT_INFO_LOG_FILE
         [ "${#WARNING_MSG[*]}" -gt 1 ] && plural='S' || plural=''
         CUI_displayMsg warning "${#WARNING_MSG[*]} WARNING$plural"
         echo
@@ -193,9 +202,8 @@ function displayResult () {
 
     # else if successful:
     else
-        getDateWithCS; local datecs="$RETVAL"
         echo "$datecs;$EXECUTION_ID;$SCRIPT_NAME;OK" >> $SUPERVISOR_INFO_LOG_FILE
-        echo "$datecs;${SUPERVISOR_PREFIX_MSG}OK" >> $SCRIPT_INFO_LOG_FILE
+        echo "$script_datecs${SUPERVISOR_PREFIX_MSG}OK" >> $SCRIPT_INFO_LOG_FILE
         CUI_displayMsg ok 'OK'
         echo
         CUI_displayMsg help "Supervisor log file: $(dirname $SUPERVISOR_INFO_LOG_FILE)/<b>$(basename $SUPERVISOR_INFO_LOG_FILE)</b>"
@@ -220,14 +228,32 @@ function displayScriptMsg {
     local msg="$2"
     local msg_wo_tab msg_wo_color tmsg i warning_msg
 
-    # Trim:
-    msg_wo_tab="$msg"
-    while [ "${msg_wo_tab:0:${#SUPERVISOR_LOG_TABULATION}}" = "$SUPERVISOR_LOG_TABULATION" ]; do
-        msg_wo_tab="${msg_wo_tab:${#SUPERVISOR_LOG_TABULATION}}"
-    done
-    msg_wo_color="$(echo "$msg_wo_tab" | sed -r 's:(\033|\x1B)\[[0-9;]*[mK]::ig')"
-    tmsg="${msg_wo_color##+( )}"	# ltrim
+    # Clean CSV message:
+    if [[ $SUPERVISOR_OUTPUT_FORMAT = 'csv' ]]; then
+        tmsg="$(echo "$msg" | awk -f $SUPERVISOR_CSV_PARSER \
+            -v separator="$SUPERVISOR_CSV_FIELD_SEPARATOR" \
+            -v enclosure="$SUPERVISOR_CSV_FIELD_ENCLOSURE" \
+            -v target_column="$SUPERVISOR_CSV_FIELD_TO_SCAN" \
+            --source '{
+                csv_parse_record($0, separator, enclosure, csv)
+                print csv[target_column-1]
+            }' \
+        )"
+        msg_wo_tab="$msg"
+        msg_wo_color="$msg"
 
+    # …else clean simple TXT message:
+    else
+        # Trim:
+        msg_wo_tab="$msg"
+        while [ "${msg_wo_tab:0:${#SUPERVISOR_LOG_TABULATION}}" = "$SUPERVISOR_LOG_TABULATION" ]; do
+            msg_wo_tab="${msg_wo_tab:${#SUPERVISOR_LOG_TABULATION}}"
+        done
+        msg_wo_color="$(echo "$msg_wo_tab" | sed -r 's:(\033|\x1B)\[[0-9;]*[mK]::ig')"
+        tmsg="${msg_wo_color##+( )}"	# ltrim
+    fi
+
+    # Detect tags:
     if [ "${tmsg:0:9}" = "$SUPERVISOR_WARNING_TAG" ]; then
         echo -n $date
         i=$(( ${#msg} - ${#msg_wo_tab} ))
@@ -527,5 +553,16 @@ $tab${tab}Executable script to oversee.
 $tab
 $tab$param<script-parameters>
 $tab${tab}Optional oversaw script's parameters.
+
+${title}Exit status
+${tab}$param  0$normal if and only if no error
+${tab}$param 65$normal Missing script name!
+${tab}$param 66$normal Script '…' not found!
+${tab}$param 67$normal Script '…' is not executable!
+${tab}$param 68$normal Exit code changed from 0 to 68 due to errors.
+${tab}$param 69$normal Another instance of '…' is still running with supervisor!
+${tab}$param 71$normal Customized mails file not found: '…'
+${tab}$param 72$normal Invalid Mutt command: '…'
+${tab}${param}xxx$normal Any code not null returned by user script
 "
 }

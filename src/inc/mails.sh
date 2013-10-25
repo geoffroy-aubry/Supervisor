@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ##
 # Copyright © 2013 Geoffroy Aubry <geoffroy.aubry@free.fr>
@@ -35,8 +35,10 @@ function getMailInstigator () {
 }
 
 function getElapsedTime () {
-    local t0="$(cat "$SCRIPT_INFO_LOG_FILE" | head -n1 | awk '{print $1" "$2}')"
-    local t1="$(cat "$SCRIPT_INFO_LOG_FILE" | tail -n1 | awk '{print $1" "$2}')"
+    local pattern
+    [[ $SUPERVISOR_OUTPUT_FORMAT == 'csv' ]] && pattern='^.' || pattern='^'
+    local t0="$(cat "$SCRIPT_INFO_LOG_FILE" | head -n1 | sed "s/$pattern//" | awk '{print $1" "$2}')"
+    local t1="$(cat "$SCRIPT_INFO_LOG_FILE" | tail -n1 | sed "s/$pattern//" | awk '{print $1" "$2}')"
     local seconds=$(( $(date -d "$t1" +%s) - $(date -d "$t0" +%s) ))
     [[ $seconds -eq 0 ]] && (( seconds=seconds+1 ))
 
@@ -106,7 +108,7 @@ function parentSendMailOnError () {
         -e "s/{{script_info_log_file}}/$(basename "$SCRIPT_INFO_LOG_FILE")/g" \
         -e "s/{{script_error_log_file}}/$(basename "$SCRIPT_ERROR_LOG_FILE")/g" \
         -e "s/{{error_msg}}/$error_msg/g" \
-        "$SRC_DIR/templates/error.html" \
+        "$EMAIL_TEMPLATES_DIR/error.html" \
     )
     sendMail "$(getMailSubject ERROR)" "$mail_msg" "$SCRIPT_ERROR_LOG_FILE.gz"
 }
@@ -119,7 +121,7 @@ function parentSendMailOnWarning () {
     local warning_html="$(echo "$warning_context" \
         | sed -r \
             -e 's|^[0-9]+-(.*)$|<span style="color:#9b8861">\1</span>|' \
-            -e 's|^--$|<span style="color:#9b8861">[…]</span>|' \
+            -e 's|^--$|<span style="color:#9b8861;font-style:italic">[…]</span>|' \
             -e 's|^[0-9]+:||' \
     )"
 
@@ -141,7 +143,7 @@ function parentSendMailOnWarning () {
         -e "s/{{supervisor_info_log_file}}/$(basename "$SUPERVISOR_INFO_LOG_FILE")/g" \
         -e "s/{{script_info_log_file}}/$(basename "$SCRIPT_INFO_LOG_FILE")/g" \
         -e "s/{{warning_msg}}/$warning_msg/g" \
-        "$SRC_DIR/templates/warning.html" \
+        "$EMAIL_TEMPLATES_DIR/warning.html" \
     )
 
     sendMail "$(getMailSubject WARNING)" "$mail_msg" ''
@@ -160,12 +162,12 @@ function parentSendMailOnSuccess () {
         -e "s/{{log_dir}}/$log_dir/g" \
         -e "s/{{supervisor_info_log_file}}/$(basename "$SUPERVISOR_INFO_LOG_FILE")/g" \
         -e "s/{{script_info_log_file}}/$(basename "$SCRIPT_INFO_LOG_FILE")/g" \
-        "$SRC_DIR/templates/success.html" \
+        "$EMAIL_TEMPLATES_DIR/success.html" \
     )
     sendMail "$(getMailSubject SUCCESS)" "$mail_msg" ''
 }
 
-function parentSendMailOnInit () {
+function parentSendMailOnStartup () {
     local script_name="$(echo "$SCRIPT_NAME" | sed 's|\(/\)|\\\1|g')"
     local mail_msg=$(sed \
         -e "s/{{date}}/$(date +'%Y-%m-%d, %H:%M:%S')/g" \
@@ -174,7 +176,7 @@ function parentSendMailOnInit () {
         -e "s/{{server}}/$(hostname)/g" \
         -e "s/{{instigator}}/$(getMailInstigator)/g" \
         -e "s/{{cmd}}/$(getCmd)/g" \
-        "$SRC_DIR/templates/starting.html" \
+        "$EMAIL_TEMPLATES_DIR/starting.html" \
     )
     rawSendMail "$(getMailSubject STARTING)" "$mail_msg" ''
 }
@@ -191,6 +193,6 @@ function sendMailOnSuccess () {
     parentSendMailOnSuccess
 }
 
-function sendMailOnInit () {
-    parentSendMailOnInit
+function sendMailOnStartup () {
+    parentSendMailOnStartup
 }

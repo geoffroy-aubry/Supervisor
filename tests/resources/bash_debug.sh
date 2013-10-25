@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 echo Title:
 echo -e '\033[0;30m┆\033[0m   level 1'
