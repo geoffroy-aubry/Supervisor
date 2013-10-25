@@ -35,8 +35,10 @@ function getMailInstigator () {
 }
 
 function getElapsedTime () {
-    local t0="$(cat "$SCRIPT_INFO_LOG_FILE" | head -n1 | awk '{print $1" "$2}')"
-    local t1="$(cat "$SCRIPT_INFO_LOG_FILE" | tail -n1 | awk '{print $1" "$2}')"
+    local pattern
+    [[ $SUPERVISOR_OUTPUT_FORMAT == 'csv' ]] && pattern='^.' || pattern='^'
+    local t0="$(cat "$SCRIPT_INFO_LOG_FILE" | head -n1 | sed "s/$pattern//" | awk '{print $1" "$2}')"
+    local t1="$(cat "$SCRIPT_INFO_LOG_FILE" | tail -n1 | sed "s/$pattern//" | awk '{print $1" "$2}')"
     local seconds=$(( $(date -d "$t1" +%s) - $(date -d "$t0" +%s) ))
     [[ $seconds -eq 0 ]] && (( seconds=seconds+1 ))
 
@@ -119,7 +121,7 @@ function parentSendMailOnWarning () {
     local warning_html="$(echo "$warning_context" \
         | sed -r \
             -e 's|^[0-9]+-(.*)$|<span style="color:#9b8861">\1</span>|' \
-            -e 's|^--$|<span style="color:#9b8861">[…]</span>|' \
+            -e 's|^--$|<span style="color:#9b8861;font-style:italic">[…]</span>|' \
             -e 's|^[0-9]+:||' \
     )"
 
