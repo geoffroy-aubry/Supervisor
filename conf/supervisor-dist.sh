@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ##
 # Copyright © 2013 Geoffroy Aubry <geoffroy.aubry@free.fr>

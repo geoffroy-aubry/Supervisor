@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 echo '[MAIL_ATTACHMENT]/path/to/file1'
 echo Title:

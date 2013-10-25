@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ##
 # Usage: tests/inc/codeCoverage.sh <src_dir> <tests_dir>

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 echo -e "
 \033[1;36m(i) \033[0;36mStarting script '\033[1;36mtests/resources/bash_colored_simple.sh\033[0;36m' with id '\033[1;36m20131002075605_28465\033[0;36m'\033[0m

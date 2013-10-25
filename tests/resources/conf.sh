@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # PATHS
 ROOT_DIR="{root_dir}"

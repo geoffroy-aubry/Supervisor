@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 echo '[MAILTO]test1@xyz.com'
 echo Title:

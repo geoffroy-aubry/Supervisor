@@ -174,7 +174,7 @@ An execution is successful if and only if `stderr` is empty, exit status is `0` 
 A short example, here in Bash but no matter the language:
 
 ```bash
-#!/bin/bash
+#!/usr/bin/env bash
 
 echo Title:
 echo -e '\033[0;30m┆\033[0m   \033[1;32mgreen level 1'
@@ -334,7 +334,7 @@ It's an error!
 Content of `tests/resources/bash_exit_not_null.sh`:
 
 ```bash
-#!/bin/bash
+#!/usr/bin/env bash
 
 exit 42
 ```
