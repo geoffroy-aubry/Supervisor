@@ -29,8 +29,6 @@
 ##
 # Initialisation du répertoire de logs :
 #
-# @uses $EXECUTION_ID, $LOG_DIR, $SCRIPT_ERROR_LOG_FILE, $SCRIPT_INFO_LOG_FILE, $SCRIPT_NAME
-#
 function initScriptLogs () {
     [ -d "$LOG_DIR" ] || mkdir -p "$LOG_DIR"
     SCRIPT_ERROR_LOG_FILE=$LOG_DIR/$(basename "$SCRIPT_NAME").$EXECUTION_ID.error.log
@@ -57,8 +55,6 @@ function getScriptFormattedTimestamp () {
 ##
 # S'assure de l'existence du script à superviser.
 #
-# @uses $SCRIPT_NAME, $EXECUTION_ID, $SUPERVISOR_INFO_LOG_FILE, $SCRIPT_PARAMETERS.
-#
 function checkScriptCalled () {
     local now script_now
     getDateWithCS; now="$RETVAL"
@@ -84,8 +80,6 @@ function checkScriptCalled () {
 ##
 # Initialisation des logs et notification du START.
 #
-# @uses $EXECUTION_ID, $SCRIPT_INFO_LOG_FILE, $SCRIPT_NAME, $SUPERVISOR_INFO_LOG_FILE, $SUPERVISOR_MAIL_SUBJECT_PREFIX
-#
 function initExecutionOfScript () {
     local script_name="${SCRIPT_NAME:-NO SCRIPT}"
     local datecs script_now
@@ -103,8 +97,6 @@ function initExecutionOfScript () {
 
 ##
 # Appel du script passé en paramètres, en empilant le log d'erreurs à la suite des paramètres déjà fournis.
-#
-# @uses $EXECUTION_ID, $SCRIPT_ERROR_LOG_FILE, $SCRIPT_INFO_LOG_FILE, $SCRIPT_NAME, $SCRIPT_PARAMETERS
 #
 function executeScript () {
     local lock_failed=0
@@ -165,8 +157,6 @@ function executeScript () {
 
 ##
 # Gestion des erreurs, affichage et envoi de mails après exécution du script supervisé.
-#
-# @uses $EXECUTION_ID, $SCRIPT_ERROR_LOG_FILE, $SCRIPT_INFO_LOG_FILE, $SCRIPT_NAME, $SUPERVISOR_INFO_LOG_FILE, $SUPERVISOR_MAIL_SUBJECT_PREFIX
 #
 function displayResult () {
     local datecs script_now
