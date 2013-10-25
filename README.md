@@ -153,6 +153,17 @@ $ supervisor.sh [-h|--help]
         <script-parameters>
             Optional oversaw script's parameters.
 
+    Exit status
+          0 if and only if no error
+         65 Missing script name!
+         66 Script '…' not found!
+         67 Script '…' is not executable!
+         68 Exit code changed from 0 to 68 due to errors.
+         69 Another instance of '…' is still running with supervisor!
+         71 Customized mails file not found: '…'
+         72 Invalid Mutt command: '…'
+        xxx Any code not null returned by user script
+
 ### Exit status
 
 List of exit status:

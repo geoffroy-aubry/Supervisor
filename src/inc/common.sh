@@ -553,5 +553,16 @@ $tab${tab}Executable script to oversee.
 $tab
 $tab$param<script-parameters>
 $tab${tab}Optional oversaw script's parameters.
+
+${title}Exit status
+${tab}$param  0$normal if and only if no error
+${tab}$param 65$normal Missing script name!
+${tab}$param 66$normal Script '…' not found!
+${tab}$param 67$normal Script '…' is not executable!
+${tab}$param 68$normal Exit code changed from 0 to 68 due to errors.
+${tab}$param 69$normal Another instance of '…' is still running with supervisor!
+${tab}$param 71$normal Customized mails file not found: '…'
+${tab}$param 72$normal Invalid Mutt command: '…'
+${tab}${param}xxx$normal Any code not null returned by user script
 "
 }
