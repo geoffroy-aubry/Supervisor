@@ -1,6 +1,16 @@
 Change log
 ==========
 
+## Version 1.2.0 (2013-10-25)
+
+Features:
+
+  - [#4](https://github.com/geoffroy-aubry/Supervisor/issues/4): Handle CSV output of supervised scripts
+
+Unit tests:
+
+  - estimated code coverage: 88% (530 of 601 lines).
+
 ## Version 1.1.0 (2013-10-18)
 
 UI:
