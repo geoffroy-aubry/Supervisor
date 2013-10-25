@@ -27,6 +27,7 @@ CONF_DIR=$ROOT_DIR/conf
 SRC_DIR=$ROOT_DIR/src
 INC_DIR=$SRC_DIR/inc
 LOG_DIR='/var/log/supervisor'
+EMAIL_TEMPLATES_DIR=$SRC_DIR/templates
 
 # All these files must be in $LOG_DIR/ directory:
 SUPERVISOR_ERROR_LOG_FILE=$LOG_DIR/supervisor.error.log

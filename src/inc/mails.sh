@@ -108,7 +108,7 @@ function parentSendMailOnError () {
         -e "s/{{script_info_log_file}}/$(basename "$SCRIPT_INFO_LOG_FILE")/g" \
         -e "s/{{script_error_log_file}}/$(basename "$SCRIPT_ERROR_LOG_FILE")/g" \
         -e "s/{{error_msg}}/$error_msg/g" \
-        "$SRC_DIR/templates/error.html" \
+        "$EMAIL_TEMPLATES_DIR/error.html" \
     )
     sendMail "$(getMailSubject ERROR)" "$mail_msg" "$SCRIPT_ERROR_LOG_FILE.gz"
 }
@@ -143,7 +143,7 @@ function parentSendMailOnWarning () {
         -e "s/{{supervisor_info_log_file}}/$(basename "$SUPERVISOR_INFO_LOG_FILE")/g" \
         -e "s/{{script_info_log_file}}/$(basename "$SCRIPT_INFO_LOG_FILE")/g" \
         -e "s/{{warning_msg}}/$warning_msg/g" \
-        "$SRC_DIR/templates/warning.html" \
+        "$EMAIL_TEMPLATES_DIR/warning.html" \
     )
 
     sendMail "$(getMailSubject WARNING)" "$mail_msg" ''
@@ -162,7 +162,7 @@ function parentSendMailOnSuccess () {
         -e "s/{{log_dir}}/$log_dir/g" \
         -e "s/{{supervisor_info_log_file}}/$(basename "$SUPERVISOR_INFO_LOG_FILE")/g" \
         -e "s/{{script_info_log_file}}/$(basename "$SCRIPT_INFO_LOG_FILE")/g" \
-        "$SRC_DIR/templates/success.html" \
+        "$EMAIL_TEMPLATES_DIR/success.html" \
     )
     sendMail "$(getMailSubject SUCCESS)" "$mail_msg" ''
 }
@@ -176,7 +176,7 @@ function parentSendMailOnStartup () {
         -e "s/{{server}}/$(hostname)/g" \
         -e "s/{{instigator}}/$(getMailInstigator)/g" \
         -e "s/{{cmd}}/$(getCmd)/g" \
-        "$SRC_DIR/templates/starting.html" \
+        "$EMAIL_TEMPLATES_DIR/starting.html" \
     )
     rawSendMail "$(getMailSubject STARTING)" "$mail_msg" ''
 }

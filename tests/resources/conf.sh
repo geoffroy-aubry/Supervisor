@@ -6,6 +6,7 @@ CONF_DIR=$ROOT_DIR/conf
 SRC_DIR=$ROOT_DIR/src
 INC_DIR=$SRC_DIR/inc
 LOG_DIR="{log_dir}"
+EMAIL_TEMPLATES_DIR=$SRC_DIR/templates
 
 SUPERVISOR_ERROR_LOG_FILE=$LOG_DIR/supervisor.error.log
 SUPERVISOR_INFO_LOG_FILE=$LOG_DIR/supervisor.info.log
