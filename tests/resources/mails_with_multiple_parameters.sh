@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-function sendMailOnInit () {
+function sendMailOnStartup () {
     local mail_msg="<h3>Starting script '<b>$SCRIPT_NAME</b>' with id '<b>$EXECUTION_ID</b>'.</h3>\
 $(getMailInstigator)\
 You will receive another email at the end of execution."

@@ -92,7 +92,7 @@ function initExecutionOfScript () {
     local msg="Starting script '<b>$script_name</b>' with id '<b>$EXECUTION_ID</b>'"
     CUI_displayMsg help "$msg"
 
-    [ "$SUPERVISOR_MAIL_SEND_ON_STARTUP" -eq 1 ] && sendMailOnInit
+    [ "$SUPERVISOR_MAIL_SEND_ON_STARTUP" -eq 1 ] && sendMailOnStartup
 }
 
 ##

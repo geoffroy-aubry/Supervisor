@@ -35,10 +35,10 @@ class SentMailsTest extends SupervisorTestCase
     /**
      * @shcovers inc/mails.sh::getMailInstigator
      * @shcovers inc/mails.sh::getMailSubject
-     * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::parentSendMailOnStartup
      * @shcovers inc/mails.sh::rawSendMail
      * @shcovers inc/mails.sh::sendMail
-     * @shcovers inc/mails.sh::sendMailOnInit
+     * @shcovers inc/mails.sh::sendMailOnStartup
      */
     public function testInitMailWithPhpNotice ()
     {
@@ -54,10 +54,10 @@ class SentMailsTest extends SupervisorTestCase
     /**
      * @shcovers inc/mails.sh::getMailInstigator
      * @shcovers inc/mails.sh::getMailSubject
-     * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::parentSendMailOnStartup
      * @shcovers inc/mails.sh::rawSendMail
      * @shcovers inc/mails.sh::sendMail
-     * @shcovers inc/mails.sh::sendMailOnInit
+     * @shcovers inc/mails.sh::sendMailOnStartup
      *
      * @shcovers inc/mails.sh::compressAttachedFiles
      * @shcovers inc/mails.sh::parentSendMailOnError
@@ -80,10 +80,10 @@ class SentMailsTest extends SupervisorTestCase
     /**
      * @shcovers inc/mails.sh::getMailInstigator
      * @shcovers inc/mails.sh::getMailSubject
-     * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::parentSendMailOnStartup
      * @shcovers inc/mails.sh::rawSendMail
      * @shcovers inc/mails.sh::sendMail
-     * @shcovers inc/mails.sh::sendMailOnInit
+     * @shcovers inc/mails.sh::sendMailOnStartup
      *
      * @shcovers inc/mails.sh::compressAttachedFiles
      * @shcovers inc/mails.sh::parentSendMailOnError
@@ -129,10 +129,10 @@ class SentMailsTest extends SupervisorTestCase
     /**
      * @shcovers inc/mails.sh::getMailInstigator
      * @shcovers inc/mails.sh::getMailSubject
-     * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::parentSendMailOnStartup
      * @shcovers inc/mails.sh::rawSendMail
      * @shcovers inc/mails.sh::sendMail
-     * @shcovers inc/mails.sh::sendMailOnInit
+     * @shcovers inc/mails.sh::sendMailOnStartup
      *
      * @shcovers inc/mails.sh::compressAttachedFiles
      * @shcovers inc/mails.sh::parentSendMailOnSuccess
@@ -155,10 +155,10 @@ class SentMailsTest extends SupervisorTestCase
     /**
      * @shcovers inc/mails.sh::getMailInstigator
      * @shcovers inc/mails.sh::getMailSubject
-     * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::parentSendMailOnStartup
      * @shcovers inc/mails.sh::rawSendMail
      * @shcovers inc/mails.sh::sendMail
-     * @shcovers inc/mails.sh::sendMailOnInit
+     * @shcovers inc/mails.sh::sendMailOnStartup
      *
      * @shcovers inc/mails.sh::compressAttachedFiles
      * @shcovers inc/mails.sh::parentSendMailOnSuccess
@@ -203,10 +203,10 @@ class SentMailsTest extends SupervisorTestCase
     /**
      * @shcovers inc/mails.sh::getMailInstigator
      * @shcovers inc/mails.sh::getMailSubject
-     * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::parentSendMailOnStartup
      * @shcovers inc/mails.sh::rawSendMail
      * @shcovers inc/mails.sh::sendMail
-     * @shcovers inc/mails.sh::sendMailOnInit
+     * @shcovers inc/mails.sh::sendMailOnStartup
      *
      * @shcovers inc/mails.sh::compressAttachedFiles
      * @shcovers inc/mails.sh::parentSendMailOnError
@@ -225,10 +225,10 @@ class SentMailsTest extends SupervisorTestCase
     /**
      * @shcovers inc/mails.sh::getMailInstigator
      * @shcovers inc/mails.sh::getMailSubject
-     * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::parentSendMailOnStartup
      * @shcovers inc/mails.sh::rawSendMail
      * @shcovers inc/mails.sh::sendMail
-     * @shcovers inc/mails.sh::sendMailOnInit
+     * @shcovers inc/mails.sh::sendMailOnStartup
      *
      * @shcovers inc/mails.sh::compressAttachedFiles
      * @shcovers inc/mails.sh::parentSendMailOnError
@@ -251,10 +251,10 @@ class SentMailsTest extends SupervisorTestCase
     /**
      * @shcovers inc/mails.sh::getMailInstigator
      * @shcovers inc/mails.sh::getMailSubject
-     * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::parentSendMailOnStartup
      * @shcovers inc/mails.sh::rawSendMail
      * @shcovers inc/mails.sh::sendMail
-     * @shcovers inc/mails.sh::sendMailOnInit
+     * @shcovers inc/mails.sh::sendMailOnStartup
      *
      * @shcovers inc/mails.sh::compressAttachedFiles
      * @shcovers inc/mails.sh::parentSendMailOnError
@@ -277,10 +277,10 @@ class SentMailsTest extends SupervisorTestCase
     /**
      * @shcovers inc/mails.sh::getMailInstigator
      * @shcovers inc/mails.sh::getMailSubject
-     * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::parentSendMailOnStartup
      * @shcovers inc/mails.sh::rawSendMail
      * @shcovers inc/mails.sh::sendMail
-     * @shcovers inc/mails.sh::sendMailOnInit
+     * @shcovers inc/mails.sh::sendMailOnStartup
      *
      * @shcovers inc/mails.sh::compressAttachedFiles
      * @shcovers inc/mails.sh::parentSendMailOnError
@@ -339,10 +339,10 @@ class SentMailsTest extends SupervisorTestCase
     /**
      * @shcovers inc/mails.sh::getMailInstigator
      * @shcovers inc/mails.sh::getMailSubject
-     * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::parentSendMailOnStartup
      * @shcovers inc/mails.sh::rawSendMail
      * @shcovers inc/mails.sh::sendMail
-     * @shcovers inc/mails.sh::sendMailOnInit
+     * @shcovers inc/mails.sh::sendMailOnStartup
      *
      * @shcovers inc/mails.sh::compressAttachedFiles
      * @shcovers inc/mails.sh::parentSendMailOnWarning
@@ -365,10 +365,10 @@ class SentMailsTest extends SupervisorTestCase
     /**
      * @shcovers inc/mails.sh::getMailInstigator
      * @shcovers inc/mails.sh::getMailSubject
-     * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::parentSendMailOnStartup
      * @shcovers inc/mails.sh::rawSendMail
      * @shcovers inc/mails.sh::sendMail
-     * @shcovers inc/mails.sh::sendMailOnInit
+     * @shcovers inc/mails.sh::sendMailOnStartup
      *
      * @shcovers inc/mails.sh::compressAttachedFiles
      * @shcovers inc/mails.sh::parentSendMailOnSuccess
@@ -392,10 +392,10 @@ class SentMailsTest extends SupervisorTestCase
     /**
      * @shcovers inc/mails.sh::getMailInstigator
      * @shcovers inc/mails.sh::getMailSubject
-     * @shcovers inc/mails.sh::parentSendMailOnInit
+     * @shcovers inc/mails.sh::parentSendMailOnStartup
      * @shcovers inc/mails.sh::rawSendMail
      * @shcovers inc/mails.sh::sendMail
-     * @shcovers inc/mails.sh::sendMailOnInit
+     * @shcovers inc/mails.sh::sendMailOnStartup
      *
      * @shcovers inc/mails.sh::compressAttachedFiles
      * @shcovers inc/mails.sh::parentSendMailOnSuccess

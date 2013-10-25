@@ -167,7 +167,7 @@ function parentSendMailOnSuccess () {
     sendMail "$(getMailSubject SUCCESS)" "$mail_msg" ''
 }
 
-function parentSendMailOnInit () {
+function parentSendMailOnStartup () {
     local script_name="$(echo "$SCRIPT_NAME" | sed 's|\(/\)|\\\1|g')"
     local mail_msg=$(sed \
         -e "s/{{date}}/$(date +'%Y-%m-%d, %H:%M:%S')/g" \
@@ -193,6 +193,6 @@ function sendMailOnSuccess () {
     parentSendMailOnSuccess
 }
 
-function sendMailOnInit () {
-    parentSendMailOnInit
+function sendMailOnStartup () {
+    parentSendMailOnStartup
 }
