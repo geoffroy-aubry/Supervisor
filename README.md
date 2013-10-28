@@ -123,13 +123,16 @@ $ supervisor.sh [-h|--help]
         --customized-mails=<file>
             Path to a Bash script customizing sent mails by redefining some of
             the sendMailOn[Init|Success|Warning|Error]() functions.
-            See --param=<key>=<value> option.
+            See --param option.
 
         -h, --help
             Display this help.
 
         --mail-instigator=<email>
             Specify who executed the supervisor.
+
+        --mail-to=<email>
+            Add a new recipient's email address. Multiple --mail-to options may be used.
 
         --monitor
             Check whether supervisor's error log file is empty. If not, then send critical
