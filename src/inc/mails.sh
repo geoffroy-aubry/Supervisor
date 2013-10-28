@@ -55,7 +55,7 @@ function getElapsedTime () {
 
 function getCmd () {
     local parameters="$(echo "$SCRIPT_PARAMETERS" \
-        | sed -r -e "s/ +(--[a-z0-9_-]+=('[^']+'|\"[^\"]+\"|[^'][^ ]*))/\\\n\1\\\n/ig" -e 's/\n(\n|$)/\1/g')"
+        | sed -r -e "s/ +(--[a-z0-9_-]+(=('[^']+'|\"[^\"]+\"|[^'\" ]*))?)/\\\n\1\\\n/ig" -e 's/\n(\n|$)/\1/g')"
     echo -n "$SCRIPT_NAME\n$parameters\n$EXECUTION_ID\n$SCRIPT_ERROR_LOG_FILE\n2>>$SCRIPT_ERROR_LOG_FILE" \
         | sed -e 's/\\n *\\n/\\n/g' -e 's/\\n/\\n    /g' -e 's|\(/\)|\\\1|g'
 }
