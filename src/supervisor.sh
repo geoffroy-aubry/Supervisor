@@ -60,6 +60,7 @@ SUMMARIZE_NB_DAYS=0
 MIN_DAYS_BEFORE_ARCHIVING=1
 SCRIPT_INFO_LOG_FILE=''
 SCRIPT_ERROR_LOG_FILE=''
+ADD_MAIL_TO=''
 
 function getOpts () {
     local j=0
@@ -89,6 +90,7 @@ function getOpts () {
             --customized-mails=*) CUSTOMIZED_MAILS=${i#*=} ;;
             --help)               ACTION='help' ;;
             --mail-instigator=*)  MAIL_INSTIGATOR=' '${i#*=} ;;
+            --mail-to=*)          ADD_MAIL_TO="$ADD_MAIL_TO ${i#*=}" ;;
             --monitor)            ACTION='monitor' ;;
 
             --param=*)
@@ -125,6 +127,9 @@ loadCustomizedMails
 
 # to normalize string representation:
 SUPERVISOR_LOG_TABULATION=$(echo -e "$SUPERVISOR_LOG_TABULATION")
+
+# Concatenate recipients sources:
+SUPERVISOR_MAIL_TO="$SUPERVISOR_MAIL_TO $ADD_MAIL_TO"
 
 # Duplicate stderr:
 exec 2> >(tee -a $SUPERVISOR_ERROR_LOG_FILE >&2)

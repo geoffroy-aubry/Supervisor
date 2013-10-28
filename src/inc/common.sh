@@ -524,13 +524,16 @@ $tab
 $tab$opt--customized-mails$normal=$param<file>
 $tab${tab}Path to a Bash script customizing sent mails by redefining some of
 $tab${tab}the ${cmd}sendMailOn$normal[${cmd}Init$normal|${cmd}Success$normal|${cmd}Warning$normal|${cmd}Error$normal]${cmd}()$normal functions.
-$tab${tab}See $opt--param$normal=$param<key>=<value>$normal option.
+$tab${tab}See $opt--param$normal option.
 $tab
 $tab$opt-h$normal, $opt--help
 $tab${tab}Display this help.
 $tab
 $tab$opt--mail-instigator$normal=$param<email>
 $tab${tab}Specify who executed the supervisor.
+$tab
+$tab$opt--mail-to$normal=$param<email>
+$tab${tab}Add one new recipient's email address. Multiple $opt--mail-to$normal options may be used.
 $tab
 $tab$opt--monitor
 $tab${tab}Check whether supervisor's error log file is empty. If not, then send critical
