@@ -1,6 +1,17 @@
 Change log
 ==========
 
+## Version 1.3.0 (2013-10-28)
+
+Features:
+
+  - [#5](https://github.com/geoffroy-aubry/Supervisor/issues/5): Allow to add recipients through CLI,
+    and add them to those defined in config file.
+
+Doc:
+
+  - [#6](https://github.com/geoffroy-aubry/Supervisor/issues/6): Document the configuration file
+
 ## Version 1.2.0 (2013-10-25)
 
 Features:
@@ -17,7 +28,7 @@ UI:
 
   - [#2](https://github.com/geoffroy-aubry/Supervisor/issues/2): Add attractive HTML emails
 
-DOC:
+Doc:
 
   - [#3](https://github.com/geoffroy-aubry/Supervisor/issues/3): Document warning tags in README.md
 
