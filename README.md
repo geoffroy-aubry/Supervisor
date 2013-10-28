@@ -45,7 +45,7 @@ and ensure email notifications will be sent (on startup, success, warning or err
     Used in: `supervisor.info.log`, `supervisor.error.log`, `<script>_<exec_id>.info.log`
     and `<script>_<exec_id>.error.log`.
   * Possibility to block parallel overseen script execution. Useful if an execution takes too long…
-  * You can specify a configuration file to load in addition to the default one.
+  * You can specify a configuration file to load in addition to the default one (overloading).
   * Entirely configurable tag system allowing executed scripts to dynamically specify via `stdout`
     warning, mailto, mail attachment, instigator…
   * Automatic log archiving mechanism.
