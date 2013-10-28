@@ -29,37 +29,77 @@ INC_DIR=$SRC_DIR/inc
 LOG_DIR='/var/log/supervisor'
 EMAIL_TEMPLATES_DIR=$SRC_DIR/templates
 
-# All these files must be in $LOG_DIR/ directory:
+# All four following files must be in $LOG_DIR/ directory.
+
+# Critical supervisor error, must remain empty:
+# (must be in $LOG_DIR/ directory)
 SUPERVISOR_ERROR_LOG_FILE=$LOG_DIR/supervisor.error.log
+
+# Supervisor's activity:
+# (must be in $LOG_DIR/ directory)
 SUPERVISOR_INFO_LOG_FILE=$LOG_DIR/supervisor.info.log
+
+# Monitoring log file used to send critical email notifications
+# using an exponential backoff algorithm in minute increments:
+# (must be in $LOG_DIR/ directory)
 SUPERVISOR_MONITORING_LOG_FILE=$LOG_DIR/supervisor.monitoring.log
+
+# File's pattern to archive logs per day (%s will be replaced by a date in the +%Y-%m-%d format):
+# (must be in $LOG_DIR/ directory)
 SUPERVISOR_ARCHIVING_PATTERN=$LOG_DIR/supervisor_archive_%s.tar.gz
 
-# Lock script against parallel run (0|1)
+# Lock script against parallel run (0|1):
 SUPERVISOR_LOCK_SCRIPT=1
 
-# 1 = Do nothing
-# 2 = Do not add timestamp when inner timestamp already exists
-# 3 = Remove inner timestamp
+# Handling cascaded supervisors:
+#     1 = Do nothing
+#     2 = Do not add timestamp when inner timestamp already exists
+#     3 = Remove inner timestamp
 SUPERVISOR_ABOVE_SUPERVISOR_STRATEGY=1
 
 # Space separated list of emails :
 SUPERVISOR_MAIL_TO="supervisor@xyz.com"
+
+# Prefix of all supervisor's emails subject:
 SUPERVISOR_MAIL_SUBJECT_PREFIX='[supervisor] '
+
+# Location of Mutt:
 SUPERVISOR_MAIL_MUTT_CMD='/usr/bin/mutt'
+
+# Extra parameters for Mutt (mutt -e …):
 SUPERVISOR_MAIL_MUTT_CFG="set content_type=text/html; \
 my_hdr From: Supervisor <supervisor@xyz.com>; \
 my_hdr Reply-To: Supervisor <supervisor@xyz.com>"
+
+# Send an email at startup (0|1):
 SUPERVISOR_MAIL_SEND_ON_STARTUP=1
+
+# Send an email on success (0|1):
 SUPERVISOR_MAIL_SEND_ON_SUCCESS=1
+
+# Send an email on warning (0|1):
 SUPERVISOR_MAIL_SEND_ON_WARNING=1
+
+# Send an email on error (0|1):
 SUPERVISOR_MAIL_SEND_ON_ERROR=1
 
+# String used as tabulation by supervised scripts:
+# (tags must be at the beginning of a line or only preceded by tabulations)
 SUPERVISOR_LOG_TABULATION='\033[0;30m┆\033[0m   '
+
+# Prefix of all messages from Supervisor in $SCRIPT_INFO_LOG_FILE:
 SUPERVISOR_PREFIX_MSG='[SUPERVISOR] '
+
+# Warning tag syntax:
 SUPERVISOR_WARNING_TAG='[WARNING]'
+
+# Debug tag syntax (not displayed in stdout):
 SUPERVISOR_DEBUG_TAG='[DEBUG]'
+
+# Tag syntax to add a new recipient:
 SUPERVISOR_MAILTO_TAG='[MAILTO]'
+
+# Tag syntax to add a new attachment:
 SUPERVISOR_MAIL_ATTACHMENT_TAG='[MAIL_ATTACHMENT]'
 
 # Expected output format: {'txt', 'csv'}
