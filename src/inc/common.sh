@@ -533,7 +533,7 @@ $tab$opt--mail-instigator$normal=$param<email>
 $tab${tab}Specify who executed the supervisor.
 $tab
 $tab$opt--mail-to$normal=$param<email>
-$tab${tab}Add one new recipient's email address. Multiple $opt--mail-to$normal options may be used.
+$tab${tab}Add a new recipient's email address. Multiple $opt--mail-to$normal options may be used.
 $tab
 $tab$opt--monitor
 $tab${tab}Check whether supervisor's error log file is empty. If not, then send critical
