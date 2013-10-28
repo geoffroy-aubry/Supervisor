@@ -2,7 +2,7 @@
 
 [![Latest stable version](https://poser.pugx.org/geoffroy-aubry/Supervisor/v/stable.png "Latest stable version")](https://packagist.org/packages/geoffroy-aubry/Supervisor)
 [![Build Status](https://secure.travis-ci.org/geoffroy-aubry/Supervisor.png?branch=stable)](http://travis-ci.org/geoffroy-aubry/Supervisor)
-&nbsp;_[Estimated code coverage](https://travis-ci.org/geoffroy-aubry/Supervisor): 88% (503 of 572 lines)._
+&nbsp;_[Estimated code coverage](https://travis-ci.org/geoffroy-aubry/Supervisor): 88% (530 of 601 lines)._
 
 Oversee script execution, recording `stdout`, `stderr` and exit code with timestamping,
 and ensure email notifications will be sent (on startup, success, warning or error)… plus many other features.
@@ -45,7 +45,7 @@ and ensure email notifications will be sent (on startup, success, warning or err
     Used in: `supervisor.info.log`, `supervisor.error.log`, `<script>_<exec_id>.info.log`
     and `<script>_<exec_id>.error.log`.
   * Possibility to block parallel overseen script execution. Useful if an execution takes too long…
-  * You can specify a configuration file to load in addition to the default one.
+  * You can specify a configuration file to load in addition to the default one (overloading).
   * Entirely configurable tag system allowing executed scripts to dynamically specify via `stdout`
     warning, mailto, mail attachment, instigator…
   * Automatic log archiving mechanism.
@@ -123,13 +123,16 @@ $ supervisor.sh [-h|--help]
         --customized-mails=<file>
             Path to a Bash script customizing sent mails by redefining some of
             the sendMailOn[Init|Success|Warning|Error]() functions.
-            See --param=<key>=<value> option.
+            See --param option.
 
         -h, --help
             Display this help.
 
         --mail-instigator=<email>
             Specify who executed the supervisor.
+
+        --mail-to=<email>
+            Add a new recipient's email address. Multiple --mail-to options may be used.
 
         --monitor
             Check whether supervisor's error log file is empty. If not, then send critical
@@ -510,7 +513,7 @@ See [CHANGELOG](CHANGELOG.md) file for details.
 ## Continuous integration
 
 [![Build Status](https://secure.travis-ci.org/geoffroy-aubry/Supervisor.png?branch=stable)](http://travis-ci.org/geoffroy-aubry/Supervisor)
-&nbsp;_[Estimated code coverage](https://travis-ci.org/geoffroy-aubry/Supervisor): 88% (503 of 572 lines)._
+&nbsp;_[Estimated code coverage](https://travis-ci.org/geoffroy-aubry/Supervisor): 88% (530 of 601 lines)._
 
 Unit tests with [PHPUnit](https://github.com/sebastianbergmann/phpunit/):
 
