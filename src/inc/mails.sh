@@ -99,7 +99,7 @@ function sendMail () {
 function parentSendMailOnError () {
     local script_name="$(echo "$SCRIPT_NAME" | sed 's|\(/\)|\\\1|g')"
     local log_dir="$(dirname "$SUPERVISOR_INFO_LOG_FILE" | sed 's|\(/\)|\\\1|g')"
-    local error_msg="$(cat "$SCRIPT_ERROR_LOG_FILE" | awk 1 ORS='\\n' | sed 's|\(/\)|\\\1|g')"
+    local error_msg="$(cat "$SCRIPT_ERROR_LOG_FILE" | sed 's:\(/\|\\\):\\\1:g' | awk 1 ORS='\\n')"
     local mail_msg=$(sed \
         -e "s/{{elapsed_time}}/$(getElapsedTime)/g" \
         -e "s/{{script}}/$script_name/g" \
@@ -133,7 +133,7 @@ function parentSendMailOnWarning () {
     [ "${#WARNING_MSG[*]}" -gt 1 ] && plural='s' || plural=''
     local script_name="$(echo "$SCRIPT_NAME" | sed 's|\(/\)|\\\1|g')"
     local log_dir="$(dirname "$SUPERVISOR_INFO_LOG_FILE" | sed 's|\(/\)|\\\1|g')"
-    local warning_msg="$(echo "$warning_html" | awk 1 ORS='\\n' | sed 's|\(/\)|\\\1|g')"
+    local warning_msg="$(echo "$warning_html" | sed 's:\(/\|\\\):\\\1:g' | awk 1 ORS='\\n')"
     local mail_msg=$(sed \
         -e "s/{{nb_warnings}}/${#WARNING_MSG[*]}/g" \
         -e "s/{{warning_plural}}/$plural/g" \

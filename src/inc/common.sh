@@ -119,7 +119,7 @@ function executeScript () {
         local color_start="$(echo -e "${CUI_COLORS['processing']}")"
         local color_end=$'\E'\[0m
         local pattern='[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} [0-9]{2}cs, '
-        while IFS='' read line; do
+        while IFS='' read -r line; do
             IFS="$src_ifs"
             getDateWithCS; datecs="$RETVAL"
 
@@ -173,13 +173,19 @@ function displayResult () {
         echo
 
         CUI_displayMsg help "Supervisor log file: $(dirname $SUPERVISOR_INFO_LOG_FILE)/<b>$(basename $SUPERVISOR_INFO_LOG_FILE)</b>:"
-        cat $SUPERVISOR_INFO_LOG_FILE | grep ";$EXECUTION_ID;" | while IFS="" read line; do CUI_displayMsg info "$line"; done
+        cat $SUPERVISOR_INFO_LOG_FILE | grep ";$EXECUTION_ID;" | while IFS="" read -r line; do CUI_displayMsg info "$line"; done
         IFS="$src_ifs"
         echo
 
         CUI_displayMsg help "Execution log file: $(dirname $SCRIPT_INFO_LOG_FILE)/<b>$(basename $SCRIPT_INFO_LOG_FILE)</b>"
         CUI_displayMsg help "Error log file: $(dirname $SCRIPT_ERROR_LOG_FILE)/<b>$(basename $SCRIPT_ERROR_LOG_FILE)</b>:"
-        cat $SCRIPT_ERROR_LOG_FILE | ( IFS="" read line; CUI_displayMsg error "$line"; while IFS="" read line; do CUI_displayMsg error_detail "$line"; done )
+        cat $SCRIPT_ERROR_LOG_FILE | ( \
+            IFS="" read -r line; \
+            CUI_displayMsg error "${line//\\/\\\\}"; \
+            while IFS="" read -r line; do \
+                CUI_displayMsg error_detail "${line//\\/\\\\}"; \
+            done \
+        )
         IFS="$src_ifs"
         echo
 
@@ -258,7 +264,7 @@ function displayScriptMsg {
         echo -n $date
         i=$(( ${#msg} - ${#msg_wo_tab} ))
         echo -en "${msg:0:$i}"
-        CUI_displayMsg warning "$msg_wo_color"
+        CUI_displayMsg warning "${msg_wo_color//\\/\\\\}"
         warning_msg="${tmsg:9}"
         warning_msg="${warning_msg##+( )}"
         WARNING_MSG[${#WARNING_MSG[*]}]="$1, $warning_msg"
@@ -270,7 +276,7 @@ function displayScriptMsg {
         SUPERVISOR_MAIL_ADD_ATTACHMENT="$SUPERVISOR_MAIL_ADD_ATTACHMENT ${tmsg:17}"
     else
         echo -n $date
-        CUI_displayMsg normal "$msg"
+        CUI_displayMsg normal "${msg//\\/\\\\}"
     fi
 }
 
