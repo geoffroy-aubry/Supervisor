@@ -1,6 +1,13 @@
 Change log
 ==========
 
+## Version 1.3.1 (2013-11-11)
+
+Features:
+
+  - Add protection against whitespaces in customized named parameters.
+  - Escape backslashes on stdout and into both error and warning mails.
+
 ## Version 1.3.0 (2013-10-28)
 
 Features:
