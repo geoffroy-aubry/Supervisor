@@ -63,8 +63,12 @@ class SupervisorTestCase extends \PHPUnit_Framework_TestCase
         $this->copyConfigFile('conf.sh');
     }
 
-    protected function execSupervisor ($sParameters, $mConfigFilename = '', $bStripBashColors = true)
-    {
+    protected function execSupervisor (
+        $sParameters,
+        $mConfigFilename = '',
+        $bStripBashColors = true,
+        $bBackgroundJob = false
+    ) {
         if (is_string($mConfigFilename)) {
             if (empty($mConfigFilename)) {
                 $mConfigFilename = 'conf.sh';
@@ -77,6 +81,11 @@ class SupervisorTestCase extends \PHPUnit_Framework_TestCase
                 $this->copyConfigFile($sConfigFilename);
             }
             $sCmd = $sParameters;
+        }
+
+        if ($bBackgroundJob) {
+            $sTmpPath = tempnam($this->sTmpDir, 'paralleljob_');
+            $sCmd = "( $sCmd 1>$sTmpPath 2>&1 ) & echo \$! && sleep .1";
         }
 
         $iExitCode = 0;
