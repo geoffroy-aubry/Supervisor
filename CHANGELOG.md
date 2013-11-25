@@ -1,6 +1,12 @@
 Change log
 ==========
 
+## Version 1.4.0 (2013-11-25)
+
+Features:
+
+  - [#7](https://github.com/geoffroy-aubry/Supervisor/issues/7): Add proper signal handling and interrupts.
+
 ## Version 1.3.1 (2013-11-11)
 
 Features:
