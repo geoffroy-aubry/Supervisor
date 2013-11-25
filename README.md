@@ -53,6 +53,8 @@ and ensure email notifications will be sent (on startup, success, warning or err
     including final status per day and per supervised script.
   * Handle CSV output, with definition of field separator, field enclosure and number of the field to watch
     in configuration file.
+  * Add proper signal handling and interrupts: `SIGHUP`, `SIGINT`, `SIGQUIT` and `SIGTERM`
+    now transmitted to supervised script.
 
 ### Notifications
 

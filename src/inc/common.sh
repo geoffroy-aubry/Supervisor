@@ -144,7 +144,7 @@ function executeScript () {
         done < $pipe
         rm -f $pipe
 
-        wait $pid
+        wait $pid 2>/dev/null
         EXIT_CODE=$?
         if [ $EXIT_CODE -ne 0 ]; then
             echo "${SUPERVISOR_PREFIX_MSG}Exit code not null: $EXIT_CODE" >> $SCRIPT_ERROR_LOG_FILE
