@@ -195,7 +195,7 @@ function displayResult () {
     elif [ "${#WARNING_MSG[*]}" -gt 0 ]; then
         local plural
         echo "$datecs;$EXECUTION_ID;$SCRIPT_NAME;WARNING" >> $SUPERVISOR_INFO_LOG_FILE
-        echo "$script_datecs${SUPERVISOR_PREFIX_MSG}WARNING" >> $SCRIPT_INFO_LOG_FILE
+        echo "$script_datecs${SUPERVISOR_PREFIX_MSG}WARNING (#${#WARNING_MSG[*]})" >> $SCRIPT_INFO_LOG_FILE
         [ "${#WARNING_MSG[*]}" -gt 1 ] && plural='S' || plural=''
         CUI_displayMsg warning "${#WARNING_MSG[*]} WARNING$plural"
         echo
