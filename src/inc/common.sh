@@ -532,6 +532,10 @@ $tab${tab}Path to a Bash script customizing sent mails by redefining some of
 $tab${tab}the ${cmd}sendMailOn$normal[${cmd}Init$normal|${cmd}Success$normal|${cmd}Warning$normal|${cmd}Error$normal]${cmd}()$normal functions.
 $tab${tab}See $opt--param$normal option.
 $tab
+$tab$opt--exec_id$normal=$param<string>
+$tab${tab}Allow to force execution id, used in mails and name of logs.
+$tab${tab}By default: YYYYMMDDHHIISS_XXXXX, where X are random digits.
+$tab
 $tab$opt-h$normal, $opt--help
 $tab${tab}Display this help.
 $tab
