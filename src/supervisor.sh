@@ -88,6 +88,7 @@ function getOpts () {
 
             --conf=*)             CONFIG_FILE=${i#*=} ;;
             --customized-mails=*) CUSTOMIZED_MAILS=${i#*=} ;;
+            --exec-id=*)          EXECUTION_ID=${i#*=} ;;
             --help)               ACTION='help' ;;
             --mail-instigator=*)  MAIL_INSTIGATOR=' '${i#*=} ;;
             --mail-to=*)          ADD_MAIL_TO="$ADD_MAIL_TO ${i#*=}" ;;
