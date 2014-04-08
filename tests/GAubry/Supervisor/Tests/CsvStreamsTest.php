@@ -107,7 +107,7 @@ END
 2;c;|yellow;level 2|;y
 1;b;[WARNING] second message;x
 END
-[SUPERVISOR] WARNING\n", $aResult['script_info_content']);
+[SUPERVISOR] WARNING (#2)\n", $aResult['script_info_content']);
         $this->assertEquals('', $aResult['script_err_content']);
         $this->assertEquals("$sScriptPath;START\n$sScriptPath;WARNING\n", $aResult['supervisor_info_content']);
         $this->assertEquals('', $aResult['supervisor_err_content']);

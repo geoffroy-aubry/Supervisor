@@ -53,7 +53,7 @@ class SignalsTest extends SupervisorTestCase
         $iPid = (int)$aResult['std_out'];
         usleep(20 * 1000);
         posix_kill($iPid, SIGTERM);
-        sleep(1);
+        sleep(2);
 
         $this->assertContains(";$sScriptPath;ERROR", file_get_contents($aResult['supervisor_info_path']));
         $this->assertEquals('', file_get_contents($aResult['supervisor_err_path']));

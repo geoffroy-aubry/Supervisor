@@ -576,7 +576,7 @@ Title:
 ┆   ┆       [WARNING]colored message 2…
   END with spaces" . '  ' . "
   [WARNING]   message 3
-[SUPERVISOR] WARNING\n", $aResult['script_info_content']);
+[SUPERVISOR] WARNING (#3)\n", $aResult['script_info_content']);
         $this->assertEquals('', $aResult['script_err_content']);
         $this->assertEquals("$sScriptPath;START\n$sScriptPath;WARNING\n", $aResult['supervisor_info_content']);
         $this->assertEquals('', $aResult['supervisor_err_content']);
@@ -610,7 +610,7 @@ Title:
 \t\t    [WARNING]colored message 2
   END with spaces" . '  ' . "
   [WARNING]   message 3
-[SUPERVISOR] WARNING\n", $aResult['script_info_content']);
+[SUPERVISOR] WARNING (#3)\n", $aResult['script_info_content']);
         $this->assertEquals('', $aResult['script_err_content']);
         $this->assertEquals("$sScriptPath;START\n$sScriptPath;WARNING\n", $aResult['supervisor_info_content']);
         $this->assertEquals('', $aResult['supervisor_err_content']);
@@ -644,7 +644,7 @@ Title:
             [WARNING]colored message 2
   END with spaces" . '  ' . "
   [WARNING]   message 3
-[SUPERVISOR] WARNING\n", $aResult['script_info_content']);
+[SUPERVISOR] WARNING (#3)\n", $aResult['script_info_content']);
         $this->assertEquals('', $aResult['script_err_content']);
         $this->assertEquals("$sScriptPath;START\n$sScriptPath;WARNING\n", $aResult['supervisor_info_content']);
         $this->assertEquals('', $aResult['supervisor_err_content']);
