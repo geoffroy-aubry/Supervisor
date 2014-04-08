@@ -88,6 +88,7 @@ function getOpts () {
 
             --conf=*)             CONFIG_FILE=${i#*=} ;;
             --customized-mails=*) CUSTOMIZED_MAILS=${i#*=} ;;
+            --exec-id=*)          EXECUTION_ID=${i#*=} ;;
             --help)               ACTION='help' ;;
             --mail-instigator=*)  MAIL_INSTIGATOR=' '${i#*=} ;;
             --mail-to=*)          ADD_MAIL_TO="$ADD_MAIL_TO ${i#*=}" ;;
@@ -137,5 +138,17 @@ exec 2> >(tee -a $SUPERVISOR_ERROR_LOG_FILE >&2)
 
 [ -x "$(echo "$SUPERVISOR_MAIL_MUTT_CMD" | cut -d' ' -f1)" ] \
     || die "Invalid Mutt command: '<b>$SUPERVISOR_MAIL_MUTT_CMD</b>'" 72
+
+# Handle interruption signals:
+function interrupt {
+    echo
+    CUI_displayMsg error "$1 signal received! SIGTERM transmitted to supervised script…"
+    kill -TERM $pid
+    wait $pid
+}
+trap 'interrupt SIGHUP'  SIGHUP
+trap 'interrupt SIGINT'  SIGINT
+trap 'interrupt SIGQUIT' SIGQUIT
+trap 'interrupt SIGTERM' SIGTERM
 
 doAction

@@ -2,7 +2,7 @@
 
 [![Latest stable version](https://poser.pugx.org/geoffroy-aubry/Supervisor/v/stable.png "Latest stable version")](https://packagist.org/packages/geoffroy-aubry/Supervisor)
 [![Build Status](https://secure.travis-ci.org/geoffroy-aubry/Supervisor.png?branch=stable)](http://travis-ci.org/geoffroy-aubry/Supervisor)
-&nbsp;_[Estimated code coverage](https://travis-ci.org/geoffroy-aubry/Supervisor): 88% (530 of 601 lines)._
+&nbsp;_[Estimated code coverage](https://travis-ci.org/geoffroy-aubry/Supervisor): 88% (544 of 617 lines)._
 
 Oversee script execution, recording `stdout`, `stderr` and exit code with timestamping,
 and ensure email notifications will be sent (on startup, success, warning or error)… plus many other features.
@@ -53,6 +53,8 @@ and ensure email notifications will be sent (on startup, success, warning or err
     including final status per day and per supervised script.
   * Handle CSV output, with definition of field separator, field enclosure and number of the field to watch
     in configuration file.
+  * Add proper signal handling and interrupts: `SIGHUP`, `SIGINT`, `SIGQUIT` and `SIGTERM`
+    now transmitted to supervised script.
 
 ### Notifications
 
@@ -513,7 +515,7 @@ See [CHANGELOG](CHANGELOG.md) file for details.
 ## Continuous integration
 
 [![Build Status](https://secure.travis-ci.org/geoffroy-aubry/Supervisor.png?branch=stable)](http://travis-ci.org/geoffroy-aubry/Supervisor)
-&nbsp;_[Estimated code coverage](https://travis-ci.org/geoffroy-aubry/Supervisor): 88% (530 of 601 lines)._
+&nbsp;_[Estimated code coverage](https://travis-ci.org/geoffroy-aubry/Supervisor): 88% (544 of 617 lines)._
 
 Unit tests with [PHPUnit](https://github.com/sebastianbergmann/phpunit/):
 

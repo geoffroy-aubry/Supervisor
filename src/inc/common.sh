@@ -144,7 +144,7 @@ function executeScript () {
         done < $pipe
         rm -f $pipe
 
-        wait $pid
+        wait $pid 2>/dev/null
         EXIT_CODE=$?
         if [ $EXIT_CODE -ne 0 ]; then
             echo "${SUPERVISOR_PREFIX_MSG}Exit code not null: $EXIT_CODE" >> $SCRIPT_ERROR_LOG_FILE
@@ -195,7 +195,7 @@ function displayResult () {
     elif [ "${#WARNING_MSG[*]}" -gt 0 ]; then
         local plural
         echo "$datecs;$EXECUTION_ID;$SCRIPT_NAME;WARNING" >> $SUPERVISOR_INFO_LOG_FILE
-        echo "$script_datecs${SUPERVISOR_PREFIX_MSG}WARNING" >> $SCRIPT_INFO_LOG_FILE
+        echo "$script_datecs${SUPERVISOR_PREFIX_MSG}WARNING (#${#WARNING_MSG[*]})" >> $SCRIPT_INFO_LOG_FILE
         [ "${#WARNING_MSG[*]}" -gt 1 ] && plural='S' || plural=''
         CUI_displayMsg warning "${#WARNING_MSG[*]} WARNING$plural"
         echo
@@ -531,6 +531,10 @@ $tab$opt--customized-mails$normal=$param<file>
 $tab${tab}Path to a Bash script customizing sent mails by redefining some of
 $tab${tab}the ${cmd}sendMailOn$normal[${cmd}Init$normal|${cmd}Success$normal|${cmd}Warning$normal|${cmd}Error$normal]${cmd}()$normal functions.
 $tab${tab}See $opt--param$normal option.
+$tab
+$tab$opt--exec_id$normal=$param<string>
+$tab${tab}Allow to force execution id, used in mails and name of logs.
+$tab${tab}By default: YYYYMMDDHHIISS_XXXXX, where X are random digits.
 $tab
 $tab$opt-h$normal, $opt--help
 $tab${tab}Display this help.

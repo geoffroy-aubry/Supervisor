@@ -9,3 +9,4 @@ composer.phar
 /.twgit*
 /conf/phpunit.php
 /conf/supervisor.sh
+/.idea/
