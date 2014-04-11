@@ -89,7 +89,7 @@ and ensure email notifications will be sent (on startup, success, warning or err
   - [mutt](http://www.mutt.org/), to send email notifications
   - Unit tests require PHP >= 5.3.3
 
-Tested on Debian/Ubuntu Linux.
+Tested on Debian/Ubuntu Linux and Mac OS X 10.8 (Mountain Lion).
 
 ## Usage
 
