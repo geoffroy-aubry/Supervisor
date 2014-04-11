@@ -120,7 +120,8 @@ $ supervisor.sh [-h|--help]
             Archive in Gzip supervisor's logs older than <min-days>.
 
         -c <conf-file>, --conf=<conf-file>
-            Specify a configuration file to load in addition to the default one.
+            Specify a configuration file to load in addition to the default one,
+            namely '/conf/supervisor-dist.sh'.
 
         --customized-mails=<file>
             Path to a Bash script customizing sent mails by redefining some of
@@ -470,7 +471,17 @@ Also send this summary by email to `SUPERVISOR_MAIL_TO` list.
     $ cd Supervisor && git checkout stable
     ```
 
-3. If you have to supervise scripts producing CSV output,
+3. Create your own configuration file and adapt it:
+
+    ```bash
+    $ cp conf/supervisor-dist.sh conf/supervisor.sh
+    ```
+
+    **Note:** file `conf/supervisor-dist.sh` is always loaded.
+    Then optional configuration file specified with option `--conf` is loaded (overwriting).
+    But if no option `--conf` is found, then `conf/supervisor.sh` is loaded if exists.
+
+4. If you have to supervise scripts producing CSV output,
    then install [Awk CSV parser](https://github.com/geoffroy-aubry/awk-csv-parser) component:
     * Manually:
         * See [Installation section](https://github.com/geoffroy-aubry/awk-csv-parser#installation)
@@ -491,7 +502,7 @@ Also send this summary by email to `SUPERVISOR_MAIL_TO` list.
 
         *See <http://getcomposer.org/doc/00-intro.md#installation-nix> for more information to install composer.*
 
-4. You can create a symlink to `supervisor.sh`:
+5. You can create a symlink to `supervisor.sh`:
 
     ```bash
     $ sudo ln -s /path/to/src/supervisor.sh /usr/local/bin/supervisor
@@ -515,7 +526,7 @@ See [CHANGELOG](CHANGELOG.md) file for details.
 ## Continuous integration
 
 [![Build Status](https://secure.travis-ci.org/geoffroy-aubry/Supervisor.png?branch=stable)](http://travis-ci.org/geoffroy-aubry/Supervisor)
-&nbsp;_[Estimated code coverage](https://travis-ci.org/geoffroy-aubry/Supervisor): 88% (544 of 617 lines)._
+&nbsp;_[Estimated code coverage](https://travis-ci.org/geoffroy-aubry/Supervisor): 88% (544 of 618 lines)._
 
 Unit tests with [PHPUnit](https://github.com/sebastianbergmann/phpunit/):
 

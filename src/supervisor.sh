@@ -122,7 +122,18 @@ function getOpts () {
 getOpts "$@"
 
 # Includes:
-. $(dirname $(readlink -f "$BASH_SOURCE"))/../conf/supervisor-dist.sh
+
+# Give the full dirname of the script no matter where it is being called from, and resolve any symlink.
+# Credit: Dave Dopson, http://stackoverflow.com/a/246128/1813519
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+    DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+    SOURCE="$(readlink "$SOURCE")"
+    # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located:
+    [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+done
+. "$( cd -P "$( dirname "$SOURCE" )" && pwd )"/../conf/supervisor-dist.sh
+[ -z "$CONFIG_FILE" ] && CONFIG_FILE=$CONF_DIR/supervisor.sh
 [ -f "$CONFIG_FILE" ] && . $CONFIG_FILE
 . $INC_DIR/common.sh
 loadCustomizedMails

@@ -525,7 +525,8 @@ $tab$opt--archive$normal=$param<min-days>
 $tab${tab}Archive in Gzip supervisor's logs older than $param<min-days>$normal.
 $tab
 $tab$opt-c $param<conf-file>$normal, $opt--conf$normal=$param<conf-file>
-$tab${tab}Specify a configuration file to load in addition to the default one.
+$tab${tab}Specify a configuration file to load in addition to the default one,
+$tab${tab}namely '/conf/supervisor-dist.sh'.
 $tab
 $tab$opt--customized-mails$normal=$param<file>
 $tab${tab}Path to a Bash script customizing sent mails by redefining some of
