@@ -1,6 +1,12 @@
 Change log
 ==========
 
+## Version 1.5.0 (2014-04-11)
+
+Features:
+
+  - [#9](https://github.com/geoffroy-aubry/Supervisor/issues/9): Remove dependency to readlink because not portable to OS-X.
+
 ## Version 1.4.0 (2014-04-07)
 
 Features:
