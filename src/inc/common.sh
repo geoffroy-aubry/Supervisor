@@ -386,7 +386,7 @@ function doAction () {
 function monitor () {
     if [ -s "$SUPERVISOR_ERROR_LOG_FILE" ]; then
         [ ! -s "$SUPERVISOR_INFO_LOG_FILE" ] && touch $SUPERVISOR_INFO_LOG_FILE
-        new_md5="$(md5sum $SUPERVISOR_ERROR_LOG_FILE | cut -d' ' -f1)"
+        new_md5="$($SUPERVISOR_MD5_BIN $SUPERVISOR_ERROR_LOG_FILE | cut -d' ' -f1)"
         timestamp="$($SUPERVISOR_DATE_BIN +\%s)"
         send_mail=0
         counter=1
