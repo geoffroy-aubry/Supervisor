@@ -315,7 +315,7 @@ function summarize () {
             IFS=';'
             for action in $actions; do
                 stats[$action]="$(cat "$SUPERVISOR_INFO_LOG_FILE" | grep "^$day " | grep ";$action$" \
-                    | cut -d';' -f3 | grep -- "$script" | wc -l)"
+                    | cut -d';' -f3 | grep -- "$script" | wc -l | tr -d ' ')"
             done
             for action in $actions; do
                 data+=("${stats[$action]}")
@@ -480,7 +480,7 @@ function archive () {
                     -e "$(basename "$SUPERVISOR_ERROR_LOG_FILE")" \
                     -e "$(basename "$SUPERVISOR_MONITORING_LOG_FILE")" \
             )"
-            nb_files="$(echo "$files" | wc -l)"
+            nb_files="$(echo "$files" | wc -l | tr -d ' ')"
             echo -en "    $date$oldest_date $normal⇒ "
             if [ ! -z "$files" ] && [ "$nb_files" -gt 0 ]; then
                 if [ ! -e "$archiving_path" ]; then
