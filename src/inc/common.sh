@@ -341,7 +341,7 @@ function summarize () {
     printf -v rows '<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n' "${data[@]:7}"
     mail_msg="<table border=1 cellspacing=0>$header$rows</table>"
     mail_subject="$SUPERVISOR_MAIL_SUBJECT_PREFIX > Summary"
-    echo "$mail_msg" | $SUPERVISOR_MAIL_MUTT_CMD -e "$SUPERVISOR_MAIL_MUTT_CFG" -s "$mail_subject" -- $SUPERVISOR_MAIL_TO $MAIL_INSTIGATOR
+    echo "$mail_msg" | $SUPERVISOR_MAIL_MUTT_BIN -e "$SUPERVISOR_MAIL_MUTT_CFG" -s "$mail_subject" -- $SUPERVISOR_MAIL_TO $MAIL_INSTIGATOR
 }
 
 function loadCustomizedMails () {

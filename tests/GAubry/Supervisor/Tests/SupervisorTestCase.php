@@ -74,7 +74,7 @@ class SupervisorTestCase extends \PHPUnit_Framework_TestCase
             } else {
                 $this->copyConfigFile($mConfigFilename);
             }
-            $sCmd = BASH_PATH . ' ' . SRC_DIR . "/supervisor.sh -c '$this->sTmpDir/$mConfigFilename' $sParameters";
+            $sCmd = BASH_BIN . ' ' . SRC_DIR . "/supervisor.sh -c '$this->sTmpDir/$mConfigFilename' $sParameters";
         } else {
             foreach ($mConfigFilename as $sConfigFilename) {
                 $this->copyConfigFile($sConfigFilename);
@@ -192,7 +192,7 @@ class SupervisorTestCase extends \PHPUnit_Framework_TestCase
      */
     protected function shellCodeCall ($sCmd, $bStripBashColors = true)
     {
-        $sShellCodeCall = BASH_PATH . ' ' . TESTS_DIR . '/inc/testShellCode.sh "' . $sCmd . '"';
+        $sShellCodeCall = BASH_BIN . ' ' . TESTS_DIR . '/inc/testShellCode.sh "' . $sCmd . '"';
         return $this->exec($sShellCodeCall, $bStripBashColors);
     }
 

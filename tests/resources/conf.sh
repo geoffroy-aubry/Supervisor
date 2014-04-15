@@ -24,7 +24,7 @@ SUPERVISOR_ABOVE_SUPERVISOR_STRATEGY=1
 # Space separated list of emails :
 SUPERVISOR_MAIL_TO="gaubry@hi-media.com geoff.abury@gmail.com"
 SUPERVISOR_MAIL_SUBJECT_PREFIX='[DW] '
-SUPERVISOR_MAIL_MUTT_CMD="$ROOT_DIR/tests/resources/mutt.sh $LOG_DIR"
+SUPERVISOR_MAIL_MUTT_BIN="$ROOT_DIR/tests/resources/mutt.sh $LOG_DIR"
 SUPERVISOR_MAIL_MUTT_CFG="set content_type=text/html; \
 my_hdr From: Data Warehouse Supervisor <gaubry@hi-media.com>; \
 my_hdr Reply-To: Geoffroy Aubry <gaubry@hi-media.com>"

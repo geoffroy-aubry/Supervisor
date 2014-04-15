@@ -73,7 +73,7 @@ SUPERVISOR_MAIL_TO="supervisor@xyz.com"
 SUPERVISOR_MAIL_SUBJECT_PREFIX='[supervisor] '
 
 # Location of Mutt:
-SUPERVISOR_MAIL_MUTT_CMD='/usr/bin/mutt'
+SUPERVISOR_MAIL_MUTT_BIN='/usr/bin/mutt'
 
 # Extra parameters for Mutt (mutt -e …):
 SUPERVISOR_MAIL_MUTT_CFG="set content_type=text/html; \

@@ -83,7 +83,7 @@ function rawSendMail () {
         CUI_displayMsg error "No recipients were specified! See <b>SUPERVISOR_MAIL_TO</b> variable in config file."
     else
         [ ! -z "$attachment" ] && attachment="-a $attachment"
-        echo "$mail_msg" | $SUPERVISOR_MAIL_MUTT_CMD \
+        echo "$mail_msg" | $SUPERVISOR_MAIL_MUTT_BIN \
             -e "$SUPERVISOR_MAIL_MUTT_CFG" -s "$mail_subject" $attachment -- $SUPERVISOR_MAIL_TO$MAIL_INSTIGATOR
     fi
 }
