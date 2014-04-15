@@ -2,12 +2,14 @@
 
 [![Latest stable version](https://poser.pugx.org/geoffroy-aubry/Supervisor/v/stable.png "Latest stable version")](https://packagist.org/packages/geoffroy-aubry/Supervisor)
 [![Build Status](https://secure.travis-ci.org/geoffroy-aubry/Supervisor.png?branch=stable)](http://travis-ci.org/geoffroy-aubry/Supervisor)
-&nbsp;_[Estimated code coverage](https://travis-ci.org/geoffroy-aubry/Supervisor): 88% (544 of 617 lines)._
+&nbsp;_[Estimated code coverage](https://travis-ci.org/geoffroy-aubry/Supervisor): 88% (546 of 622 lines)._
 
 Oversee script execution, recording `stdout`, `stderr` and exit code with timestamping,
 and ensure email notifications will be sent (on startup, success, warning or error)… plus many other features.
 
-*Technologies* : Supervisor is in Bash, only unit tests are in PHP.
+**Technologies** : Supervisor is in Bash, only unit tests are in PHP.
+
+**Supported OS** : Debian/Ubuntu Linux, FreeBSD/OS X.
 
 ## Table of Contents
 
@@ -44,7 +46,8 @@ and ensure email notifications will be sent (on startup, success, warning or err
   * An execution ID uniquely identify each script execution.
     Used in: `supervisor.info.log`, `supervisor.error.log`, `<script>_<exec_id>.info.log`
     and `<script>_<exec_id>.error.log`.
-  * Possibility to block parallel overseen script execution. Useful if an execution takes too long…
+  * Possibility to block parallel script execution *(only on Debian/Ubuntu Linux)*.
+    Useful if an execution takes too long…
   * You can specify a configuration file to load in addition to the default one (overloading).
   * Entirely configurable tag system allowing executed scripts to dynamically specify via `stdout`
     warning, mailto, mail attachment, instigator…
@@ -86,10 +89,17 @@ and ensure email notifications will be sent (on startup, success, warning or err
 ## Requirements
 
   - Bash v4 _(2009)_ and above
-  - [mutt](http://www.mutt.org/), to send email notifications
-  - Unit tests require PHP >= 5.3.3
+  - [mutt](http://www.mutt.org/), to send email notifications (`apt-get install mutt`, or `brew install mutt`)
+  - Unit tests require PHP >= 5.3.3 and Xdebug
+  - On FreeBSD/OS X only, you need to install these GNU tools:
 
-Tested on Debian/Ubuntu Linux and Mac OS X 10.8 (Mountain Lion).
+      ```bash
+      $ brew install coreutils
+      $ brew install gnu-sed
+      $ brew install gawk
+      ```
+
+Tested on Debian/Ubuntu Linux and FreeBSD/OS X.
 
 ## Usage
 
@@ -406,6 +416,7 @@ _TO DOCUMENT_
 
 Sometimes there's the need to ensure that a script is only executed one time.
 In order to achieve this, set `SUPERVISOR_LOCK_SCRIPT` to 1 in your configuration file.
+*Only available on Debian/Ubuntu Linux, otherwise leave 0.*
 
 ```bash
 # Lock script against parallel run (0|1)
@@ -526,9 +537,23 @@ See [CHANGELOG](CHANGELOG.md) file for details.
 ## Continuous integration
 
 [![Build Status](https://secure.travis-ci.org/geoffroy-aubry/Supervisor.png?branch=stable)](http://travis-ci.org/geoffroy-aubry/Supervisor)
-&nbsp;_[Estimated code coverage](https://travis-ci.org/geoffroy-aubry/Supervisor): 88% (544 of 618 lines)._
+&nbsp;_[Estimated code coverage](https://travis-ci.org/geoffroy-aubry/Supervisor): 88% (546 of 622 lines)._
 
-Unit tests with [PHPUnit](https://github.com/sebastianbergmann/phpunit/):
+Require PHP >= 5.3.3 and Xdebug.
+
+Create your own configuration file and adapt it:
+
+```bash
+$ cp conf/phpunit-dist.php conf/phpunit.php
+```
+
+Launch unit tests with [PHPUnit](https://github.com/sebastianbergmann/phpunit/):
+
+```bash
+$ vendor/bin/phpunit --configuration conf/phpunit-dist.xml
+```
+
+On FreeBSD/OS X you must exclude tests about exclusive execution (`SUPERVISOR_LOCK_SCRIPT`):
 
 ```bash
 $ vendor/bin/phpunit --configuration conf/phpunit-dist.xml

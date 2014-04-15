@@ -26,8 +26,8 @@
 #
 function getDateWithCS {
     local date_format=%Y-%m-%d\ %H:%M:%S
-    local now=$(date "+$date_format")
-    local cs=$(date +%N | sed 's/^\([0-9]\{2\}\).*$/\1/')
+    local now=$($SUPERVISOR_DATE_BIN "+$date_format")
+    local cs=$($SUPERVISOR_DATE_BIN +%N | $SUPERVISOR_SED_BIN 's/^\([0-9]\{2\}\).*$/\1/')
     RETVAL="$now ${cs}cs"
 }
 

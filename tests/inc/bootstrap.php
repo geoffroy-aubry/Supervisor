@@ -44,4 +44,6 @@ $oLoader->add('GAubry\Supervisor\Tests', __DIR__ . '/../');
 
 require_once(__DIR__ . '/../../conf/phpunit.php');
 
+error_reporting(-1);
+ini_set('display_errors', 0);
 date_default_timezone_set('UTC');

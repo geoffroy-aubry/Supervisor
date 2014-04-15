@@ -1,5 +1,9 @@
 # See: http://about.travis-ci.org/docs/user/build-configuration/
 
+os:
+  - osx
+  - linux
+
 language: php
 php:
   - 5.3

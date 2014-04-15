@@ -1,6 +1,12 @@
 Change log
 ==========
 
+## Version 1.6.0 (2014-04-15)
+
+Features:
+
+  - [#10](https://github.com/geoffroy-aubry/Supervisor/issues/10): Add compatibility with FreeBSD/OS X.
+
 ## Version 1.5.0 (2014-04-11)
 
 Features:
