@@ -408,6 +408,7 @@ PHP   1. {main}() $sScriptPath:0
      * @shcovers inc/common.sh::displayResult
      * @shcovers inc/common.sh::displayScriptMsg
      * @shcovers inc/tools.sh::getLock
+     * @group locks
      */
     public function testBlockingLocks ()
     {
@@ -470,6 +471,7 @@ Title:
      * @shcovers inc/common.sh::displayResult
      * @shcovers inc/common.sh::displayScriptMsg
      * @shcovers inc/tools.sh::getLock
+     * @group locks
      */
     public function testNonBlockingLocks ()
     {

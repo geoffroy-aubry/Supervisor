@@ -481,7 +481,7 @@ function archive () {
                     -e "$(basename "$SUPERVISOR_MONITORING_LOG_FILE")" \
             )"
             nb_files="$(echo "$files" | wc -l | tr -d ' ')"
-            echo -en "    $date$oldest_date $normal⇒ "
+            echo -en "    $date$oldest_date ${normal}⇒ "
             if [ ! -z "$files" ] && [ "$nb_files" -gt 0 ]; then
                 if [ ! -e "$archiving_path" ]; then
                     [ "$nb_files" -gt 1 ] && plural='s' || plural=''
