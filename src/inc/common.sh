@@ -387,7 +387,7 @@ function monitor () {
     if [ -s "$SUPERVISOR_ERROR_LOG_FILE" ]; then
         [ ! -s "$SUPERVISOR_INFO_LOG_FILE" ] && touch $SUPERVISOR_INFO_LOG_FILE
         new_md5="$(md5sum $SUPERVISOR_ERROR_LOG_FILE | cut -d' ' -f1)"
-        timestamp="$(date +\%s)"
+        timestamp="$($SUPERVISOR_DATE_BIN +\%s)"
         send_mail=0
         counter=1
 
@@ -461,16 +461,16 @@ function archive () {
     local ok_bold='\033[1;32m'
 
     local min_days="$1"
-    local newest_date="$(date -d "- $min_days days" +%Y-%m-%d)"
+    local newest_date="$($SUPERVISOR_DATE_BIN -d "- $min_days days" +%Y-%m-%d)"
     local oldest_date="$($SUPERVISOR_LS_BIN -g --no-group --time-style='+%Y-%m-%d %H:%M' "$LOG_DIR"/*.log \
         --sort=time --reverse 2>/dev/null | head -n1 | $SUPERVISOR_AWK_BIN '{print $4}')"
     local archiving_path files nb_files plural
 
     echo -e "\n${title}Archiving from $title_bold$oldest_date ${title}to $title_bold$newest_date ${title}inclusive:"
-    if [ "$(date -d "$oldest_date" +%s)" -gt "$(date -d "$newest_date" +%s)" ]; then
+    if [ "$($SUPERVISOR_DATE_BIN -d "$oldest_date" +%s)" -gt "$($SUPERVISOR_DATE_BIN -d "$newest_date" +%s)" ]; then
         echo -e "    ${normal}No date to process…"
     else
-        while [ "$(date -d "$oldest_date" +%s)" -le "$(date -d "$newest_date" +%s)" ]; do
+        while [ "$($SUPERVISOR_DATE_BIN -d "$oldest_date" +%s)" -le "$($SUPERVISOR_DATE_BIN -d "$newest_date" +%s)" ]; do
             archiving_path="$(printf "$SUPERVISOR_ARCHIVING_PATTERN" "$oldest_date")"
             files="$($SUPERVISOR_LS_BIN -g --no-group --time-style='+%Y-%m-%d %H:%M' "$LOG_DIR"/*.log --sort=time --reverse \
                 | grep "$oldest_date" | $SUPERVISOR_AWK_BIN '{print $6}' \
@@ -495,7 +495,7 @@ function archive () {
             else
                 echo -e "no file to archive"
             fi
-            oldest_date="$(date -d "$oldest_date + 1 day" +%Y-%m-%d)";
+            oldest_date="$($SUPERVISOR_DATE_BIN -d "$oldest_date + 1 day" +%Y-%m-%d)";
         done
     fi
 }

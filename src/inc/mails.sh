@@ -39,16 +39,16 @@ function getElapsedTime () {
     [[ $SUPERVISOR_OUTPUT_FORMAT == 'csv' ]] && pattern='^.' || pattern='^'
     local t0="$(cat "$SCRIPT_INFO_LOG_FILE" | head -n1 | $SUPERVISOR_SED_BIN "s/$pattern//" | $SUPERVISOR_AWK_BIN '{print $1" "$2}')"
     local t1="$(cat "$SCRIPT_INFO_LOG_FILE" | tail -n1 | $SUPERVISOR_SED_BIN "s/$pattern//" | $SUPERVISOR_AWK_BIN '{print $1" "$2}')"
-    local seconds=$(( $(date -d "$t1" +%s) - $(date -d "$t0" +%s) ))
+    local seconds=$(( $($SUPERVISOR_DATE_BIN -d "$t1" +%s) - $($SUPERVISOR_DATE_BIN -d "$t0" +%s) ))
     [[ $seconds -eq 0 ]] && (( seconds=seconds+1 ))
 
     local elapsed_time
     if [ $seconds -ge 3600 ]; then
-        elapsed_time="$(date -u -d "@$seconds" +'%-Hh %Mmin %Ss')"
+        elapsed_time="$($SUPERVISOR_DATE_BIN -u -d "@$seconds" +'%-Hh %Mmin %Ss')"
     elif [ $seconds -ge 60 ]; then
-        elapsed_time="$(date -u -d "@$seconds" +'%-Mmin %Ss')"
+        elapsed_time="$($SUPERVISOR_DATE_BIN -u -d "@$seconds" +'%-Mmin %Ss')"
     else
-        elapsed_time="$(date -u -d "@$seconds" +'%-Ss')"
+        elapsed_time="$($SUPERVISOR_DATE_BIN -u -d "@$seconds" +'%-Ss')"
     fi
     echo -n "$elapsed_time"
 }
@@ -176,7 +176,7 @@ function parentSendMailOnSuccess () {
 function parentSendMailOnStartup () {
     local script_name="$(echo "$SCRIPT_NAME" | $SUPERVISOR_SED_BIN 's|\(/\)|\\\1|g')"
     local mail_msg=$($SUPERVISOR_SED_BIN \
-        -e "s/{{date}}/$(date +'%Y-%m-%d, %H:%M:%S')/g" \
+        -e "s/{{date}}/$($SUPERVISOR_DATE_BIN +'%Y-%m-%d, %H:%M:%S')/g" \
         -e "s/{{script}}/$script_name/g" \
         -e "s/{{exec_id}}/$EXECUTION_ID/g" \
         -e "s/{{server}}/$(hostname)/g" \

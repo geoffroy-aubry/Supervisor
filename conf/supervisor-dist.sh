@@ -66,6 +66,9 @@ SUPERVISOR_AWK_BIN=awk
 # Path to GNU ls command:
 SUPERVISOR_LS_BIN=ls
 
+# Path to GNU date command:
+SUPERVISOR_DATE_BIN=date
+
 # Space separated list of emails :
 SUPERVISOR_MAIL_TO="supervisor@xyz.com"
 
