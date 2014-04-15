@@ -237,7 +237,7 @@ function displayScriptMsg {
 
     # Clean CSV message:
     if [[ $SUPERVISOR_OUTPUT_FORMAT = 'csv' ]]; then
-        tmsg="$(echo "$msg" | awk -f $SUPERVISOR_CSV_PARSER \
+        tmsg="$(echo "$msg" | $SUPERVISOR_AWK_BIN -f $SUPERVISOR_CSV_PARSER \
             -v separator="$SUPERVISOR_CSV_FIELD_SEPARATOR" \
             -v enclosure="$SUPERVISOR_CSV_FIELD_ENCLOSURE" \
             -v target_column="$SUPERVISOR_CSV_FIELD_TO_SCAN" \
@@ -328,7 +328,7 @@ function summarize () {
     ( printf "$title%s\t$title%s\t%s\t$title%s\t$title%s\t$title%s\t$title%s\n" "${header[@]}"; \
       printf "$date%s\t$normal%s\t%s\t$ok%s\t$warning%s\t$error%s\t$error%s\n" "${data[@]}" ) \
         | column -t -s $'\t' \
-        | awk -v cOk="$ok" -v cNormal="$normal" -v cError="$error" -v cZero="$zero" -v cWarning="$warning" \
+        | $SUPERVISOR_AWK_BIN -v cOk="$ok" -v cNormal="$normal" -v cError="$error" -v cZero="$zero" -v cWarning="$warning" \
             '{
                 L=$0
                 while ((s=index(L, cOk"0")) > 0 || (s=index(L, cWarning"0")) > 0 || (s=index(L, cError"0")) > 0) {
@@ -462,7 +462,7 @@ function archive () {
 
     local min_days="$1"
     local newest_date="$(date -d "- $min_days days" +%Y-%m-%d)"
-    local oldest_date="$(ls -g --no-group --time-style='+%Y-%m-%d %H:%M' "$LOG_DIR"/*.log --sort=time --reverse 2>/dev/null | head -n1 | awk '{print $4}')"
+    local oldest_date="$(ls -g --no-group --time-style='+%Y-%m-%d %H:%M' "$LOG_DIR"/*.log --sort=time --reverse 2>/dev/null | head -n1 | $SUPERVISOR_AWK_BIN '{print $4}')"
     local archiving_path files nb_files plural
 
     echo -e "\n${title}Archiving from $title_bold$oldest_date ${title}to $title_bold$newest_date ${title}inclusive:"
@@ -472,7 +472,7 @@ function archive () {
         while [ "$(date -d "$oldest_date" +%s)" -le "$(date -d "$newest_date" +%s)" ]; do
             archiving_path="$(printf "$SUPERVISOR_ARCHIVING_PATTERN" "$oldest_date")"
             files="$(ls -g --no-group --time-style='+%Y-%m-%d %H:%M' "$LOG_DIR"/*.log --sort=time --reverse \
-                | grep "$oldest_date" | awk '{print $6}' \
+                | grep "$oldest_date" | $SUPERVISOR_AWK_BIN '{print $6}' \
                 | $SUPERVISOR_SED_BIN "s|^$LOG_DIR/||" \
                 | grep -v \
                     -e "$(basename "$SUPERVISOR_INFO_LOG_FILE")" \
