@@ -48,7 +48,7 @@ SUPERVISOR_MONITORING_LOG_FILE=$LOG_DIR/supervisor.monitoring.log
 # (must be in $LOG_DIR/ directory)
 SUPERVISOR_ARCHIVING_PATTERN=$LOG_DIR/supervisor_archive_%s.tar.gz
 
-# Lock script against parallel run (0|1):
+# Lock script against parallel run (0|1), only available on Debian/Ubuntu Linux, otherwise leave 0:
 SUPERVISOR_LOCK_SCRIPT=1
 
 # Handling cascaded supervisors:
@@ -57,22 +57,22 @@ SUPERVISOR_LOCK_SCRIPT=1
 #     3 = Remove inner timestamp
 SUPERVISOR_ABOVE_SUPERVISOR_STRATEGY=1
 
-# Path to GNU sed command:
+# Path to GNU sed command (typically, Debian/Ubuntu: sed, FreeBSD/OS X: gsed):
 SUPERVISOR_SED_BIN=sed
 
-# Path to GNU awk command:
+# Path to GNU awk command (typically, Debian/Ubuntu: awk, FreeBSD/OS X: gawk):
 SUPERVISOR_AWK_BIN=awk
 
-# Path to GNU ls command:
+# Path to GNU ls command (typically, Debian/Ubuntu: ls, FreeBSD/OS X: gls):
 SUPERVISOR_LS_BIN=ls
 
-# Path to GNU date command:
+# Path to GNU date command (typically, Debian/Ubuntu: date, FreeBSD/OS X: gdate):
 SUPERVISOR_DATE_BIN=date
 
-# Path to md5 command (Debian: md5sum, FreeBSD/OSX: 'md5 -r'):
+# Path to md5 command (typically, Debian/Ubuntu: md5sum, FreeBSD/OS X: 'md5 -r'):
 SUPERVISOR_MD5_BIN=md5sum
 
-# Path to GNU tar command:
+# Path to GNU tar command (typically, Debian/Ubuntu: tar, FreeBSD/OS X: gtar):
 SUPERVISOR_TAR_BIN=tar
 
 # Space separated list of emails :
@@ -81,7 +81,7 @@ SUPERVISOR_MAIL_TO="supervisor@xyz.com"
 # Prefix of all supervisor's emails subject:
 SUPERVISOR_MAIL_SUBJECT_PREFIX='[supervisor] '
 
-# Location of Mutt:
+# Location of Mutt (typically, Debian/Ubuntu: '/usr/bin/mutt', FreeBSD/OS X: '/usr/local/bin/mutt'):
 SUPERVISOR_MAIL_MUTT_BIN='/usr/bin/mutt'
 
 # Extra parameters for Mutt (mutt -e …):
