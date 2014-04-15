@@ -147,8 +147,8 @@ SUPERVISOR_MAIL_TO="$SUPERVISOR_MAIL_TO $ADD_MAIL_TO"
 # Duplicate stderr:
 exec 2> >(tee -a $SUPERVISOR_ERROR_LOG_FILE >&2)
 
-[ -x "$(echo "$SUPERVISOR_MAIL_MUTT_CMD" | cut -d' ' -f1)" ] \
-    || die "Invalid Mutt command: '<b>$SUPERVISOR_MAIL_MUTT_CMD</b>'" 72
+[ -x "$(echo "$SUPERVISOR_MAIL_MUTT_BIN" | cut -d' ' -f1)" ] \
+    || die "Invalid Mutt command: '<b>$SUPERVISOR_MAIL_MUTT_BIN</b>'" 72
 
 # Handle interruption signals:
 function interrupt {

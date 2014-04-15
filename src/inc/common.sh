@@ -139,7 +139,8 @@ function executeScript () {
             fi
 
             getScriptFormattedTimestamp "$datecs" && script_datecs="$RETVAL"
-            echo "$script_datecs$line" | sed -r 's:(\033|\x1B)\[[0-9;]*[mK]::ig' >> $SCRIPT_INFO_LOG_FILE
+            echo "$script_datecs$line" \
+                | $SUPERVISOR_SED_BIN -r 's:(\033|\x1B)\[[0-9;]*[mK]::ig' >> $SCRIPT_INFO_LOG_FILE
             displayScriptMsg "$datecs" "$line"
         done < $pipe
         rm -f $pipe
@@ -236,7 +237,7 @@ function displayScriptMsg {
 
     # Clean CSV message:
     if [[ $SUPERVISOR_OUTPUT_FORMAT = 'csv' ]]; then
-        tmsg="$(echo "$msg" | awk -f $SUPERVISOR_CSV_PARSER \
+        tmsg="$(echo "$msg" | $SUPERVISOR_AWK_BIN -f $SUPERVISOR_CSV_PARSER \
             -v separator="$SUPERVISOR_CSV_FIELD_SEPARATOR" \
             -v enclosure="$SUPERVISOR_CSV_FIELD_ENCLOSURE" \
             -v target_column="$SUPERVISOR_CSV_FIELD_TO_SCAN" \
@@ -255,7 +256,7 @@ function displayScriptMsg {
         while [ "${msg_wo_tab:0:${#SUPERVISOR_LOG_TABULATION}}" = "$SUPERVISOR_LOG_TABULATION" ]; do
             msg_wo_tab="${msg_wo_tab:${#SUPERVISOR_LOG_TABULATION}}"
         done
-        msg_wo_color="$(echo "$msg_wo_tab" | sed -r 's:(\033|\x1B)\[[0-9;]*[mK]::ig')"
+        msg_wo_color="$(echo "$msg_wo_tab" | $SUPERVISOR_SED_BIN -r 's:(\033|\x1B)\[[0-9;]*[mK]::ig')"
         tmsg="${msg_wo_color##+( )}"	# ltrim
     fi
 
@@ -314,7 +315,7 @@ function summarize () {
             IFS=';'
             for action in $actions; do
                 stats[$action]="$(cat "$SUPERVISOR_INFO_LOG_FILE" | grep "^$day " | grep ";$action$" \
-                    | cut -d';' -f3 | grep -- "$script" | wc -l)"
+                    | cut -d';' -f3 | grep -- "$script" | wc -l | tr -d ' ')"
             done
             for action in $actions; do
                 data+=("${stats[$action]}")
@@ -327,7 +328,7 @@ function summarize () {
     ( printf "$title%s\t$title%s\t%s\t$title%s\t$title%s\t$title%s\t$title%s\n" "${header[@]}"; \
       printf "$date%s\t$normal%s\t%s\t$ok%s\t$warning%s\t$error%s\t$error%s\n" "${data[@]}" ) \
         | column -t -s $'\t' \
-        | awk -v cOk="$ok" -v cNormal="$normal" -v cError="$error" -v cZero="$zero" -v cWarning="$warning" \
+        | $SUPERVISOR_AWK_BIN -v cOk="$ok" -v cNormal="$normal" -v cError="$error" -v cZero="$zero" -v cWarning="$warning" \
             '{
                 L=$0
                 while ((s=index(L, cOk"0")) > 0 || (s=index(L, cWarning"0")) > 0 || (s=index(L, cError"0")) > 0) {
@@ -340,7 +341,7 @@ function summarize () {
     printf -v rows '<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n' "${data[@]:7}"
     mail_msg="<table border=1 cellspacing=0>$header$rows</table>"
     mail_subject="$SUPERVISOR_MAIL_SUBJECT_PREFIX > Summary"
-    echo "$mail_msg" | $SUPERVISOR_MAIL_MUTT_CMD -e "$SUPERVISOR_MAIL_MUTT_CFG" -s "$mail_subject" -- $SUPERVISOR_MAIL_TO $MAIL_INSTIGATOR
+    echo "$mail_msg" | $SUPERVISOR_MAIL_MUTT_BIN -e "$SUPERVISOR_MAIL_MUTT_CFG" -s "$mail_subject" -- $SUPERVISOR_MAIL_TO $MAIL_INSTIGATOR
 }
 
 function loadCustomizedMails () {
@@ -385,8 +386,8 @@ function doAction () {
 function monitor () {
     if [ -s "$SUPERVISOR_ERROR_LOG_FILE" ]; then
         [ ! -s "$SUPERVISOR_INFO_LOG_FILE" ] && touch $SUPERVISOR_INFO_LOG_FILE
-        new_md5="$(md5sum $SUPERVISOR_ERROR_LOG_FILE | cut -d' ' -f1)"
-        timestamp="$(date +\%s)"
+        new_md5="$($SUPERVISOR_MD5_BIN $SUPERVISOR_ERROR_LOG_FILE | cut -d' ' -f1)"
+        timestamp="$($SUPERVISOR_DATE_BIN +\%s)"
         send_mail=0
         counter=1
 
@@ -460,40 +461,41 @@ function archive () {
     local ok_bold='\033[1;32m'
 
     local min_days="$1"
-    local newest_date="$(date -d "- $min_days days" +%Y-%m-%d)"
-    local oldest_date="$(ls -g --no-group --time-style='+%Y-%m-%d %H:%M' "$LOG_DIR"/*.log --sort=time --reverse 2>/dev/null | head -n1 | awk '{print $4}')"
+    local newest_date="$($SUPERVISOR_DATE_BIN -d "- $min_days days" +%Y-%m-%d)"
+    local oldest_date="$($SUPERVISOR_LS_BIN -g --no-group --time-style='+%Y-%m-%d %H:%M' "$LOG_DIR"/*.log \
+        --sort=time --reverse 2>/dev/null | head -n1 | $SUPERVISOR_AWK_BIN '{print $4}')"
     local archiving_path files nb_files plural
 
     echo -e "\n${title}Archiving from $title_bold$oldest_date ${title}to $title_bold$newest_date ${title}inclusive:"
-    if [ "$(date -d "$oldest_date" +%s)" -gt "$(date -d "$newest_date" +%s)" ]; then
+    if [ "$($SUPERVISOR_DATE_BIN -d "$oldest_date" +%s)" -gt "$($SUPERVISOR_DATE_BIN -d "$newest_date" +%s)" ]; then
         echo -e "    ${normal}No date to process…"
     else
-        while [ "$(date -d "$oldest_date" +%s)" -le "$(date -d "$newest_date" +%s)" ]; do
+        while [ "$($SUPERVISOR_DATE_BIN -d "$oldest_date" +%s)" -le "$($SUPERVISOR_DATE_BIN -d "$newest_date" +%s)" ]; do
             archiving_path="$(printf "$SUPERVISOR_ARCHIVING_PATTERN" "$oldest_date")"
-            files="$(ls -g --no-group --time-style='+%Y-%m-%d %H:%M' "$LOG_DIR"/*.log --sort=time --reverse \
-                | grep "$oldest_date" | awk '{print $6}' \
-                | sed "s|^$LOG_DIR/||" \
+            files="$($SUPERVISOR_LS_BIN -g --no-group --time-style='+%Y-%m-%d %H:%M' "$LOG_DIR"/*.log --sort=time --reverse \
+                | grep "$oldest_date" | $SUPERVISOR_AWK_BIN '{print $6}' \
+                | $SUPERVISOR_SED_BIN "s|^$LOG_DIR/||" \
                 | grep -v \
                     -e "$(basename "$SUPERVISOR_INFO_LOG_FILE")" \
                     -e "$(basename "$SUPERVISOR_ERROR_LOG_FILE")" \
                     -e "$(basename "$SUPERVISOR_MONITORING_LOG_FILE")" \
             )"
-            nb_files="$(echo "$files" | wc -l)"
-            echo -en "    $date$oldest_date $normal⇒ "
+            nb_files="$(echo "$files" | wc -l | tr -d ' ')"
+            echo -en "    $date$oldest_date ${normal}⇒ "
             if [ ! -z "$files" ] && [ "$nb_files" -gt 0 ]; then
                 if [ ! -e "$archiving_path" ]; then
                     [ "$nb_files" -gt 1 ] && plural='s' || plural=''
                     echo -e "${ok}archiving $ok_bold$nb_files ${ok}file$plural into $ok_bold$archiving_path"
                     echo "$files" \
-                        | xargs tar --directory=$LOG_DIR -czvf "$archiving_path" \
-                        | sed "s|^|$LOG_DIR/|" | xargs rm
+                        | xargs $SUPERVISOR_TAR_BIN --directory=$LOG_DIR -czvf "$archiving_path" \
+                        | $SUPERVISOR_SED_BIN "s|^|$LOG_DIR/|" | xargs rm
                 else
                     echo -e "${ok}already archived into $ok_bold$archiving_path"
                 fi
             else
                 echo -e "no file to archive"
             fi
-            oldest_date="$(date -d "$oldest_date + 1 day" +%Y-%m-%d)";
+            oldest_date="$($SUPERVISOR_DATE_BIN -d "$oldest_date + 1 day" +%Y-%m-%d)";
         done
     fi
 }
