@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+. "{root_dir}/conf/supervisor.sh"
+
 # PATHS
 ROOT_DIR="{root_dir}"
 CONF_DIR=$ROOT_DIR/conf
