@@ -28,7 +28,7 @@ function getMailSubject () {
 
 function getMailInstigator () {
     if [ -z "$MAIL_INSTIGATOR" ]; then
-        echo -n '<i style="font-weight:normal">not specified</i>' | sed 's|\(/\)|\\\1|g'
+        echo -n '<i style="font-weight:normal">not specified</i>' | $SUPERVISOR_SED_BIN 's|\(/\)|\\\1|g'
     else
         echo -n "$MAIL_INSTIGATOR"
     fi
@@ -37,8 +37,8 @@ function getMailInstigator () {
 function getElapsedTime () {
     local pattern
     [[ $SUPERVISOR_OUTPUT_FORMAT == 'csv' ]] && pattern='^.' || pattern='^'
-    local t0="$(cat "$SCRIPT_INFO_LOG_FILE" | head -n1 | sed "s/$pattern//" | awk '{print $1" "$2}')"
-    local t1="$(cat "$SCRIPT_INFO_LOG_FILE" | tail -n1 | sed "s/$pattern//" | awk '{print $1" "$2}')"
+    local t0="$(cat "$SCRIPT_INFO_LOG_FILE" | head -n1 | $SUPERVISOR_SED_BIN "s/$pattern//" | awk '{print $1" "$2}')"
+    local t1="$(cat "$SCRIPT_INFO_LOG_FILE" | tail -n1 | $SUPERVISOR_SED_BIN "s/$pattern//" | awk '{print $1" "$2}')"
     local seconds=$(( $(date -d "$t1" +%s) - $(date -d "$t0" +%s) ))
     [[ $seconds -eq 0 ]] && (( seconds=seconds+1 ))
 
@@ -55,9 +55,11 @@ function getElapsedTime () {
 
 function getCmd () {
     local parameters="$(echo "$SCRIPT_PARAMETERS" \
-        | sed -r -e "s/ +(--[a-z0-9_-]+(=('[^']+'|\"[^\"]+\"|[^'\" ]*))?)/\\\n\1\\\n/ig" -e 's/\n(\n|$)/\1/g')"
+        | $SUPERVISOR_SED_BIN -r \
+            -e "s/ +(--[a-z0-9_-]+(=('[^']+'|\"[^\"]+\"|[^'\" ]*))?)/\\\n\1\\\n/ig" \
+            -e 's/\n(\n|$)/\1/g')"
     echo -n "$SCRIPT_NAME\n$parameters\n$EXECUTION_ID\n$SCRIPT_ERROR_LOG_FILE\n2>>$SCRIPT_ERROR_LOG_FILE" \
-        | sed -e 's/\\n *\\n/\\n/g' -e 's/\\n/\\n    /g' -e 's|\(/\)|\\\1|g'
+        | $SUPERVISOR_SED_BIN -e 's/\\n *\\n/\\n/g' -e 's/\\n/\\n    /g' -e 's|\(/\)|\\\1|g'
 }
 
 function compressAttachedFiles () {
@@ -97,10 +99,10 @@ function sendMail () {
 }
 
 function parentSendMailOnError () {
-    local script_name="$(echo "$SCRIPT_NAME" | sed 's|\(/\)|\\\1|g')"
-    local log_dir="$(dirname "$SUPERVISOR_INFO_LOG_FILE" | sed 's|\(/\)|\\\1|g')"
-    local error_msg="$(cat "$SCRIPT_ERROR_LOG_FILE" | sed 's:\(/\|\\\):\\\1:g' | awk 1 ORS='\\n')"
-    local mail_msg=$(sed \
+    local script_name="$(echo "$SCRIPT_NAME" | $SUPERVISOR_SED_BIN 's|\(/\)|\\\1|g')"
+    local log_dir="$(dirname "$SUPERVISOR_INFO_LOG_FILE" | $SUPERVISOR_SED_BIN 's|\(/\)|\\\1|g')"
+    local error_msg="$(cat "$SCRIPT_ERROR_LOG_FILE" | $SUPERVISOR_SED_BIN 's:\(/\|\\\):\\\1:g' | awk 1 ORS='\\n')"
+    local mail_msg=$($SUPERVISOR_SED_BIN \
         -e "s/{{elapsed_time}}/$(getElapsedTime)/g" \
         -e "s/{{script}}/$script_name/g" \
         -e "s/{{exec_id}}/$EXECUTION_ID/g" \
@@ -120,10 +122,10 @@ function parentSendMailOnError () {
 function parentSendMailOnWarning () {
     local warning_context="$(cat "$SCRIPT_INFO_LOG_FILE" | grep -B2 --color=never -n '\[WARNING\]')"
     echo "$warning_context" | head -n1 | grep -vq '^1\(-\|:\)' && warning_context=$'--\n'"$warning_context"
-    echo "$warning_context" | tail -n1 | grep -vq "^$(wc -l "$SCRIPT_INFO_LOG_FILE" | awk '{print $1}')" \
-        && warning_context="$warning_context"$'\n--'
+    echo "$warning_context" | tail -n1 | grep -vq "^$(wc -l "$SCRIPT_INFO_LOG_FILE" \
+        | awk '{print $1}')" && warning_context="$warning_context"$'\n--'
     local warning_html="$(echo "$warning_context" \
-        | sed -r \
+        | $SUPERVISOR_SED_BIN -r \
             -e 's|^[0-9]+-(.*)$|<span style="color:#9b8861">\1</span>|' \
             -e 's|^--$|<span style="color:#9b8861;font-style:italic">[…]</span>|' \
             -e 's|^[0-9]+:||' \
@@ -131,10 +133,10 @@ function parentSendMailOnWarning () {
 
     local plural
     [ "${#WARNING_MSG[*]}" -gt 1 ] && plural='s' || plural=''
-    local script_name="$(echo "$SCRIPT_NAME" | sed 's|\(/\)|\\\1|g')"
-    local log_dir="$(dirname "$SUPERVISOR_INFO_LOG_FILE" | sed 's|\(/\)|\\\1|g')"
-    local warning_msg="$(echo "$warning_html" | sed 's:\(/\|\\\):\\\1:g' | awk 1 ORS='\\n')"
-    local mail_msg=$(sed \
+    local script_name="$(echo "$SCRIPT_NAME" | $SUPERVISOR_SED_BIN 's|\(/\)|\\\1|g')"
+    local log_dir="$(dirname "$SUPERVISOR_INFO_LOG_FILE" | $SUPERVISOR_SED_BIN 's|\(/\)|\\\1|g')"
+    local warning_msg="$(echo "$warning_html" | $SUPERVISOR_SED_BIN 's:\(/\|\\\):\\\1:g' | awk 1 ORS='\\n')"
+    local mail_msg=$($SUPERVISOR_SED_BIN \
         -e "s/{{nb_warnings}}/${#WARNING_MSG[*]}/g" \
         -e "s/{{warning_plural}}/$plural/g" \
         -e "s/{{elapsed_time}}/$(getElapsedTime)/g" \
@@ -154,9 +156,9 @@ function parentSendMailOnWarning () {
 }
 
 function parentSendMailOnSuccess () {
-    local script_name="$(echo "$SCRIPT_NAME" | sed 's|\(/\)|\\\1|g')"
-    local log_dir="$(dirname "$SUPERVISOR_INFO_LOG_FILE" | sed 's|\(/\)|\\\1|g')"
-    local mail_msg=$(sed \
+    local script_name="$(echo "$SCRIPT_NAME" | $SUPERVISOR_SED_BIN 's|\(/\)|\\\1|g')"
+    local log_dir="$(dirname "$SUPERVISOR_INFO_LOG_FILE" | $SUPERVISOR_SED_BIN 's|\(/\)|\\\1|g')"
+    local mail_msg=$($SUPERVISOR_SED_BIN \
         -e "s/{{elapsed_time}}/$(getElapsedTime)/g" \
         -e "s/{{script}}/$script_name/g" \
         -e "s/{{exec_id}}/$EXECUTION_ID/g" \
@@ -172,8 +174,8 @@ function parentSendMailOnSuccess () {
 }
 
 function parentSendMailOnStartup () {
-    local script_name="$(echo "$SCRIPT_NAME" | sed 's|\(/\)|\\\1|g')"
-    local mail_msg=$(sed \
+    local script_name="$(echo "$SCRIPT_NAME" | $SUPERVISOR_SED_BIN 's|\(/\)|\\\1|g')"
+    local mail_msg=$($SUPERVISOR_SED_BIN \
         -e "s/{{date}}/$(date +'%Y-%m-%d, %H:%M:%S')/g" \
         -e "s/{{script}}/$script_name/g" \
         -e "s/{{exec_id}}/$EXECUTION_ID/g" \

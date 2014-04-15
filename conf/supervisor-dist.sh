@@ -57,6 +57,9 @@ SUPERVISOR_LOCK_SCRIPT=1
 #     3 = Remove inner timestamp
 SUPERVISOR_ABOVE_SUPERVISOR_STRATEGY=1
 
+# Path to sed command:
+SUPERVISOR_SED_BIN=sed
+
 # Space separated list of emails :
 SUPERVISOR_MAIL_TO="supervisor@xyz.com"
 

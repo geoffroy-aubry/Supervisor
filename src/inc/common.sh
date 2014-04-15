@@ -139,7 +139,8 @@ function executeScript () {
             fi
 
             getScriptFormattedTimestamp "$datecs" && script_datecs="$RETVAL"
-            echo "$script_datecs$line" | sed -r 's:(\033|\x1B)\[[0-9;]*[mK]::ig' >> $SCRIPT_INFO_LOG_FILE
+            echo "$script_datecs$line" \
+                | $SUPERVISOR_SED_BIN -r 's:(\033|\x1B)\[[0-9;]*[mK]::ig' >> $SCRIPT_INFO_LOG_FILE
             displayScriptMsg "$datecs" "$line"
         done < $pipe
         rm -f $pipe
@@ -255,7 +256,7 @@ function displayScriptMsg {
         while [ "${msg_wo_tab:0:${#SUPERVISOR_LOG_TABULATION}}" = "$SUPERVISOR_LOG_TABULATION" ]; do
             msg_wo_tab="${msg_wo_tab:${#SUPERVISOR_LOG_TABULATION}}"
         done
-        msg_wo_color="$(echo "$msg_wo_tab" | sed -r 's:(\033|\x1B)\[[0-9;]*[mK]::ig')"
+        msg_wo_color="$(echo "$msg_wo_tab" | $SUPERVISOR_SED_BIN -r 's:(\033|\x1B)\[[0-9;]*[mK]::ig')"
         tmsg="${msg_wo_color##+( )}"	# ltrim
     fi
 
@@ -472,7 +473,7 @@ function archive () {
             archiving_path="$(printf "$SUPERVISOR_ARCHIVING_PATTERN" "$oldest_date")"
             files="$(ls -g --no-group --time-style='+%Y-%m-%d %H:%M' "$LOG_DIR"/*.log --sort=time --reverse \
                 | grep "$oldest_date" | awk '{print $6}' \
-                | sed "s|^$LOG_DIR/||" \
+                | $SUPERVISOR_SED_BIN "s|^$LOG_DIR/||" \
                 | grep -v \
                     -e "$(basename "$SUPERVISOR_INFO_LOG_FILE")" \
                     -e "$(basename "$SUPERVISOR_ERROR_LOG_FILE")" \
@@ -486,7 +487,7 @@ function archive () {
                     echo -e "${ok}archiving $ok_bold$nb_files ${ok}file$plural into $ok_bold$archiving_path"
                     echo "$files" \
                         | xargs tar --directory=$LOG_DIR -czvf "$archiving_path" \
-                        | sed "s|^|$LOG_DIR/|" | xargs rm
+                        | $SUPERVISOR_SED_BIN "s|^|$LOG_DIR/|" | xargs rm
                 else
                     echo -e "${ok}already archived into $ok_bold$archiving_path"
                 fi

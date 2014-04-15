@@ -38,8 +38,8 @@ class ArchivingTest extends SupervisorTestCase
     public static function setUpBeforeClass()
     {
         $sCmd =
-            'bash -c \'for f in $(ls -1 "' . RESOURCES_DIR . '"/archiving/*.log | grep -v /supervisor.); do
-                d="$(echo "$f" | sed -r "s/^.*([0-9]{14}).*$/\\1/")"
+            'bash -c \'for f in $(ls -1 "' . RESOURCES_DIR . '"/archiving/*.log); do
+                d="$(echo "$f" | ' . SED_BIN . ' -r "s/^.*([0-9]{14}).*$/\\1/")"
                 touch -t ${d:0:-2} "$f"
             done\'';
         Helpers::exec($sCmd);

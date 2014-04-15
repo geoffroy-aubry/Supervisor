@@ -29,7 +29,6 @@
 namespace GAubry\Supervisor\Tests;
 
 use GAubry\Helpers\Helpers;
-use GAubry\Helpers\Debug;
 
 class SupervisorTestCase extends \PHPUnit_Framework_TestCase
 {
@@ -75,7 +74,7 @@ class SupervisorTestCase extends \PHPUnit_Framework_TestCase
             } else {
                 $this->copyConfigFile($mConfigFilename);
             }
-            $sCmd = SRC_DIR . "/supervisor.sh -c '$this->sTmpDir/$mConfigFilename' $sParameters";
+            $sCmd = BASH_PATH . ' ' . SRC_DIR . "/supervisor.sh -c '$this->sTmpDir/$mConfigFilename' $sParameters";
         } else {
             foreach ($mConfigFilename as $sConfigFilename) {
                 $this->copyConfigFile($sConfigFilename);
@@ -193,7 +192,7 @@ class SupervisorTestCase extends \PHPUnit_Framework_TestCase
      */
     protected function shellCodeCall ($sCmd, $bStripBashColors = true)
     {
-        $sShellCodeCall = '/bin/bash ' . TESTS_DIR . '/inc/testShellCode.sh "' . $sCmd . '"';
+        $sShellCodeCall = BASH_PATH . ' ' . TESTS_DIR . '/inc/testShellCode.sh "' . $sCmd . '"';
         return $this->exec($sShellCodeCall, $bStripBashColors);
     }
 
