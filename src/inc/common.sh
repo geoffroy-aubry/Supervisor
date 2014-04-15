@@ -462,7 +462,8 @@ function archive () {
 
     local min_days="$1"
     local newest_date="$(date -d "- $min_days days" +%Y-%m-%d)"
-    local oldest_date="$(ls -g --no-group --time-style='+%Y-%m-%d %H:%M' "$LOG_DIR"/*.log --sort=time --reverse 2>/dev/null | head -n1 | $SUPERVISOR_AWK_BIN '{print $4}')"
+    local oldest_date="$($SUPERVISOR_LS_BIN -g --no-group --time-style='+%Y-%m-%d %H:%M' "$LOG_DIR"/*.log \
+        --sort=time --reverse 2>/dev/null | head -n1 | $SUPERVISOR_AWK_BIN '{print $4}')"
     local archiving_path files nb_files plural
 
     echo -e "\n${title}Archiving from $title_bold$oldest_date ${title}to $title_bold$newest_date ${title}inclusive:"
@@ -471,7 +472,7 @@ function archive () {
     else
         while [ "$(date -d "$oldest_date" +%s)" -le "$(date -d "$newest_date" +%s)" ]; do
             archiving_path="$(printf "$SUPERVISOR_ARCHIVING_PATTERN" "$oldest_date")"
-            files="$(ls -g --no-group --time-style='+%Y-%m-%d %H:%M' "$LOG_DIR"/*.log --sort=time --reverse \
+            files="$($SUPERVISOR_LS_BIN -g --no-group --time-style='+%Y-%m-%d %H:%M' "$LOG_DIR"/*.log --sort=time --reverse \
                 | grep "$oldest_date" | $SUPERVISOR_AWK_BIN '{print $6}' \
                 | $SUPERVISOR_SED_BIN "s|^$LOG_DIR/||" \
                 | grep -v \

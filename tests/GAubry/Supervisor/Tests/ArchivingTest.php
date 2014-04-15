@@ -38,13 +38,13 @@ class ArchivingTest extends SupervisorTestCase
     public static function setUpBeforeClass()
     {
         $sCmd =
-            'bash -c \'for f in $(ls -1 "' . RESOURCES_DIR . '"/archiving/*.log); do
+            'bash -c \'for f in $(' . LS_BIN . ' -1 "' . RESOURCES_DIR . '"/archiving/*.log); do
                 d="$(echo "$f" | ' . SED_BIN . ' -r "s/^.*([0-9]{14}).*$/\\1/")"
                 touch -t ${d:0:-2} "$f"
             done\'';
         Helpers::exec($sCmd);
 
-        $sCmd = 'for f in $(ls -1 "' . RESOURCES_DIR . '"/archiving/supervisor*.log); do touch -t 201310011200 "$f"; done';
+        $sCmd = 'for f in $(' . LS_BIN . ' -1 "' . RESOURCES_DIR . '"/archiving/supervisor*.log); do touch -t 201310011200 "$f"; done';
         Helpers::exec($sCmd);
     }
 
@@ -114,7 +114,7 @@ php_notice.php.20130925182719_29103.error.log";
         $sExpectedResult = "bash_colored_simple.sh.20130930155451_04516.info.log";
         $this->assertEquals($sExpectedResult, $sResult);
 
-        $sResult = $this->exec("ls -1 $this->sTmpDir/archiving | grep .log");
+        $sResult = $this->exec(LS_BIN . " -1 $this->sTmpDir/archiving | grep .log");
         $sExpectedResult = "supervisor.error.log\nsupervisor.info.log";
         $this->assertEquals($sExpectedResult, $sResult);
     }
@@ -137,7 +137,7 @@ Archiving from 2013-10-01 to 2013-09-30 inclusive:
         $this->assertEquals('', $aResult['supervisor_err_content']);
         $this->assertEquals('', $aResult['sent_mails']);
 
-        $sResult = $this->exec("ls -1 $this->sTmpDir/archiving | grep .log");
+        $sResult = $this->exec(LS_BIN . " -1 $this->sTmpDir/archiving | grep .log");
         $sExpectedResult = "supervisor.error.log\nsupervisor.info.log";
         $this->assertEquals($sExpectedResult, $sResult);
     }
@@ -183,7 +183,7 @@ php_notice.php.20130925182719_29103.error.log";
         $sExpectedResult = "bash_colored_simple.sh.20130930155451_04516.info.log";
         $this->assertEquals($sExpectedResult, $sResult);
 
-        $sResult = $this->exec("ls -1 $this->sTmpDir/archiving | grep .log");
+        $sResult = $this->exec(LS_BIN . " -1 $this->sTmpDir/archiving | grep .log");
         $sExpectedResult = "bash_colored_simple.sh.20130930155451_04516.info.log
 bash_std_err_with_mail_to.20130929182339_27780.error.log
 bash_std_err_with_mail_to.20130929182339_27780.info.log
@@ -256,7 +256,7 @@ Archiving from 2013-09-21 to 2013-09-28 inclusive:
         $this->assertEquals('', $aResult['supervisor_err_content']);
         $this->assertEquals('', $aResult['sent_mails']);
 
-        $sResult = $this->exec("ls -1 $this->sTmpDir/archiving | grep .log");
+        $sResult = $this->exec(LS_BIN . " -1 $this->sTmpDir/archiving | grep .log");
         $sExpectedResult = "bash_colored_simple.sh.20130930155451_04516.info.log
 bash_std_err_with_mail_to.20130929182339_27780.error.log
 bash_std_err_with_mail_to.20130929182339_27780.info.log

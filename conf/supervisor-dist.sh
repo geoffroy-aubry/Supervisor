@@ -63,6 +63,9 @@ SUPERVISOR_SED_BIN=sed
 # Path to GNU awk command:
 SUPERVISOR_AWK_BIN=awk
 
+# Path to GNU ls command:
+SUPERVISOR_LS_BIN=ls
+
 # Space separated list of emails :
 SUPERVISOR_MAIL_TO="supervisor@xyz.com"
 
