@@ -72,6 +72,9 @@ SUPERVISOR_DATE_BIN=date
 # Path to md5 command (Debian: md5sum, FreeBSD/OSX: 'md5 -r'):
 SUPERVISOR_MD5_BIN=md5sum
 
+# Path to GNU tar command:
+SUPERVISOR_TAR_BIN=tar
+
 # Space separated list of emails :
 SUPERVISOR_MAIL_TO="supervisor@xyz.com"
 

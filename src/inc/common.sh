@@ -487,7 +487,7 @@ function archive () {
                     [ "$nb_files" -gt 1 ] && plural='s' || plural=''
                     echo -e "${ok}archiving $ok_bold$nb_files ${ok}file$plural into $ok_bold$archiving_path"
                     echo "$files" \
-                        | xargs tar --directory=$LOG_DIR -czvf "$archiving_path" \
+                        | xargs $SUPERVISOR_TAR_BIN --directory=$LOG_DIR -czvf "$archiving_path" \
                         | $SUPERVISOR_SED_BIN "s|^|$LOG_DIR/|" | xargs rm
                 else
                     echo -e "${ok}already archived into $ok_bold$archiving_path"
