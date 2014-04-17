@@ -269,7 +269,7 @@ function displayScriptMsg {
         warning_msg="${tmsg:9}"
         warning_msg="${warning_msg##+( )}"
         WARNING_MSG[${#WARNING_MSG[*]}]="$1, $warning_msg"
-    elif [ "${tmsg:0:7}" = "$SUPERVISOR_DEBUG_TAG" ]; then
+    elif [ "${tmsg:0:7}" = "$SUPERVISOR_DEBUG_TAG" ] && [ "$SUPERVISOR_SHOW_DEBUG_MSG" -ne 1 ] ; then
         :
     elif [ "${tmsg:0:8}" = "$SUPERVISOR_MAILTO_TAG" ]; then
         SUPERVISOR_MAIL_TO="$SUPERVISOR_MAIL_TO ${tmsg:8}"

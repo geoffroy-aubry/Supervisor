@@ -111,8 +111,12 @@ SUPERVISOR_PREFIX_MSG='[SUPERVISOR] '
 # Warning tag syntax:
 SUPERVISOR_WARNING_TAG='[WARNING]'
 
-# Debug tag syntax (not displayed in stdout):
+# Debug tag syntax (displayed in stdout if and only if SUPERVISOR_SHOW_DEBUG_TRACES is 1):
 SUPERVISOR_DEBUG_TAG='[DEBUG]'
+
+# Display messages beginning with SUPERVISOR_DEBUG_TAG if and only if set to 1
+# (but messages are still present in `<script>_<exec_id>.info.log`).
+SUPERVISOR_SHOW_DEBUG_MSG=0
 
 # Tag syntax to add a new recipient:
 SUPERVISOR_MAILTO_TAG='[MAILTO]'
