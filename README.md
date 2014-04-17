@@ -395,11 +395,15 @@ Please note that warnings are listed with 2 lines of context.
 
 #### Debug traces
 
-Messages preceded by a debug tag are hidden in Supervisor's output, but still present in `<script>_<exec_id>.info.log`.
+By default, messages preceded by a debug tag are hidden in Supervisor's output (but still present in `<script>_<exec_id>.info.log`).
+Set `SUPERVISOR_SHOW_DEBUG_MSG` to `1` to display them.
 
-Default configuration: `SUPERVISOR_DEBUG_TAG='[DEBUG]'`
+Default configuration:
 
-_TO DOCUMENT_
+```
+SUPERVISOR_DEBUG_TAG='[DEBUG]'
+SUPERVISOR_SHOW_DEBUG_MSG=0
+```
 
 #### E-mail related tags
 

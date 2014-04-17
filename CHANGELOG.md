@@ -1,6 +1,12 @@
 Change log
 ==========
 
+## Version 1.6.1 (2014-04-17)
+
+Features:
+
+  - Allow to not hide debug messages with a new configuration setting: `SUPERVISOR_SHOW_DEBUG_MSG=(0|1)`.
+
 ## Version 1.6.0 (2014-04-15)
 
 Features:
