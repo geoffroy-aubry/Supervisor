@@ -28,8 +28,6 @@
 
 namespace GAubry\Supervisor\Tests;
 
-use GAubry\Helpers\Helpers;
-
 class CsvStreamsTest extends SupervisorTestCase
 {
     private function filterScriptInfo ($sScriptInfoPath)

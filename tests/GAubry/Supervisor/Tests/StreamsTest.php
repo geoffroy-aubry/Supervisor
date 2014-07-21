@@ -28,8 +28,6 @@
 
 namespace GAubry\Supervisor\Tests;
 
-use GAubry\Helpers\Helpers;
-
 class StreamsTest extends SupervisorTestCase
 {
     private function filterScriptInfo ($sScriptInfoPath)
@@ -502,7 +500,7 @@ Title:
      * @shcovers inc/common.sh::displayResult
      * @shcovers inc/common.sh::displayScriptMsg
      */
-    public function testAdditionalParameters ()
+    public function testAdditionalParametersWithDefaultBehavior ()
     {
         $sScriptName = 'bash_additional_parameters.sh';
         $sScriptPath = RESOURCES_DIR . "/$sScriptName";
@@ -516,6 +514,104 @@ Parameter: 'one'
 Parameter: 'two'
 Parameter: '" . $aResult['exec_id'] . "'
 Parameter: '" . $aResult['script_err_path'] . "'
+[SUPERVISOR] OK\n", $aResult['script_info_content']);
+        $this->assertEquals('', $aResult['script_err_content']);
+        $this->assertEquals("$sScriptPath;START\n$sScriptPath;OK\n", $aResult['supervisor_info_content']);
+        $this->assertEquals('', $aResult['supervisor_err_content']);
+    }
+
+    /**
+     * @shcovers inc/common.sh::executeScript
+     * @shcovers inc/common.sh::displayResult
+     * @shcovers inc/common.sh::displayScriptMsg
+     */
+    public function testAdditionalParametersWithModeOnlyValue ()
+    {
+        $sScriptName = 'bash_additional_parameters.sh';
+        $sScriptPath = RESOURCES_DIR . "/$sScriptName";
+        $aResult = $this->execSupervisor("$sScriptPath --extra-param-mode=only-value 'one two'");
+        $sScriptInfoFiltered = $this->filterScriptInfo($aResult['script_info_path']);
+        $sExpectedStdOut = $this->getExpectedSupervisorStdOut($sScriptPath, $aResult['exec_id'], $sScriptInfoFiltered);
+        $this->assertEquals($sExpectedStdOut, $aResult['std_out']);
+        $this->assertEquals(0, $aResult['exit_code']);
+        $this->assertEquals("[SUPERVISOR] START
+Parameter: 'one'
+Parameter: 'two'
+Parameter: '" . $aResult['exec_id'] . "'
+Parameter: '" . $aResult['script_err_path'] . "'
+[SUPERVISOR] OK\n", $aResult['script_info_content']);
+        $this->assertEquals('', $aResult['script_err_content']);
+        $this->assertEquals("$sScriptPath;START\n$sScriptPath;OK\n", $aResult['supervisor_info_content']);
+        $this->assertEquals('', $aResult['supervisor_err_content']);
+    }
+
+    /**
+     * @shcovers inc/common.sh::executeScript
+     * @shcovers inc/common.sh::displayResult
+     * @shcovers inc/common.sh::displayScriptMsg
+     */
+    public function testAdditionalParametersWithInvalidMode ()
+    {
+        $sScriptName = 'bash_additional_parameters.sh';
+        $sScriptPath = RESOURCES_DIR . "/$sScriptName";
+        $aResult = $this->execSupervisor("$sScriptPath --extra-param-mode=NOT-EXISTS 'one two'");
+        $sScriptInfoFiltered = $this->filterScriptInfo($aResult['script_info_path']);
+        $sExpectedStdOut = $this->getExpectedSupervisorStdOut($sScriptPath, $aResult['exec_id'], $sScriptInfoFiltered);
+        $this->assertEquals($sExpectedStdOut, $aResult['std_out']);
+        $this->assertEquals(0, $aResult['exit_code']);
+        $this->assertEquals("[SUPERVISOR] START
+Parameter: 'one'
+Parameter: 'two'
+Parameter: '" . $aResult['exec_id'] . "'
+Parameter: '" . $aResult['script_err_path'] . "'
+[SUPERVISOR] OK\n", $aResult['script_info_content']);
+        $this->assertEquals('', $aResult['script_err_content']);
+        $this->assertEquals("$sScriptPath;START\n$sScriptPath;OK\n", $aResult['supervisor_info_content']);
+        $this->assertEquals('', $aResult['supervisor_err_content']);
+    }
+
+    /**
+     * @shcovers inc/common.sh::executeScript
+     * @shcovers inc/common.sh::displayResult
+     * @shcovers inc/common.sh::displayScriptMsg
+     */
+    public function testAdditionalParametersWithModeNone ()
+    {
+        $sScriptName = 'bash_additional_parameters.sh';
+        $sScriptPath = RESOURCES_DIR . "/$sScriptName";
+        $aResult = $this->execSupervisor("$sScriptPath --extra-param-mode=none 'one two'");
+        $sScriptInfoFiltered = $this->filterScriptInfo($aResult['script_info_path']);
+        $sExpectedStdOut = $this->getExpectedSupervisorStdOut($sScriptPath, $aResult['exec_id'], $sScriptInfoFiltered);
+        $this->assertEquals($sExpectedStdOut, $aResult['std_out']);
+        $this->assertEquals(0, $aResult['exit_code']);
+        $this->assertEquals("[SUPERVISOR] START
+Parameter: 'one'
+Parameter: 'two'
+[SUPERVISOR] OK\n", $aResult['script_info_content']);
+        $this->assertEquals('', $aResult['script_err_content']);
+        $this->assertEquals("$sScriptPath;START\n$sScriptPath;OK\n", $aResult['supervisor_info_content']);
+        $this->assertEquals('', $aResult['supervisor_err_content']);
+    }
+
+    /**
+     * @shcovers inc/common.sh::executeScript
+     * @shcovers inc/common.sh::displayResult
+     * @shcovers inc/common.sh::displayScriptMsg
+     */
+    public function testAdditionalParametersWithModeWithName ()
+    {
+        $sScriptName = 'bash_additional_parameters.sh';
+        $sScriptPath = RESOURCES_DIR . "/$sScriptName";
+        $aResult = $this->execSupervisor("$sScriptPath --extra-param-mode=with-name 'one two'");
+        $sScriptInfoFiltered = $this->filterScriptInfo($aResult['script_info_path']);
+        $sExpectedStdOut = $this->getExpectedSupervisorStdOut($sScriptPath, $aResult['exec_id'], $sScriptInfoFiltered);
+        $this->assertEquals($sExpectedStdOut, $aResult['std_out']);
+        $this->assertEquals(0, $aResult['exit_code']);
+        $this->assertEquals("[SUPERVISOR] START
+Parameter: 'one'
+Parameter: 'two'
+Parameter: '--exec-id=" . $aResult['exec_id'] . "'
+Parameter: '--error-log-file=" . $aResult['script_err_path'] . "'
 [SUPERVISOR] OK\n", $aResult['script_info_content']);
         $this->assertEquals('', $aResult['script_err_content']);
         $this->assertEquals("$sScriptPath;START\n$sScriptPath;OK\n", $aResult['supervisor_info_content']);

@@ -76,6 +76,7 @@ class SupervisorTestCase extends \PHPUnit_Framework_TestCase
             }
             $sCmd = BASH_BIN . ' ' . SRC_DIR . "/supervisor.sh -c '$this->sTmpDir/$mConfigFilename' $sParameters";
         } else {
+            /* @var $mConfigFilename array */
             foreach ($mConfigFilename as $sConfigFilename) {
                 $this->copyConfigFile($sConfigFilename);
             }

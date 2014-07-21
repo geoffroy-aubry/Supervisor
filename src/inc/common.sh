@@ -111,8 +111,15 @@ function executeScript () {
     if [ $lock_failed -eq 0 ]; then
         local src_ifs="$IFS"
         local pipe="/tmp/fifo_${EXECUTION_ID}_$RANDOM"
+        local extra_param
+        case $EXTRA_PARAM_MODE in
+            only-value) extra_param="$EXECUTION_ID $SCRIPT_ERROR_LOG_FILE" ;;
+            with-name) extra_param="--exec-id=$EXECUTION_ID --error-log-file=$SCRIPT_ERROR_LOG_FILE" ;;
+            *) extra_param='' ;;
+        esac
+
         mkfifo -m 666 $pipe
-        $SCRIPT_NAME $SCRIPT_PARAMETERS $EXECUTION_ID $SCRIPT_ERROR_LOG_FILE 2>>$SCRIPT_ERROR_LOG_FILE > $pipe &
+        $SCRIPT_NAME $SCRIPT_PARAMETERS $extra_param 2>>$SCRIPT_ERROR_LOG_FILE > $pipe &
         pid=$!
 
         local datecs script_datecs
@@ -535,9 +542,15 @@ $tab${tab}Path to a Bash script customizing sent mails by redefining some of
 $tab${tab}the ${cmd}sendMailOn$normal[${cmd}Init$normal|${cmd}Success$normal|${cmd}Warning$normal|${cmd}Error$normal]${cmd}()$normal functions.
 $tab${tab}See $opt--param$normal option.
 $tab
-$tab$opt--exec_id$normal=$param<string>
+$tab$opt--exec-id$normal=$param<string>
 $tab${tab}Allow to force execution id, used in mails and name of logs.
 $tab${tab}By default: YYYYMMDDHHIISS_XXXXX, where X are random digits.
+$tab
+$tab$opt--extra-param-mode$normal=[${cmd}only-value$normal|${cmd}with-name$normal|${cmd}none$normal]
+$tab${tab}Two extra parameters are added to the end of $param<script-parameters>$normal: a unique
+$tab${tab}execution ID and name of file recording script's stderr. ${cmd}with-name$normal mode prefixes
+$tab${tab}values with '--exec-id=' and '--error-log-file=' respectively.
+$tab${tab}By default: ${cmd}only-value$normal.
 $tab
 $tab$opt-h$normal, $opt--help
 $tab${tab}Display this help.
