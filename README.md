@@ -2,7 +2,7 @@
 
 [![Latest stable version](https://poser.pugx.org/geoffroy-aubry/Supervisor/v/stable.png "Latest stable version")](https://packagist.org/packages/geoffroy-aubry/Supervisor)
 [![Build Status](https://secure.travis-ci.org/geoffroy-aubry/Supervisor.png?branch=stable)](http://travis-ci.org/geoffroy-aubry/Supervisor)
-&nbsp;_[Estimated code coverage](https://travis-ci.org/geoffroy-aubry/Supervisor): 88% (546 of 622 lines)._
+&nbsp;_[Estimated code coverage](https://travis-ci.org/geoffroy-aubry/Supervisor): 87% (553 of 638 lines)._
 
 Oversee script execution, recording `stdout`, `stderr` and exit code with timestamping,
 and ensure email notifications will be sent (on startup, success, warning or error)… plus many other features.
@@ -120,10 +120,10 @@ $ supervisor.sh [-h|--help]
         and ensure email notifications will be sent (on start, success, warning or error).
 
     Usage
-        supervisor.sh [OPTION]… <script-path> [<script-parameters>]
-        supervisor.sh [-c <conf-file>] --archive=<min-days>
-        supervisor.sh [-c <conf-file>] --monitor
-        supervisor.sh [-c <conf-file>] --summarize
+        supervisor [OPTION]… <script-path> [<script-parameters>]
+        supervisor [-c <conf-file>] --archive=<min-days>
+        supervisor [-c <conf-file>] --monitor
+        supervisor [-c <conf-file>] --summarize
 
     Options
         --archive=<min-days>
@@ -137,6 +137,16 @@ $ supervisor.sh [-h|--help]
             Path to a Bash script customizing sent mails by redefining some of
             the sendMailOn[Init|Success|Warning|Error]() functions.
             See --param option.
+
+        --exec-id=<string>
+            Allow to force execution id, used in mails and name of logs.
+            By default: YYYYMMDDHHIISS_XXXXX, where X are random digits.
+
+        --extra-param-mode=[only-value|with-name|none]
+            Two extra parameters are added to the end of <script-parameters>: a unique
+            execution ID and name of file recording script's stderr. with-name mode prefixes
+            values with '--exec-id=' and '--error-log-file=' respectively.
+            By default: only-value.
 
         -h, --help
             Display this help.
@@ -541,7 +551,7 @@ See [CHANGELOG](CHANGELOG.md) file for details.
 ## Continuous integration
 
 [![Build Status](https://secure.travis-ci.org/geoffroy-aubry/Supervisor.png?branch=stable)](http://travis-ci.org/geoffroy-aubry/Supervisor)
-&nbsp;_[Estimated code coverage](https://travis-ci.org/geoffroy-aubry/Supervisor): 88% (546 of 622 lines)._
+&nbsp;_[Estimated code coverage](https://travis-ci.org/geoffroy-aubry/Supervisor): 87% (553 of 638 lines)._
 
 Require PHP >= 5.3.3 and Xdebug.
 

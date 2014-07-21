@@ -49,6 +49,7 @@ CONFIG_FILE=''
 SCRIPT_NAME=''
 SCRIPT_PARAMETERS=''
 EXECUTION_ID="$(date +'%Y%m%d%H%M%S')_$(printf '%05d' $RANDOM)"
+EXTRA_PARAM_MODE='only-value'
 MAIL_INSTIGATOR=''
 SUPERVISOR_MAIL_ADD_ATTACHMENT=''
 CUSTOMIZED_MAILS=''
@@ -89,6 +90,15 @@ function getOpts () {
             --conf=*)             CONFIG_FILE=${i#*=} ;;
             --customized-mails=*) CUSTOMIZED_MAILS=${i#*=} ;;
             --exec-id=*)          EXECUTION_ID=${i#*=} ;;
+
+            --extra-param-mode=*)
+                value=${i#*=}
+                case $value in
+                    only-value|with-name|none) EXTRA_PARAM_MODE=$value ;;
+                    *)                         EXTRA_PARAM_MODE='only-value' ;;
+                esac
+                ;;
+
             --help)               ACTION='help' ;;
             --mail-instigator=*)  MAIL_INSTIGATOR=' '${i#*=} ;;
             --mail-to=*)          ADD_MAIL_TO="$ADD_MAIL_TO ${i#*=}" ;;
