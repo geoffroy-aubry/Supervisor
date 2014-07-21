@@ -1,6 +1,12 @@
 Change log
 ==========
 
+## Version 1.7.0 (2014-07-21)
+
+Features:
+
+  - [#11](https://github.com/geoffroy-aubry/Supervisor/issues/11): Add `--extra-param-mode` option.
+
 ## Version 1.6.1 (2014-04-17)
 
 Features:
