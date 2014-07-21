@@ -28,8 +28,6 @@
 
 namespace GAubry\Supervisor\Tests;
 
-use GAubry\Helpers\Helpers;
-
 class SummaryTest extends SupervisorTestCase
 {
     /**
