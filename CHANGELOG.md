@@ -1,6 +1,12 @@
 Change log
 ==========
 
+## Version 1.7.1 (2015-04-27)
+
+Fixes:
+
+  - Summary email improperly formatted. 
+
 ## Version 1.7.0 (2014-07-21)
 
 Features:
