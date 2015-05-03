@@ -1,6 +1,12 @@
 Change log
 ==========
 
+## Version 1.8.0 (2015-05-04)
+
+Features:
+
+  - Better Summary email, now like others.
+
 ## Version 1.7.1 (2015-04-27)
 
 Fixes:
