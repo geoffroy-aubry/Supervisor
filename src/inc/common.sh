@@ -344,11 +344,15 @@ function summarize () {
                 print L
             }'
 
-    printf -v header '<tr><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th></tr>\n' "${header[@]}"
-    printf -v rows '<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n' "${data[@]}"
-    mail_msg="<h2>Summary</h2><table border=1 cellspacing=0>$header$rows</table>"
     mail_subject="$SUPERVISOR_MAIL_SUBJECT_PREFIX > Summary"
-    echo "$mail_msg" | $SUPERVISOR_MAIL_MUTT_BIN -e "$SUPERVISOR_MAIL_MUTT_CFG" -s "$mail_subject" -- $SUPERVISOR_MAIL_TO $MAIL_INSTIGATOR
+    printf -v rows '<tr><td style="white-space:nowrap;color:#003d66">%s</td><td style="white-space:nowrap;color:#003d66;font-size:12px">%s</td><td style="white-space:nowrap;color:#128ee6;text-align:center">%s</td><td style="white-space:nowrap;color:#349b1d;text-align:center">%s</td><td style="white-space:nowrap;color:#e26d00;text-align:center">%s</td><td style="white-space:nowrap;color:#c52a2a;text-align:center">%s</td><td style="white-space:nowrap;color:#000000;text-align:center">%s</td></tr>' "${data[@]}"
+    rows=$(echo "$rows" | sed 's/>0</></g')
+    local mail_msg=$($SUPERVISOR_SED_BIN \
+        -e "s/{{nb_days}}/$max_nb_days/g" \
+        -e "s|{{rows}}|$rows|g" \
+        "$EMAIL_TEMPLATES_DIR/summary.html" \
+    )
+    rawSendMail "$mail_subject" "$mail_msg" ''
 }
 
 function loadCustomizedMails () {
