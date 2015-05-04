@@ -1,6 +1,12 @@
 Change log
 ==========
 
+## Version 1.8.1 (2015-05-05)
+
+Fixes:
+
+  - Bad days selected in summary.
+
 ## Version 1.8.0 (2015-05-04)
 
 Features:
@@ -11,7 +17,7 @@ Features:
 
 Fixes:
 
-  - Summary email improperly formatted. 
+  - Summary email improperly formatted.
 
 ## Version 1.7.0 (2014-07-21)
 
