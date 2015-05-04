@@ -313,7 +313,7 @@ function summarize () {
     local data=()
     declare -A stats
 
-    days="$(cat "$SUPERVISOR_INFO_LOG_FILE" | cut -d' ' -f1 | uniq | sort -r | tail -n$max_nb_days)"
+    days="$(cat "$SUPERVISOR_INFO_LOG_FILE" | cut -d' ' -f1 | uniq | sort -r | head -n$max_nb_days)"
     for day in $days; do
         scripts="$(cat "$SUPERVISOR_INFO_LOG_FILE" | grep "^$day " | grep ";START$" | cut -d';' -f3 | sort | uniq)"
         IFS=$'\n'
